@@ -1,30 +1,34 @@
-# Hatake Social Beta — Task PRD
-
-## Original Problem Statement
-> git clone https://github.com/ewilliamhertz/hatakesocialbeta, use provided env (Neon Postgres + Resend + JWT), fix the landing page so it shows in English when EN is selected, and restyle HaloNav into a half-halo with glow and curved icon positioning.
+# Hatake Social — PRD
 
 ## Architecture
-- Next.js 14 app (TS) located at `/app/hatakesocialbeta`
-- Auth: JWT (custom)
-- DB: Neon Postgres via Prisma
-- Email: Resend
-- Deploy target: Vercel
+- Next.js 14 (App Router, TS) at repo root, deployed on Vercel
+- Postgres on Neon (Prisma 5.22)
+- JWT auth via `jose`, Resend for email
+- Daily Vercel cron triggers TCGCSV + Scryfall sync + price/value snapshots
 
-## What's been implemented (2026-01)
-- Cloned repo into `/app/hatakesocialbeta`
-- Created `.env` with `DATABASE_URL` (typo `DATABASEw_URL` fixed → `DATABASE_URL`), `RESEND_API_KEY`, `JWT_SECRET`
-- Refactored `src/app/page.tsx` landing page to use `useI18n()` translations (previously hardcoded Swedish)
-- Added landing-page keys (`landing.*`) to both `en` and `sv` dictionaries in `src/lib/i18nContext.tsx`
-- Added `<LanguageSwitcher />` to the landing-page top header so EN/SV toggle is visible on the landing
-- Added missing `nav.guilds` Swedish translation
-- Redesigned `src/components/HaloNav.tsx`:
-  - Half-halo arc rendered with SVG (gradient stroke cyan → white → fuchsia + Gaussian-blur glow + dashed inner highlight)
-  - 8 icons positioned mathematically along the arc (no longer in a straight row) using ellipse parameterisation
-  - Center Login/Profile button sits at the apex with strong radial glow
+## Implemented (Jan 2026)
+- Landing page fully i18n (EN/SV) with LanguageSwitcher in header
+- HaloNav: half-halo bottom bar with conic-gradient profile bubble, layoutId active pill, Euryx Arena cross-app link
+- Apps page: Euryx Arena flagship card at top + 5 sub-app tiles
+- Admin user: `Swagyser9@gmail.com` (ADMIN role) with 6 per-game API keys generated
+- Database seeded: 78,200 cards + 3,951 sealed across Magic / Pokemon / One Piece / Lorcana / Riftbound / Naruto
+- Daily cron at `/api/cron/daily-sync` (TCGCSV recent-10 + Scryfall price refresh + PriceHistory + CollectionValueHistory snapshots)
+- Resumable bulk backfill at `/api/cron/backfill` + `scripts/run_backfill.sh` chainer
+- Public API endpoints for every game: `/api/v1/{mtg,pokemon,one-piece,naruto,lorcana,riftbound}/cards` (Bearer hk_*)
+- Price-history endpoint: `/api/v1/cards/[id]/price-history`
+- Profile chart: `<CollectionValueChart />` on `/profile` (Recharts area chart with 7D/30D/90D/1Y ranges)
+- Pagination fix on /collection All Cards tab (functional setState, no premature hasMore=false)
+- Lorcana & Riftbound now show in All Cards game selector + search API
 
-## Notes for Vercel
-- `.env` is gitignored — add the three variables in Vercel Project → Settings → Environment Variables before deploying.
+## Known limitations
+- Per-day-cap rate limiting on /api/v1/* not enforced yet
+- Set codes shown instead of full set names (deferred per user choice)
+- Naruto only 201 cards (source CSV is incomplete)
+- Profile chart shows empty state until first day of cron runs add historical points
 
-## Future / Backlog
-- Translate remaining hardcoded Swedish strings on other pages (register, login, etc.) if needed
-- Consider per-language URL routing (next-intl) for SEO if multilingual SEO matters
+## Backlog (P1)
+- Full-text search index on CardReference(name, setCode)
+- next/image migration on collection cards (LCP)
+- Set names backfill + Set model
+- API rate limiting
+- Euryx ↔ Hatake SSO via shared cookie domain

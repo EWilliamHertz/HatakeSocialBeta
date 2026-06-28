@@ -6,6 +6,7 @@ import { decrypt } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import ReputationStars from '@/components/ReputationStars';
+import CollectionValueChart from '@/components/CollectionValueChart';
 
 const prisma = new PrismaClient();
 
@@ -102,6 +103,11 @@ export default async function ProfilePage() {
               <Settings size={20} className="text-slate-300" />
             </Link>
           </div>
+        </div>
+
+        {/* Collection Value Tracker */}
+        <div className="mb-12">
+          <CollectionValueChart />
         </div>
 
         {/* Stats Grid */}

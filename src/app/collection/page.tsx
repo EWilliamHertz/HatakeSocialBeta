@@ -8,7 +8,7 @@ import { useI18n } from '@/lib/i18nContext';
 import ListForSaleModal from '@/components/ListForSaleModal';
 
 type Tab = 'ALL_CARDS' | 'YOUR_COLLECTION' | 'SEALED';
-type Game = 'MAGIC' | 'POKEMON' | 'ONE_PIECE' | 'NARUTO';
+type Game = 'MAGIC' | 'POKEMON' | 'ONE_PIECE' | 'NARUTO' | 'LORCANA' | 'RIFTBOUND';
 
 type CardData = {
   id: string;
@@ -185,14 +185,13 @@ function AllCardsTab() {
       });
   }, [game]);
 
-  const fetchCards = async (append = false) => {
+  const fetchCards = async (append = false, overridePage?: number) => {
     if (!append) {
       setCards([]);
-      setHasMore(false);
     }
     setLoading(true);
     try {
-      const currentPage = append ? page + 1 : 1;
+      const currentPage = overridePage ?? (append ? page + 1 : 1);
       const params = new URLSearchParams();
       params.append('game', game);
       params.append('page', currentPage.toString());
@@ -204,7 +203,7 @@ function AllCardsTab() {
 
       const res = await fetch(`/api/collection/search?${params.toString()}`);
       const data = await res.json();
-      
+
       if (data.cards) {
         const newCards = data.cards.map((c: any) => ({
           id: c.apiId,
@@ -215,9 +214,9 @@ function AllCardsTab() {
           setCode: c.setCode,
           collectorNumber: c.collectorNumber,
         }));
-        setCards(append ? [...cards, ...newCards] : newCards);
-        if (append) setPage(currentPage);
-        if (newCards.length < 50) setHasMore(false);
+        setCards(prev => (append ? [...prev, ...newCards] : newCards));
+        setPage(currentPage);
+        setHasMore(newCards.length >= 50);
       } else {
         if (!append) setCards([]);
         setHasMore(false);
@@ -248,7 +247,7 @@ function AllCardsTab() {
     <div>
       {/* Game Selector */}
       <div className="flex flex-wrap gap-2 mb-6 items-center">
-        {['MAGIC', 'POKEMON', 'ONE_PIECE', 'NARUTO'].map((g) => (
+        {['MAGIC', 'POKEMON', 'ONE_PIECE', 'LORCANA', 'RIFTBOUND', 'NARUTO'].map((g) => (
           <button 
             key={g}
             onClick={() => {
@@ -280,7 +279,7 @@ function AllCardsTab() {
           />
         </div>
 
-        {(game === 'MAGIC' || game === 'POKEMON' || game === 'ONE_PIECE') && (
+        {(game === 'MAGIC' || game === 'POKEMON' || game === 'ONE_PIECE' || game === 'LORCANA' || game === 'RIFTBOUND') && (
           <>
             <select 
               value={setCode}
@@ -393,9 +392,19 @@ function AllCardsTab() {
       )}
 
       {cards.length > 0 && hasMore && (
-        <button onClick={() => fetchCards(true)} className="w-full mt-6 py-4 bg-slate-900 border border-white/10 hover:bg-slate-800 text-cyan-400 font-bold rounded-xl transition-colors">
-          {loading ? 'Loading...' : 'Load More Cards'}
+        <button
+          data-testid="load-more-cards-btn"
+          onClick={() => fetchCards(true)}
+          disabled={loading}
+          className="w-full mt-6 py-4 bg-slate-900 border border-white/10 hover:bg-slate-800 text-cyan-400 font-bold rounded-xl transition-colors disabled:opacity-50"
+        >
+          {loading ? `Loading page ${page + 1}…` : `Load More Cards (page ${page + 1})`}
         </button>
+      )}
+      {cards.length > 0 && !hasMore && !loading && (
+        <p className="text-center text-slate-500 text-xs mt-6">
+          End of results — showing all {cards.length} cards across {page} page{page > 1 ? 's' : ''}.
+        </p>
       )}
 
       {/* Add Card Modal */}

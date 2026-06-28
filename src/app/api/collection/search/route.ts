@@ -66,8 +66,14 @@ export async function GET(request: Request) {
     
     // (Removed api.pokemontcg.io fetch, now handled by local TCGCSV DB below)
     
-    // Pokemon, Naruto, One Piece (Local Database)
-    else if (game === 'POKEMON' || game === 'NARUTO' || game === 'ONE_PIECE') {
+    // Pokemon, Naruto, One Piece, Lorcana, Riftbound (Local Database)
+    else if (
+      game === 'POKEMON' ||
+      game === 'NARUTO' ||
+      game === 'ONE_PIECE' ||
+      game === 'LORCANA' ||
+      game === 'RIFTBOUND'
+    ) {
       const element = searchParams.get('element');
       const cost = searchParams.get('cost');
       const language = searchParams.get('language');
