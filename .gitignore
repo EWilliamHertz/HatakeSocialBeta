@@ -36,3 +36,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 mtg-bulk-data.json
+.env.*
+*.env
+credentials.json
+*.key
+.credentials
+node_modules/@next/swc-linux-arm64-gnu/next-swc.linux-arm64-gnu.node
