@@ -42,7 +42,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       success: true,
-      owner: { id: user.id, handle: user.handle },
+      owner: { id: user.id, handle: user.username },
       collection: collection.map(c => ({
         instanceId: c.id,
         apiId: c.cardReference.apiId,

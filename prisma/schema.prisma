@@ -60,6 +60,9 @@ model User {
   // Notifications
   notifications   Notification[]
 
+  // Collection value tracking over time
+  collectionValueHistory CollectionValueHistory[]
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -164,6 +167,7 @@ model CardReference {
   apiPayload    Json
   
   instances     CardInstance[]
+  priceHistory  PriceHistory[]
 }
 
 enum GameType {
@@ -172,6 +176,32 @@ enum GameType {
   POKEMON
   ONE_PIECE
   NARUTO
+  LORCANA
+  RIFTBOUND
+}
+
+// ─── Price History & Collection Value Tracking ──────────────────────────────
+model PriceHistory {
+  id              String        @id @default(cuid())
+  cardReferenceId String
+  cardReference   CardReference @relation(fields: [cardReferenceId], references: [id], onDelete: Cascade)
+  price           Float
+  source          String        @default("tcgcsv") // "tcgcsv", "scryfall", "manual"
+  recordedAt      DateTime      @default(now())
+
+  @@index([cardReferenceId, recordedAt])
+  @@index([recordedAt])
+}
+
+model CollectionValueHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalValue  Float
+  cardCount   Int
+  recordedAt  DateTime @default(now())
+
+  @@index([userId, recordedAt])
 }
 
 // ─── 3. Player Inventory (Digital Binder) ──────────────────────────────────
@@ -448,6 +478,24 @@ model Giveaway {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+// ─── Euryx Pokemon Client Integration (shared DB) ──────────────────────────
+// EuryxTournament: legacy table preserved for the Euryx Pokemon client.
+// User identity & decks are now unified via Hatake's User and Deck models.
+model EuryxTournament {
+  id             String   @id @default(cuid())
+  name           String
+  format         String
+  status         String
+  startsAt       DateTime
+  registeredCnt  Int      @default(0)
+  capacity       Int      @default(64)
+  prizePool      String?
+  region         String?
+  bannerImageUrl String?
+  description    String?  @db.Text
+  createdAt      DateTime @default(now())
 }
 
 // ─── 10. Bidding ──────────────────────────────────────────────────────────

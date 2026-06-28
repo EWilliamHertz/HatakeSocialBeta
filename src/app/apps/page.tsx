@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
-import { Gamepad2, Package, TrendingUp, Building } from 'lucide-react';
+import { Gamepad2, Package, TrendingUp, Building, Swords } from 'lucide-react';
+
+const EURYX_URL = process.env.NEXT_PUBLIC_EURYX_URL || 'https://tcg-nexus-play.preview.emergentagent.com/dashboard';
 
 export default function AppsDashboard() {
   return (
@@ -15,8 +17,51 @@ export default function AppsDashboard() {
           </p>
         </div>
 
+        {/* Euryx Arena flagship card */}
+        <a
+          href={EURYX_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="group block relative rounded-3xl p-10 overflow-hidden border border-cyan-500/40 hover:border-cyan-400 transition-all"
+          style={{
+            background:
+              'radial-gradient(circle at 20% 20%, rgba(6,182,212,0.25), transparent 50%), radial-gradient(circle at 80% 80%, rgba(217,70,239,0.25), transparent 50%), linear-gradient(135deg, #0f172a, #020617)',
+            boxShadow: '0 0 50px rgba(6,182,212,0.25), 0 0 80px rgba(217,70,239,0.15)',
+          }}
+        >
+          <div className="absolute -inset-2 bg-gradient-to-br from-cyan-500/30 to-fuchsia-500/30 opacity-0 group-hover:opacity-100 blur-3xl transition-all duration-500 -z-10" />
+          <div className="absolute top-4 right-4">
+            <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold tracking-[0.2em] uppercase bg-cyan-500/15 text-cyan-300 border border-cyan-500/40 animate-pulse">
+              NEW · LIVE
+            </span>
+          </div>
+          <div className="flex items-start gap-8">
+            <div
+              className="w-20 h-20 rounded-2xl flex items-center justify-center text-white flex-shrink-0 group-hover:scale-110 transition-transform"
+              style={{
+                background: 'linear-gradient(135deg, #06b6d4, #d946ef)',
+                boxShadow: '0 0 30px rgba(6,182,212,0.6)',
+              }}
+            >
+              <Swords size={40} />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-4xl font-black text-white mb-2 tracking-tight">
+                Euryx <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-400">Arena</span>
+              </h2>
+              <p className="text-slate-300 leading-relaxed max-w-2xl">
+                Our purely digital Pokémon TCG client. Build 60-card decks from the Hatake catalog,
+                queue live ranked matches, and battle on a hyper-modern game board.
+                One Hatake account — chat &amp; decks sync across both apps.
+              </p>
+              <div className="mt-4 flex items-center gap-2 text-cyan-400 text-sm font-bold uppercase tracking-widest">
+                Enter Arena →
+              </div>
+            </div>
+          </div>
+        </a>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Booster Simulator */}
           <Link href="/tools/booster" className="group block bg-slate-900 border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(6,182,212,0.3)] hover:border-cyan-500/50">
             <div className="absolute -inset-2 bg-gradient-to-br from-cyan-500/20 to-fuchsia-500/20 opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-500"></div>
             <div className="relative z-10 flex items-start gap-6">
@@ -30,7 +75,6 @@ export default function AppsDashboard() {
             </div>
           </Link>
 
-          {/* PokeHubz */}
           <Link href="/apps/pokehubz" className="group block bg-slate-900 border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(239,68,68,0.3)] hover:border-red-500/50">
             <div className="absolute -inset-2 bg-gradient-to-br from-red-500/20 to-yellow-500/20 opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-500"></div>
             <div className="relative z-10 flex items-start gap-6">
@@ -43,8 +87,7 @@ export default function AppsDashboard() {
               </div>
             </div>
           </Link>
-          
-          {/* API Developer Portal */}
+
           <Link href="/apps/api" className="group block bg-slate-900 border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(217,70,239,0.3)] hover:border-fuchsia-500/50">
             <div className="absolute -inset-2 bg-gradient-to-br from-fuchsia-500/20 to-emerald-500/20 opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-500"></div>
             <div className="relative z-10 flex items-start gap-6">
@@ -52,13 +95,12 @@ export default function AppsDashboard() {
                 <TrendingUp size={32} />
               </div>
               <div>
-                <h2 className="text-2xl font-black text-white mb-2 group-hover:text-fuchsia-400 transition-colors">Developer Portal & API</h2>
+                <h2 className="text-2xl font-black text-white mb-2 group-hover:text-fuchsia-400 transition-colors">Developer Portal &amp; API</h2>
                 <p className="text-slate-400 leading-relaxed">Access our comprehensive European TCG database via API. Free tier included for developers.</p>
               </div>
             </div>
           </Link>
 
-          {/* Giveaways */}
           <Link href="/giveaways" className="group block bg-slate-900 border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:border-emerald-500/50">
             <div className="absolute -inset-2 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-500"></div>
             <div className="relative z-10 flex items-start gap-6">
@@ -66,13 +108,12 @@ export default function AppsDashboard() {
                 <Package size={32} />
               </div>
               <div>
-                <h2 className="text-2xl font-black text-white mb-2 group-hover:text-emerald-400 transition-colors">Giveaways & Rewards</h2>
+                <h2 className="text-2xl font-black text-white mb-2 group-hover:text-emerald-400 transition-colors">Giveaways &amp; Rewards</h2>
                 <p className="text-slate-400 leading-relaxed">Complete challenges, invite friends, and enter raffles for sealed boxes and premium rewards.</p>
               </div>
             </div>
           </Link>
 
-          {/* B2B Portal */}
           <Link href="/b2b" className="group block bg-slate-900 border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(245,158,11,0.3)] hover:border-amber-500/50 md:col-span-2">
             <div className="absolute -inset-2 bg-gradient-to-br from-amber-500/20 to-fuchsia-500/20 opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-500"></div>
             <div className="relative z-10 flex items-start gap-6">
@@ -80,7 +121,7 @@ export default function AppsDashboard() {
                 <Building size={32} />
               </div>
               <div>
-                <h2 className="text-2xl font-black text-white mb-2 group-hover:text-amber-400 transition-colors">B2B & Wholesale Portal</h2>
+                <h2 className="text-2xl font-black text-white mb-2 group-hover:text-amber-400 transition-colors">B2B &amp; Wholesale Portal</h2>
                 <p className="text-slate-400 leading-relaxed">Deep integration for retailers and developers. Access dynamic wholesale pricing up to 35% off on official Hatake merchandise, and direct API inventory sync tools.</p>
               </div>
             </div>

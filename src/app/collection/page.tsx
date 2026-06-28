@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, Plus, TrendingUp, Filter, X, Check, Box, Loader2, Store, Download, Upload } from 'lucide-react';
+import { Search, Plus, TrendingUp, Filter, X, Check, Box, Loader2, Store, Upload } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useI18n } from '@/lib/i18nContext';
 import ListForSaleModal from '@/components/ListForSaleModal';
@@ -77,15 +77,6 @@ export default function CollectionPage() {
               <p className="text-slate-400 text-lg">{t('collection.subtitle')}</p>
             </div>
             <div className="flex flex-wrap gap-4">
-              <button onClick={() => setShowImportModal(true)} className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-colors border border-white/10 shadow-lg flex items-center gap-2">
-                <Download size={18} /> Import CSV
-              </button>
-              <button 
-                className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-colors border border-white/10 shadow-lg flex items-center gap-2"
-                onClick={() => document.getElementById('import-input')?.click()}
-              >
-                <Upload size={18} /> Importera CSV
-              </button>
               <Link href="/sales" className="px-6 py-3 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all flex items-center gap-2">
                 <TrendingUp size={18} /> Handle Sales
               </Link>
@@ -158,12 +149,6 @@ export default function CollectionPage() {
             {activeTab === 'YOUR_COLLECTION' && <YourCollectionTab instances={myInstances} sealedInstances={mySealedInstances} />}
             {activeTab === 'SEALED' && <SealedTab />}
           </motion.div>
-        </AnimatePresence>
-
-        <AnimatePresence>
-          {showImportModal && (
-            <CsvImportModal onClose={() => setShowImportModal(false)} />
-          )}
         </AnimatePresence>
       </div>
     </div>
@@ -423,95 +408,6 @@ function AllCardsTab() {
   );
 }
 
-function CsvImportModal({ onClose }: { onClose: () => void }) {
-  const [file, setFile] = useState<File | null>(null);
-  const [game, setGame] = useState<Game>('MAGIC');
-  const [uploading, setUploading] = useState(false);
-  const [result, setResult] = useState<any>(null);
-
-  const handleUpload = async () => {
-    if (!file) return;
-    setUploading(true);
-    
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('game', game);
-
-    try {
-      const res = await fetch('/api/collection/import', {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
-      setResult(data);
-      if (data.success) {
-        setTimeout(() => {
-          window.location.reload();
-        }, 2000);
-      }
-    } catch (e) {
-      alert('Upload failed');
-    }
-    setUploading(false);
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-      <div className="bg-slate-900 border border-white/10 rounded-3xl p-8 max-w-md w-full shadow-2xl relative">
-        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-white">
-          <X size={20} />
-        </button>
-        <h2 className="text-2xl font-bold text-white mb-2">Import CSV</h2>
-        <p className="text-slate-400 text-sm mb-6">Upload an exported CSV from Collectr, ManaBox, or TCGPlayer.</p>
-
-        <div className="space-y-4 mb-6">
-          <select 
-            value={game} 
-            onChange={(e) => setGame(e.target.value as Game)}
-            className="w-full bg-slate-950 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-cyan-500"
-          >
-            <option value="MAGIC">Magic: The Gathering</option>
-            <option value="POKEMON">Pokemon TCG</option>
-            <option value="ONE_PIECE">One Piece CG</option>
-            <option value="NARUTO">Naruto Mythos</option>
-          </select>
-          
-          <div className="border-2 border-dashed border-white/20 rounded-xl p-6 text-center hover:border-cyan-500/50 transition-colors">
-            <input 
-              type="file" 
-              accept=".csv"
-              onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="hidden" 
-              id="csv-upload"
-            />
-            <label htmlFor="csv-upload" className="cursor-pointer flex flex-col items-center gap-2">
-              <Upload size={32} className="text-cyan-500" />
-              <span className="text-white font-bold">{file ? file.name : 'Click to select CSV file'}</span>
-            </label>
-          </div>
-        </div>
-
-        {result && (
-          <div className={`p-4 rounded-xl mb-6 text-sm font-bold ${result.success ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'}`}>
-            {result.success ? `Successfully imported ${result.count} cards!` : result.error}
-          </div>
-        )}
-
-        <button 
-          onClick={handleUpload}
-          disabled={!file || uploading}
-          className="w-full py-3 bg-gradient-to-r from-cyan-600 to-fuchsia-600 text-white font-bold rounded-xl disabled:opacity-50 flex items-center justify-center gap-2"
-        >
-          {uploading ? <Loader2 className="animate-spin" size={18} /> : <Check size={18} />} 
-          Start Import
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─── Bulk List Modal ────────────────────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function BulkListModal({ instances, onClose, onComplete }: { instances: any[], onClose: () => void, onComplete: () => void }) {
   const [multiplier, setMultiplier] = useState(100);
   const [listings, setListings] = useState(
