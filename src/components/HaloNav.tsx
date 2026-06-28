@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   User, Image as ImageIcon, Sparkles, MessageCircle, Newspaper,
-  Store, Layers, Users, Wand2, Swords,
+  Store, Layers, Users, Wand2,
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18nContext';
 
@@ -46,12 +46,6 @@ export default function HaloNav() {
   const rightIcons: NavItem[] = [
     { href: '/deck', label: 'Deck', Icon: Layers },
     { href: '/market', label: t('nav.market'), Icon: Store },
-    {
-      href: process.env.NEXT_PUBLIC_EURYX_URL || 'https://tcg-nexus-play.preview.emergentagent.com/dashboard',
-      label: 'Arena',
-      Icon: Swords,
-      external: true,
-    },
     { href: '/apps', label: 'Apps', Icon: Wand2 },
     { href: '/messages', label: t('nav.messages'), Icon: MessageCircle },
   ];
@@ -61,7 +55,7 @@ export default function HaloNav() {
   // ry = 110px tall. Icons are placed at fixed angles measured from vertical
   // top, sweeping outward to keep the apex free for the center button.
   const leftAngles = [-78, -55, -34, -14];          // 4 left icons
-  const rightAngles = [14, 34, 55, 70, 82];         // 5 right icons (extra slot for Arena)
+  const rightAngles = [14, 34, 55, 78];             // 4 right icons
   const rx = 46;       // %
   const ry = 110;      // px
   const cx = 50;       // %  (horizontal center)
