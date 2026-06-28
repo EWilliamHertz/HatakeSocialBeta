@@ -1,0 +1,444 @@
+Revealed,ID,Rarity,Character Name,Character Version,Chakra,Power,Keyword,Group,Effects Type,Effects Timing,Effect,Set,Image
+TRUE,KS-001-C,C,Hiruzen Sarutobi,The Professor,3,3,Hokage,Leaf Village,MAIN,↯ On play,**MAIN** [↯] **POWERUP 2** another friendly *Leaf Village* character.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/01_C_Hiruzen_Professor-1920w.webp
+TRUE,KS-002-UC,UC,Hiruzen Sarutobi,Third Hokage,5,4,Hokage,Leaf Village,MAIN,↯ On play,"**MAIN** [↯] Play a *Leaf Village* character anywhere paying 1 less.
+
+**UPGRADE** [↯] **POWERUP 2** the character played with the MAIN effect.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/02_UC_Hiruzen_Hokage-1920w.webp
+TRUE,KS-003-C,C,Tsunade,Master Medical Ninja,3,3,Sannin,Leaf Village,MAIN,⧗ Continuous,"**MAIN** [⧗] When any friendly character is defeated, gain 2 Chakra.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/03_C_Tsunade_Master-1920w.webp
+TRUE,KS-004-UC,UC,Tsunade,Mitotic Regeneration,4,4,"Sannin, Jutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] Defeated friendly characters go into your hand instead of your discard pile.
+
+**UPGRADE** [↯] Choose one character in your discard pile and put them into your hand.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/04_UC_Tsunade_Reserve-Seal-1920w.webp
+TRUE,KS-005-C,C,Shizune,Assistant to Tsunade,2,1,,Leaf Village,MAIN,⧗ Continuous,**MAIN** [⧗] **CHAKRA +1**.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/05_C_Shizune_Assistant-1920w.webp
+TRUE,KS-006-UC,UC,Shizune,Prepared Needle Shot,3,2,Weapon,Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Move an enemy character with Power 3 or less in play.
+
+**UPGRADE** [↯] Gain 2 Chakra.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/06_UC_Shizune_Needle_Shot-1920w.webp
+TRUE,KS-007-C,C,Jiraiya,Toad sage,4,4,Sannin,Leaf Village,MAIN,↯ On play,"**MAIN** [↯] Play a *Summon* character anywhere, paying 1 less.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/07_C_Jiraiya_Toad_Sage-1920w.webp
+TRUE,KS-008-UC,UC,Jiraiya,Earth Style: Dark Swamp,5,5,"Sannin, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Play a *Summon* character anywhere, paying 2 less.
+
+**UPGRADE** [↯] Hide an enemy character with cost 3 or less in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/08_UC_Jiraiya_Dark_Swamp-1920w.webp
+TRUE,KS-009-C,C,Naruto Uzumaki,Genin of the Leaf Village,2,3,Team 7,Leaf Village,,,,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/09_C_Naruto_Genin-1920w.webp
+TRUE,KS-010-C,C,Naruto Uzumaki,Substitution Jutsu,3,3,"Team 7, Jutsu",Leaf Village,AMBUSH,↯ On play,**AMBUSH** [↯] Move this character from this mission.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/10_C_Naruto_Substitution-1920w.webp
+TRUE,KS-011-C,C,Sakura Haruno,Genin of Team 7,2,2,Team 7,Leaf Village,MAIN,↯ On play,"**MAIN** [↯] If there's another *Team 7* character in this mission, draw a card.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/11_C_Sakura_Genin-1920w.webp
+TRUE,KS-012-UC,UC,Sakura Haruno,Chakra Prowess,3,2,Team 7,Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] **CHAKRA +1**.
+
+**UPGRADE** [↯] Draw 1 card. If you do so, you must discard 1 card.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/12_UC_Sakura_Chakra_Prowess-1920w.webp
+TRUE,KS-013-C,C,Sasuke Uchiha,Last of the Uchiha Clan,2,4,Team 7,Leaf Village,MAIN,⧗ Continuous,**MAIN** [⧗] This character has -1 Power for every other non-hidden friendly character in this mission.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/13_C_Sasuke_Last-1920w.webp
+TRUE,KS-014-UC,UC,Sasuke Uchiha,Sharingan,3,4,"Team 7, Kekkei Genkai",Leaf Village,"AMBUSH, UPGRADE",↯ On play,"**AMBUSH** [↯] Look at the opponent's hand.
+
+**UPGRADE** AMBUSH effect: In addition, discard 1 card. If you do so, choose 1 card in the opponent’s hand and discard it.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/14_UC_Sasuke_Sharingan-1920w.webp
+TRUE,KS-015-C,C,Kakashi Hatake,Teacher of Team 7,3,3,Team 7,Leaf Village,MAIN,⧗ Continuous,**MAIN** [⧗] Other *Team 7* characters in this mission have +1 Power.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/15_C_Kakashi_Teacher-1920w.webp
+TRUE,KS-016-UC,UC,Kakashi Hatake,Sharingan,4,4,Team 7,Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Copy a non-upgrade instant effect (↯) of an enemy character with cost 4 or less in play.
+
+**UPGRADE** MAIN effect: Instead, there's no cost limit.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/16_UC_Kakashi_Sharingan-1920w.webp
+TRUE,KS-017-C,C,Choji Akimichi,Expansion Jutsu,2,1,"Team 10, Jutsu",Leaf Village,MAIN,↯ On play,**MAIN** [↯] **POWERUP 3**.,Konoha Shidō,http://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/17_C_Choji_Expansion-1920w.webp
+TRUE,KS-018-UC,UC,Choji Akimichi,Human Boulder,4,4,"Team 10, Jutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] After you move this character, hide an enemy character in this mission with less Power than this character.
+
+**UPGRADE** [↯] Move this character.",Konoha Shidō,http://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/18_UC_Choji_Human_Boulder-1920w.webp
+TRUE,KS-019-C,C,Ino Yamanaka,Genin of Team 10,1,1,Team 10,Leaf Village,MAIN,↯ On play,"**MAIN** [↯] If there's another *Team 10* character in this mission, **POWERUP 1**.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/19_C_Ino_Genin-1920w.webp
+TRUE,KS-020-UC,UC,Ino Yamanaka,Mind Transfer Jutsu,3,0,"Team 10, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Take control of an enemy character with cost 2 or less in this mission.
+
+**UPGRADE** MAIN effect: Instead, the cost limit is 3 or less.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/20_UC_Ino_Mind_Transfer-1920w.webp
+TRUE,KS-021-C,C,Shikamaru Nara,Genin of Team 10,1,0,Team 10,Leaf Village,MAIN,↯ On play,"**MAIN** [↯] If you have the Edge, draw a card.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/21_C_Shikamaru_Genin-1920w.webp
+TRUE,KS-022-UC,UC,Shikamaru Nara,Shadow Possession Jutsu,3,3,"Team 10, Jutsu",Leaf Village,AMBUSH,↯ On play,**AMBUSH** [↯] Move an enemy character played during the opponent's previous turn.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/22_UC_Shikamaru_Shadow_Possession-1920w.webp
+TRUE,KS-023-C,C,Asuma Sarutobi,Teacher of Team 10,3,3,Team 10,Leaf Village,MAIN,↯ On play,**MAIN** [↯] Move another *Team 10* character from this mission.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/23_C_Asuma_Teacher-1920w.webp
+TRUE,KS-024-UC,UC,Asuma Sarutobi,Chakra Blade,4,4,Team 10,Leaf Village,AMBUSH,↯ On play,"**AMBUSH** [↯] Draw a card. Then, discard a card to **POWERUP 3**.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/24_UC_Asuma_Trench_Knives-1920w.webp
+TRUE,KS-025-C,C,Kiba Inuzuka,Genin of Team 8,2,2,Team 8,Leaf Village,MAIN,⧗ Continuous,"**MAIN** [⧗] If Akamaru is in the same mission, **CHAKRA +1**.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/25_C_Kiba_Genin-1920w.webp
+TRUE,KS-026-UC,UC,Kiba Inuzuka,All-Fours Jutsu,3,3,"Team 8, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Hide the non-hidden enemy character with the lowest cost in this mission.
+
+**UPGRADE** [↯] Look at the 3 top cards of your deck, reveal and draw any *Akamaru* characters, then put back the other cards.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/26_UC_Kiba_All_Four-1920w.webp
+TRUE,KS-027-C,C,Akamaru,Ninja Hound,1,2,Team 8,Leaf Village,MAIN,⧗ Continuous,"**MAIN** [⧗] If there isn't a Kiba Inuzuka in this mission at the end of the round, you must return this character to your hand.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/27_C_Akamaru_Hound-1920w.webp
+TRUE,KS-028-UC,UC,Akamaru,Man Beast Clone,2,3,"Team 8, Jutsu",Leaf Village,"MAIN, AMBUSH","⧗ Continuous, ↯ On play","**MAIN** [⧗] At the end of the round, you may return this card to your hand.
+
+**AMBUSH** [↯] **POWERUP 2** a friendly *Kiba Inuzuka* in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/28_UC_Akamaru_Man_Beast_Clone-1920w.webp
+TRUE,KS-029-UC,UC,Akamaru,Two-Headed Wolf,4,4,"Team 8, Jutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] You can play this character as an upgrade over *Kiba Inuzuka*.
+
+**UPGRADE** [↯] Hide the non-hidden enemy character with the lowest cost in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/29_UC_Akamaru_Two-Headed_Wolf-1920w.webp
+TRUE,KS-030-C,C,Hinata Hyuga,Gentle Fist,2,2,"Team 8, Taijutsu",Leaf Village,MAIN,↯ On play,**MAIN** [↯] Remove up to 2 Power tokens from an enemy character in play.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/30_C_Hinata_Gentle_fist-1920w.webp
+TRUE,KS-031-UC,UC,Hinata Hyuga,Byakugan,3,2,"Team 8, Kekkei Genkai",Leaf Village,MAIN,⧗ Continuous,"**MAIN** [⧗] When a non-hidden enemy character is played in this mission, gain 1 Chakra.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/31_UC_Hinata_Byakugan-1920w.webp
+TRUE,KS-032-C,C,Shino Aburame,Parasitic Insects,2,3,Team 8,Leaf Village,MAIN,↯ On play,**MAIN** [↯] Each player draws a card.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/32_C_Shino_Parasitic_Insects-1920w.webp
+TRUE,KS-033-UC,UC,Shino Aburame,Insect Clones,4,4,"Team 8, Jutsu",Leaf Village,"AMBUSH, UPGRADE",↯ On play,"**AMBUSH** [↯] Play this character paying 4 less if there's an enemy *Jutsu* character in this mission.
+
+**UPGRADE** [↯] Move this character.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/33_UC_Shino_Insect_Clones-1920w.webp
+TRUE,KS-034-C,C,Kurenai Yuhi,Teacher of Team 8,3,3,Team 8,Leaf Village,MAIN,⧗ Continuous,**MAIN** [⧗] Other *Team 8* characters costs 1 less (min.1) to play in this mission.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/34_C_Kurenai_Teacher-1920w.webp
+TRUE,KS-035-UC,UC,Kurenai Yuhi,Tree Bind: Death,4,4,"Team 8, Jutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] Enemy characters cannot move from this mission.
+
+**UPGRADE** [↯] Defeat an enemy character with Power 1 or less in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/35_UC_Kurenai_Tree_Bind-1920w.webp
+TRUE,KS-036-C,C,Neji Hyuga,Gentle Fist,2,2,"Team Guy, Taijutsu",Leaf Village,MAIN,↯ On play,**MAIN** [↯] Remove up to 2 Power tokens from an enemy character in play.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/36_C_Neji_Gentle_fist-1920w.webp
+TRUE,KS-037-UC,UC,Neji Hyuga,Eight Trigrams: Palm Rotation,4,4,"Team Guy, Jutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] When a non-hidden enemy character is played in this mission, **POWERUP 1**.
+
+**UPGRADE** [↯] Remove all Power tokens from an enemy character in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/37_UC_Neji_Palm_Rotation-1920w.webp
+TRUE,KS-038-C,C,Rock Lee,Training in Ferocious Fist,2,3,Team Guy,Leaf Village,AMBUSH,↯ On play,**AMBUSH** [↯] **POWERUP 1**.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/38_C_RockLee_Training-1920w.webp
+TRUE,KS-039-UC,UC,Rock Lee,Primary Lotus,4,4,"Team Guy, Jutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] This character doesn't lose Power tokens at the end of the round.
+
+**UPGRADE** [↯] **POWERUP 2**.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/39_UC_RockLee_Primary_Lotus-1920w.webp
+TRUE,KS-040-C,C,Tenten,Genin of Team Guy,1,2,Team Guy,Leaf Village,MAIN,⧗ Continuous,**MAIN** [⧗] You can play this character only in a mission where you are currently winning.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/40_C_Tenten_Genin-1920w.webp
+TRUE,KS-041-UC,UC,Tenten,Weapon Specialist,3,3,Team Guy,Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Defeat an hidden character in this mission.
+
+**UPGRADE** [↯] **POWERUP 1** another *Leaf Village* character in play.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/41_UC_Tenten_Weapon_Specialist-1920w.webp
+TRUE,KS-042-C,C,Might Guy,Teacher of Team Guy,3,3,Team Guy,Leaf Village,MAIN,⧗ Continuous,**MAIN** [⧗] Other *Team Guy* characters in this mission have +1 Power.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/42_C_MightGuy_Teacher-1920w.webp
+TRUE,KS-043-UC,UC,Might Guy,Ferocious Fist,4,4,"Team Guy, Taijutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] This character doesn't lose Power tokens at the end of the round.
+
+**UPGRADE** [↯] **POWERUP 3**.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/43_UC_MightGuy_Ferocious_Fist-1920w.webp
+TRUE,KS-044-C,C,Anko Mitarashi,Genin Exams Proctor,2,2,Special Jonin,Leaf Village,MAIN,⧗ Continuous,"**MAIN** [⧗] If you have at least one other friendly *Leaf Village* character in this mission, **CHAKRA +1**.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/44_C_Anko_Proctor-1920w.webp
+TRUE,KS-045-UC,UC,Anko Mitarashi,Striking Shadow Snake,3,4,"Special Jonin, Jutsu",Leaf Village,AMBUSH,↯ On play,**AMBUSH** [↯] Defeat an hidden enemy character in play.,Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/45_UC_Anko_Striking_Shadows.webp
+TRUE,KS-046-C,C,Ebisu,Elite Trainer,3,3,Special Jonin,Leaf Village,MAIN,↯ On play,"**MAIN** [↯] If there is a friendly non-hidden character with less Power than this character in this mission, draw a card.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/46_C_Ebisu_Trainer-1920w.webp
+TRUE,KS-047-C,C,Iruka Umino,Academy Instructor,3,3,,Leaf Village,MAIN,↯ On play,**MAIN** [↯] Move a *Naruto Uzumaki* character in play.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/47_C_Iruka_Instructor-1920w.webp
+TRUE,KS-048-C,C,Hayate Gekko,Skilled Shinobi,3,3,Special Jonin,Leaf Village,MAIN,⧗ Continuous,"**MAIN** [⧗] If this character would be defeated, hide it instead.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/48_C_Hayate_Shinobi-1920w.webp
+TRUE,KS-049-C,C,Genma Shiranui,Elite Guard,3,3,Special Jonin,Leaf Village,MAIN,⧗ Continuous,"**MAIN** [⧗] If a friendly *Leaf Village* character in this mission would be hidden or defeated by enemy effects, you can defeat this character instead.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/49_C_Genma_Elite_Guard-1920w.webp
+TRUE,KS-050-C,C,Orochimaru,Undercover,4,4,"Sannin, Sound Ninja",Sound Village,AMBUSH,↯ On play,"**AMBUSH** [↯] Look at a hidden enemy character in this mission. If it costs 3 or less, take control of that character and move it to your side.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/50_C_Orochimaru_Undercover-1920w.webp
+TRUE,KS-051-UC,UC,Orochimaru,Orochimaru Style: Substitution Jutsu,5,5,Sannin,Sound Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] If you lost this mission during the Mission Evaluation phase, move this character to another mission.
+
+**UPGRADE** [↯] Defeat an hidden enemy character in play.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/51_UC_Orochimaru_Substitution-1920w.webp
+TRUE,KS-052-C,C,Kabuto Yakushi,Infiltrator,3,3,Sound Ninja,Sound Village,AMBUSH,↯ On play,**AMBUSH** [↯] Draw the top card of the opponent's deck and put it hidden in any mission under your control.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/52_C_Kabuto-Infiltrator-1920w.webp
+TRUE,KS-053-UC,UC,Kabuto Yakushi,Yin Healing Wound Destruction,4,4,Jutsu,Sound Village,"UPGRADE, MAIN",↯ On play,"**UPGRADE** [↯] Discard a card.
+
+**MAIN** [↯] Play the character at the top of your discard pile paying 3 less.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/53_UC_Kabuto_Yin_Healing-1920w.webp
+TRUE,KS-054-UC,UC,Kabuto Yakushi,Nirvana Temple Jutsu,5,5,Jutsu,Sound Village,"UPGRADE, MAIN",↯ On play,"**UPGRADE** [↯] **POWERUP 1**
+
+**MAIN** [↯] Hide all other characters in this mission with less Power than this character.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/54_UC_Kabuto_Nirvana_Temple-1920w.webp
+TRUE,KS-055-C,C,Kimimaro,Camelia Dance,3,3,Weapon,Sound Village,AMBUSH,↯ On play,**AMBUSH** [↯] Discard a card to hide a character in play with cost 3 or less.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/55_C_Kimimaro_Camelia_Dance-1920w.webp
+TRUE,KS-056-UC,UC,Kimimaro,Shikotsumyaku,4,6,Kekkei Genkai,Sound Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] If this character is affected by an enemy effect, the opponent must pay 1 Chakra, if able.
+
+**UPGRADE** [↯] Discard a card to hide a character in play with cost 4 or less.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/56_UC_Kimimaro_Shikotsumyaku-1920w.webp
+TRUE,KS-057-C,C,Jirobo,Bearer of the Curse Mark,2,2,Sound Four,Sound Village,MAIN,↯ On play,**MAIN** [↯] **POWERUP X**. X is the number of missions where you have at least one friendly *Sound Four* character.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/57_C_Jiroubou_Bearer-1920w.webp
+TRUE,KS-058-UC,UC,Jirobo,Earth Style Barrier: Earth Dome Prison,4,4,"Sound Four, Jutsu",Sound Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] **POWERUP 1** to all other friendly *Sound Four* characters in this mission.
+
+**UPGRADE** [↯] Apply the MAIN effect to *Sound Four* characters in the other missions.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/58_UC_Jirobo_Earth_Dome-1920w.webp
+TRUE,KS-059-C,C,Kidomaru,Bearer of the Curse Mark,3,2,Sound Four,Sound Village,MAIN,↯ On play,**MAIN** [↯] Move X friendly character(s). X is the number of missions where you have at least one friendly *Sound Four* character.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/59_C_Kidomaru_Bearer-1920w.webp
+TRUE,KS-060-UC,UC,Kidomaru,Spiral Spider Web,4,4,"Sound Four, Jutsu",Sound Village,"MAIN, AMBUSH",↯ On play,"**MAIN** [↯] Move a character from this mission.
+
+**AMBUSH** [↯] Defeat an enemy character with Power 1 or less in play.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/60_UC_Kidomaru_Spider_Web-1920w.webp
+TRUE,KS-061-C,C,Sakon,Bearer of the Curse Mark,3,2,Sound Four,Sound Village,MAIN,↯ On play,**MAIN** [↯] Draw X card(s). X is the number of missions where you have at least one friendly *Sound Four* character.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/61_C_Sakon_Bearer-1920w.webp
+TRUE,KS-062-UC,UC,Sakon,Black Seal,4,4,"Sound Four, Jutsu",Sound Village,AMBUSH,↯ On play,**AMBUSH** [↯] Copy a instant effect (↯) of another friendly *Sound Four* character in play.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/62_UC_Sakon_Black_Seal-1920w.webp
+TRUE,KS-063-UC,UC,Ukon,Molecular Possession,5,6,"Sound Four, Kekkei Genkai",Sound Village,MAIN,⧗ Continuous,**MAIN** [⧗] You can play this character as an upgrade over any *Sound Village* character.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/63_UC_Ukon_Molecular_Possession-1920w.webp
+TRUE,KS-064-C,C,Tayuya,Bearer of the Curse Mark,2,1,Sound Four,Sound Village,MAIN,⧗ Continuous,**MAIN** [⧗] **CHAKRA +X**. X is the number of missions where you have at least one friendly *Sound Four* character.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/64_C_Tayuya_Bearer-1920w.webp
+TRUE,KS-065-UC,UC,Tayuya,Demon Flute,4,4,"Sound Four, Jutsu",Sound Village,"AMBUSH, UPGRADE",↯ On play,"**AMBUSH** [↯] **POWERUP 2** a friendly *Sound village* character in play.
+
+**UPGRADE** [↯] Look at the 3 top cards of your deck, reveal and draw any *Summon* characters, then put back the other cards.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/65_UC_Tayuya_Demon_Flute-1920w.webp
+TRUE,KS-066-UC,UC,Rage Ogres,Summoning,4,5,Summon,Sound Village,MAIN,↯ On play,"**MAIN** [↯] If you have a *Sound Four* character in this mission, steal 1 Chakra from the opponent.
+
+**MAIN** [⧗] At the end of the round, you must return this character to your hand.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/66_UC_Rage_Ogres_Summoning-1920w.webp
+TRUE,KS-067-UC,UC,Rashomon,Summoning,4,0,Summon,Independent,MAIN,⧗ Continuous,"**MAIN** [⧗] The strongest enemy character in this mission loses all Power tokens and has its Power set to 0.
+
+**MAIN** [⧗] At the end of the round, you must return this character to your hand.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/67_UC_Rashomon_Summoning-1920w.webp
+TRUE,KS-068-C,C,Dosu Kinuta,Superhuman Hearing,3,3,Sound Ninja,Sound Village,"MAIN, AMBUSH",↯ On play,"**MAIN** [↯] Look at a hidden character in play.
+
+**AMBUSH** [↯] Defeat a hidden character in play.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/68_C_Dosu_Superhuman-1920w.webp
+TRUE,KS-069-UC,UC,Dosu Kinuta,Resonating Echo Speaker,4,5,"Sound Ninja, Weapon",Sound Village,"UPGRADE, MAIN",↯ On play,"**UPGRADE** [↯] Look at a hidden character in play.
+
+**MAIN** [↯] Choose a hidden enemy character in play. Opponent must either play them paying 2 more, or defeat them.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/69_UC_Dosu_Echo_Speaker-1920w.webp
+TRUE,KS-070-C,C,Zaku Abumi,Overconfident Shinobi,2,4,Sound Ninja,Sound Village,MAIN,↯ On play,**MAIN** [↯] Opponent gains 1 Chakra.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/70_C_Zaku_Shinobi-1920w.webp
+TRUE,KS-071-UC,UC,Zaku Abumi,Slicing Sound Wave,4,5,Sound Ninja,Sound Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] If you have less non-hidden characters than the opponent in this mission, move an enemy character from this mission.
+
+**UPGRADE** [↯] **POWERUP 2**.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/71_UC_Zaku_Slicing-1920w.webp
+TRUE,KS-072-C,C,Kin Tsuchi,Kunoichi,1,3,Sound Ninja,Sound Village,MAIN,↯ On play,**MAIN** [↯] Opponent draws a card.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/72_C_Kin_Kunoichi-1920w.webp
+TRUE,KS-073-UC,UC,Kin Tsuchi,Bell Sound Clone,4,4,"Sound Ninja, Jutsu",Sound Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Discard a card to hide an enemy character with Power 4 or less.
+
+**UPGRADE** [↯] Put the top card of your deck as a hidden character in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/73_UC_KinTsuchi_Bell_Sound-1920w.webp
+TRUE,KS-074-C,C,Gaara,Genin of the Sand Village,2,2,Team Baki,Sand Village,MAIN,↯ On play,**MAIN** [↯] **POWERUP X** where X is the number of friendly hidden characters in this mission.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/74_C_Gaara_Jinchuriki-1920w.webp
+TRUE,KS-075-C,C,Gaara,Sand Shield,3,3,"Team Baki, Jutsu",Sand Village,MAIN,⧗ Continuous,"**MAIN** [⧗] If this character would be moved or defeated by enemy effects, instead hide them.
+
+**MAIN** [⧗] You can play this character while hidden paying 2 less.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/75_C_Gaara_Sand_Shield-1920w.webp
+TRUE,KS-076-UC,UC,One-tail,Partial transformation,6,9,Tailed Beast,Sand Village,MAIN,⧗ Continuous,"**MAIN** [⧗] You can play this character as an upgrade over *Gaara*.
+
+**MAIN** [⧗] Can't be hidden or defeated by enemy effects.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/76_UC_One-Tail_Partial_Trasformation-1920w.webp
+TRUE,KS-077-C,C,Kankuro,Chakra Threads,3,3,Team Baki,Sand Village,MAIN,⧗ Continuous,"**MAIN** [⧗] If there's at least one non-hidden enemy character in this mission, **CHAKRA +1**.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/77_C_Kankurou_Chakra_Threads-1920w.webp
+TRUE,KS-078-UC,UC,Kankuro,Puppet Master Jutsu,4,4,"Team Baki, Jutsu",Sand Village,"AMBUSH, UPGRADE",↯ On play,"**AMBUSH** [↯] Move any character with Power 4 or less.
+
+**UPGRADE** [↯] Play a friendly character while hidden, paying 1 less.",Konoha Shidō,http://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/78_UC_Kankurou_Puppet_Master_Jutsu-1920w.webp
+TRUE,KS-079-C,C,Temari,Kunoichi,2,2,Team Baki,Sand Village,MAIN,⧗ Continuous,"**MAIN** [⧗] If you have the Edge, this character has +2 Power.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/79_C_Temari_Kunoichi-1920w.webp
+TRUE,KS-080-UC,UC,Temari,Cyclone Scythe Jutsu,4,4,"Team Baki, Jutsu",Sand Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Move another friendly *Sand Village* character.
+
+**UPGRADE** [↯] Move this character.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/80_UC_Temari_Sandstorm-1920w.webp
+TRUE,KS-081-C,C,Baki,Council Agent,3,2,Team Baki,Sand Village,SCORE,↯ On play,**SCORE** [↯] Draw a card.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/81_C_Baki_Council_Agent-1920w.webp
+TRUE,KS-082-UC,UC,Baki,Wind Sword,4,4,Team Baki,Sand Village,"SCORE, UPGRADE",↯ On play,"**SCORE** [↯] Defeat a hidden character in play.
+
+**UPGRADE** [↯] Defeat an enemy character with Power 1 or less in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/82_UC_Baki_Wind_Sword-1920w.webp
+TRUE,KS-083-UC,UC,Rasa,Fourth Kazekage,3,3,,Sand Village,SCORE,↯ On play,**SCORE** [↯] Gain 1 Mission point if there's another friendly *Sand Village* character in this mission.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/83_UC_Rasa_Kazekage-1920w.webp
+TRUE,KS-084-C,C,Yashamaru,Gaara's Caretaker,1,1,,Sand Village,MAIN,⧗ Continuous,**MAIN** [⧗] This character has +2 Power if there's a friendly *Gaara* in this mission.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/84_C_Yashamaru_Careteaker-1920w.webp
+TRUE,KS-085-UC,UC,Yashamaru,Sacrificial Mission,4,4,Jutsu,Sand Village,SCORE,↯ On play,"**SCORE** [↯] Defeat this character. If you do, defeat another character in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/85_UC_Yashamaru_Sacrificial-1920w.webp
+TRUE,KS-086-C,C,Zabuza Momochi,Kubikiribōchō,3,5,Rogue Ninja,Independent,,,,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/86_C_Zabuza_Kubikiribocho-1920w.webp
+TRUE,KS-087-UC,UC,Zabuza Momochi,Water Prison Jutsu,5,5,"Rogue Ninja, Jutsu",Independent,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] If there's only one non-hidden enemy character in this mission, hide them.
+
+**UPGRADE** MAIN effect: Instead, defeat them.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/87_UC_Zabuza_Water_Prison-1920w.webp
+TRUE,KS-088-C,C,Haku,Orphan from the Land of Water,2,2,Rogue Ninja,Independent,MAIN,↯ On play,"**MAIN** [↯] Draw 1 card. If you do, you must put 1 card from your hand on top of your deck.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/88_C_Haku_Orphan-1920w.webp
+TRUE,KS-089-UC,UC,Haku,Crystal Ice Mirrors,4,2,"Rogue Ninja, Jutsu",Independent,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Discard the top card of your opponent's deck. **POWERUP X** where X is the cost of the discarded card.
+
+**UPGRADE** MAIN effect: Instead, discard the top card from your deck.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/89_UC_Haku_Crystal_Ice_Mirrors-1920w.webp
+TRUE,KS-090-C,C,Itachi Uchiha,Akatsuki Investigator,3,3,Rogue Ninja,Akatsuki,MAIN,⧗ Continuous,"**MAIN** [⧗] If there is a **Sasuke Uchiha** in this mission, you can play this character while hidden paying 3 less.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/90_C_Itachi_Akatsuki-1920w.webp
+TRUE,KS-091-UC,UC,Itachi Uchiha,Mangekyō Sharingan,5,5,"Rogue Ninja, Kekkei Genkai",Akatsuki,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Look at the opponent's hand.
+
+**UPGRADE** MAIN effect: In addition, choose 1 card in the opponent’s hand and discard it",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/91_UC_Itachi_Sharingan-1920w.webp
+TRUE,KS-092-C,C,Kisame Hoshigaki,Rogue Ninja of the Hidden Mist,3,4,Rogue Ninja,Akatsuki,AMBUSH,↯ On play,**AMBUSH** [↯] Remove up to 2 Power tokens from an enemy character in this mission and put them on this character.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/92_C_Kisame_Rogue_Ninja-1920w.webp
+TRUE,KS-093-UC,UC,Kisame Hoshigaki,Samehada,6,6,"Rogue Ninja, Weapon",Akatsuki,MAIN,↯ On play,"**MAIN** [↯] Remove up to 2 Power tokens from an enemy character in play and put them on this character.
+
+**UPGRADE** MAIN effect: Instead, remove all Power tokens and put them on this character.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/93_UC_Kisame_Samehada-1920w.webp
+TRUE,KS-094-C,C,Gamabunta,Chief Toad,3,6,Summon,Independent,MAIN,⧗ Continuous,"**MAIN** [⧗] At the end of the round, you must return this character to your hand.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/94_C_Gamabunta_Chief_Toad-1920w.webp
+TRUE,KS-095-C,C,Gamahiro,Armed Toad,4,6,Summon,Independent,MAIN,"↯ On play, ⧗ Continuous","**MAIN** [↯] If there's a friendly character in this mission, draw a card.
+
+**MAIN** [⧗] At the end of the round, you must return this character to your hand.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/95_C_Gamahiro_Armed_Toad-1920w.webp
+TRUE,KS-096-C,C,Gamakichi,Eldest Son of Gamabunta,2,3,Summon,Independent,MAIN,⧗ Continuous,"**MAIN** [⧗] Pay 1 less to play this character if there's a friendly **Naruto Uzumaki** in this mission.
+
+**MAIN** [⧗] At the end of the round, you must return this character to your hand.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/96_C_Gamakichi_Eldest_Son-1920w.webp
+TRUE,KS-097-C,C,Gamatatsu,Youngest Son of Gamabunta,1,2,Summon,Independent,MAIN,⧗ Continuous,"**MAIN** [⧗] At the end of the round, you must return this character to your hand.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/97_C_Gamatatsu_Youngest_Son-1920w.webp
+TRUE,KS-098-C,C,Katsuyu,Giant Slug,3,5,Summon,Independent,MAIN,"↯ On play, ⧗ Continuous","**MAIN** [↯] If there is a friendly Tsunade in play, **POWERUP 2**.
+
+**MAIN** [⧗] At the end of the round, you must return this character to your hand.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/98_C_Katsuyu_Giant_Slug-1920w.webp
+TRUE,KS-099-C,C,Pakkun,Kakashi's Ninja Hound,1,1,Ninja Hound,Independent,SCORE,↯ On play,**SCORE** [↯] Move this character.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/99_C_Pakkun_Hound-1920w.webp
+TRUE,KS-100-C,C,Ninja Hound Corps,Kakashi's Ninja Hounds,1,1,Ninja Hound,Independent,MAIN,⧗ Continuous,"**MAIN** [⧗] When this character moves to a different mission, look at a hidden character in that mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/100_C_Ninja_Hound-1920w.webp
+TRUE,KS-101-C,C,TonTon,Tsunade's Ninja Pig,0,0,Ninja Pig,Independent,MAIN,⧗ Continuous,"**MAIN** [⧗] If there's a friendly *Tsunade* or *Shizune* in this mission, this character has +1 Power.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/101_C_TonTon_Pig-1920w.webp
+TRUE,KS-102-UC,UC,Manda,Summoned by Orochimaru,3,5,Summon,Independent,"AMBUSH, MAIN","↯ On play, ⧗ Continuous","**AMBUSH** [↯] Defeat an enemy *Summon* character in this mission.
+
+**MAIN** [⧗] At the end of the round, you must return this character to your hand.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/102_UC_Manda_Summoned-1920w.webp
+TRUE,KS-103-UC,UC,Kyodaigumo,Rain of Spiders,4,4,Summon,Independent,MAIN,⧗ Continuous,"**MAIN** [⧗] At the end of the round, hide a character with Power equal or less than this character. Then, you must return this character to your hand.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/103_UC_Giant_Spider_Rain-1920w.webp
+TRUE,KS-104-MV,MV,Tsunade,Legendary Sannin,5,6,"Sannin, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Spend any amount of additional Chakra. **POWERUP X**, where X is the amount of additional Chakra spent.
+
+**UPGRADE** [↯] **POWERUP X**.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/104_R_ART_Tsunade_Chakra_Enhanced-1920w.webp
+TRUE,KS-104-R,R,Tsunade,Legendary Sannin,5,6,Sannin,Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Spend any amount of additional Chakra. **POWERUP X**, where X is the amount of additional Chakra spent.
+
+**UPGRADE** [↯] **POWERUP X**.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/104_R_Tsunade_Hokage-1920w.webp
+TRUE,KS-104-RART,RA,Tsunade,I'm the Fith Hokage of the Leaf Village!,5,6,Sannin,Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Spend any amount of additional Chakra. **POWERUP X**, where X is the amount of additional Chakra spent.
+
+**UPGRADE** [↯] **POWERUP X**.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/104_R_ART_Tsunade_Chakra_Enhanced-1920w.webp
+TRUE,KS-105-R,R,Jiraiya,Summoning Jutsu,6,6,"Sannin, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Play a *Summon* character anywhere, paying 3 less.
+
+**UPGRADE** [↯] Move any enemy character from this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/105_R_Jiraiya_Summoning_Jutsu-1920w.webp
+TRUE,KS-105-RART,RA,Jiraiya,Hermit of Mount Myoboku,6,6,"Sannin, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Play a *Summon* character anywhere, paying 3 less.
+
+**UPGRADE** [↯] Move any enemy character from this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/105_R_ART_Jiraiya_Mud_Wall-1920w.webp
+TRUE,KS-106-R,R,Kakashi Hatake,Curse Sealing,5,5,"Team 7, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Discard the top card of an upgraded enemy character in play.
+
+**UPGRADE** MAIN effect: Copy any non-Upgrade instant effect (↯) from the discarded enemy character.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/106_R_Kakashi_Curse_Sealing-1920w.webp
+TRUE,KS-106-RART,RA,Kakashi Hatake,The Copy Ninja,5,5,"Team 7, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Discard the top card of an upgraded enemy character in play.
+
+**UPGRADE** MAIN effect: Copy any non-Upgrade instant effect (↯) from the discarded enemy character.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/106_R_ART_Kakashi_Curse_Sealing-1920w.webp
+TRUE,KS-107-R,R,Sasuke Uchiha,Chidori,5,6,"Team 7, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] You must move all other non-hidden friendly characters from this mission, if able.
+
+**UPGRADE** [↯] **POWERUP X** where X is the number of the characters moved this way.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/107_R_Sasuke_Chidori-1920w.webp
+TRUE,KS-107-RART,RA,Sasuke Uchiha,The last Uchiha,5,6,"Team 7, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] You must move all other non-hidden friendly characters from this mission, if able.
+
+**UPGRADE** [↯] **POWERUP X** where X is the number of the characters moved this way.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/107_R_ART_Sasuke_Chidori-1920w.webp
+TRUE,KS-108-MV,MV,Naruto Uzumaki,I won’t run away!,4,5,"Team 7, Jutsu",Leaf Village,"MAIN, AMBUSH",↯ On play,"**MAIN**  [↯] Hide an enemy character with Power 3 or less in this mission.
+
+**UPGRADE** MAIN effect: **POWERUP X** where X is the Power of the enemy character that is being hidden.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/108_M_Naruto-1920w.webp
+TRUE,KS-108-R,R,Naruto Uzumaki,Shadow Clone Jutsu,5,5,"Team 7, Jutsu",Leaf Village,"MAIN, AMBUSH",↯ On play,"**MAIN**  [↯] Hide an enemy character with Power 3 or less in this mission.
+
+**UPGRADE** MAIN effect: **POWERUP X** where X is the Power of the enemy character that is being hidden.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/108_R_Naruto_Rasengan-1920w.webp
+TRUE,KS-108-RART,RA,Naruto Uzumaki,Believe it!,5,5,"Team 7, Jutsu",Leaf Village,"MAIN, AMBUSH",↯ On play,"**MAIN**  [↯] Hide an enemy character with Power 3 or less in this mission.
+
+**UPGRADE** MAIN effect: **POWERUP X** where X is the Power of the enemy character that is being hidden.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/108_R_ART_Naruto_Shadow_Clone-1920w.webp
+TRUE,KS-109-R,R,Sakura Haruno,Medical Ninja,4,3,Team 7,Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Choose one of your *Leaf Village* characters in your discard pile and play it anywhere, paying its cost.
+
+**UPGRADE** MAIN effect: Instead, play the card paying 2 less.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/109_R_Sakura_Medical-1920w.webp
+TRUE,KS-109-RART,RA,Sakura Haruno,Now it's my turn to take the lead.,4,3,Team 7,Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Choose one of your *Leaf Village* characters in your discard pile and play it anywhere, paying its cost.
+
+**UPGRADE** MAIN effect: Instead, play the card paying 2 less.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/109_R_ART_Sakura_Medical-1920w.webp
+TRUE,KS-110-R,R,Ino Yamanaka,Mind Destruction Jutsu,5,4,"Team 10, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] If there are 2 or more enemy characters in this mission, move the weakest non-hidden enemy character.
+
+**UPGRADE** MAIN effect: After moving them, hide the enemy character.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/110_R_Ino_Mind_Destruction-1920w.webp
+TRUE,KS-110-RART,RA,Ino Yamanaka,Mind Transfer Jutsu,5,4,"Team 10, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] If there are 2 or more enemy characters in this mission, move the weakest non-hidden enemy character.
+
+**UPGRADE** MAIN effect: After moving them, hide the enemy character.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/110_R_ART_Ino_Mind_Destruction-1920w.webp
+TRUE,KS-111-M,MV,Shikamaru Nara,Shadow Strangle Jutsu,6,5,"Team 10, Jutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] The opponent cannot play characters while hidden in this mission.
+
+**UPGRADE** [↯] Hide an enemy character with Power 3 or less in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/111_M_Shikamaru-1920w.webp
+TRUE,KS-111-R,R,Shikamaru Nara,Shadow Strangle Jutsu,6,5,"Team 10, Jutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] The opponent cannot play characters while hidden in this mission.
+
+**UPGRADE** [↯] Hide an enemy character with Power 3 or less in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/111_R_Shikamaru_Shadow_Strangle-1920w.webp
+TRUE,KS-111-RART,RA,Shikamaru Nara,This whole thing's a drag...,6,5,"Team 10, Jutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] The opponent cannot play characters while hidden in this mission.
+
+**UPGRADE** [↯] Hide an enemy character with Power 3 or less in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/111_R_ART_Shikamaru_Shadow_Strangle-1920w.webp
+TRUE,KS-112-R,R,Choji Akimichi,Chili Pepper Pill,5,4,Team 10,Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Discard a card from your hand. **POWERUP X** where X is the cost of the discarded card in this way.
+
+**UPGRADE** [↯] Repeat the MAIN effect.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/112_R_Choji_Chili_Pepper-1920w.webp
+TRUE,KS-112-RART,RA,Choji Akimichi,Who you calling fat?,5,4,Team 10,Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Discard a card from your hand. **POWERUP X** where X is the cost of the discarded card in this way.
+
+**UPGRADE** [↯] Repeat the MAIN effect.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/112_R_ART_Choji_Butterfly-1920w.webp
+TRUE,KS-113-MV,MV,Kiba Inuzuka,Fang Over Fang,6,6,"Team 8, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Hide a friendly *Akamaru* character. If you do, hide another character in this mission.
+
+**UPGRADE** MAIN effect: Instead, defeat both of them.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/113_M_Kiba-1920w.webp
+TRUE,KS-113-R,R,Kiba Inuzuka,Fang Over Fang,6,6,"Team 8, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Hide a friendly *Akamaru* character. If you do, hide another character in this mission.
+
+**UPGRADE** MAIN effect: Instead, defeat both of them.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/113_R_Kiba_Fang_Over_Fang-1920w.webp
+TRUE,KS-113-RART,RA,Kiba Inuzuka,Stay with me Akamaru,6,6,"Team 8, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Hide a friendly *Akamaru* character. If you do, hide another character in this mission.
+
+**UPGRADE** MAIN effect: Instead, defeat both of them.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/113_R_ART_Kiba_Fang_Over_Fang-1920w.webp
+TRUE,KS-114-R,R,Hinata Hyuga,Protective Eight Trigrams Sixty-Four Palms,5,5,"Team 8, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] **POWERUP 2**. **POWERUP 1** another character
+
+**UPGRADE** [↯] Remove all Power tokens from an enemy character in play.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/114_R_Hinata_Sixty-Four_Palms-1920w.webp
+TRUE,KS-114-RART,RA,Hinata Hyuga,No more hiding!,5,5,"Team 8, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] **POWERUP 2**. **POWERUP 1** another character
+
+**UPGRADE** [↯] Remove all Power tokens from an enemy character in play.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/114_R_ART_Hinata_Sixty-Four_Palms-1920w.webp
+TRUE,KS-115-R,R,Shino Aburame,Wall of Insects Jutsu,5,6,"Team 8, Jutsu",Leaf Village,"MAIN, AMBUSH","⧗ Continuous, ↯ On play","**MAIN** [⧗] Friendly characters in this mission can't be hidden by enemy effects.
+
+**AMBUSH **[↯] Move one friendly character in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/115_R_Shino_Wall_Insects-1920w.webp
+TRUE,KS-115-RART,RA,Shino Aburame,I am a member of the Hidden Leaf Village’s Aburame clan.,5,6,"Team 8, Jutsu",Leaf Village,"MAIN, AMBUSH","⧗ Continuous, ↯ On play","**MAIN** [⧗] Friendly characters in this mission can't be hidden by enemy effects.
+
+**AMBUSH **[↯] Move one friendly character in this mission.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/115_R_ART_Shino_Wall_Insects.webp
+TRUE,KS-116-R,R,Neji Hyuga,Eight Trigrams Sixty-Four Palms,6,5,"Team Guy, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Defeat a character in this mission with exactly Power 4 in this mission.
+
+**UPGRADE** [↯] Defeat a character with exactly Power 6 in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/116_R_Neji_Sixty-Four_Palms-1920w.webp
+TRUE,KS-116-RART,RA,Neji Hyuga,Eight Trigrams Sixty-Four Palms,6,5,"Team Guy, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Defeat a character in this mission with exactly Power 4 in this mission.
+
+**UPGRADE** [↯] Defeat a character with exactly Power 6 in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/116_R_ART_Neji_Sixty-FouR_Palms-1920w.webp
+TRUE,KS-117-MV,MV,Rock Lee,Loopy Fist,5,5,"Team Guy, Taijutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] At the end of the round, you must move this character to another mission, if able.
+
+**UPGRADE** [↯] Reveal and discard the top card of your deck: **POWERUP X** where X is the cost of the discarded card.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/117_M_Rock_Lee-1920w.webp
+TRUE,KS-117-R,R,Rock Lee,Loopy Fist,5,5,"Team Guy, Taijutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] At the end of the round, you must move this character to another mission, if able.
+
+**UPGRADE** [↯] Reveal and discard the top card of your deck: **POWERUP X** where X is the cost of the discarded card.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/117_R_RockLee_Loopy_Fist.webp
+TRUE,KS-117-RART,RA,Rock Lee,"I will make you proud, Sensei.",5,5,"Team Guy, Taijutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] At the end of the round, you must move this character to another mission, if able.
+
+**UPGRADE** [↯] Reveal and discard the top card of your deck: **POWERUP X** where X is the cost of the discarded card.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/117_R_ART_RockLee_Loopy_Fist.webp
+TRUE,KS-118-R,R,Tenten,Rising Twin Dragons,4,4,"Team Guy, Jutsu",Leaf Village,AMBUSH,↯ On play,"**AMBUSH** [↯] Defeat a hidden character in this mission. If the defeated character had a printed Power of 3 or less, defeat a hidden character in play.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/118_R_Tenten_Rising_Dragons-1920w.webp
+TRUE,KS-118-RART,RA,Tenten,Twin Rising Dragons,4,4,"Team Guy, Jutsu",Leaf Village,AMBUSH,↯ On play,"**AMBUSH** [↯] Defeat a hidden character in this mission. If the defeated character had a printed Power of 3 or less, defeat a hidden character in play.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/118_R_ART_Tenten_Rising_Dragons-1920w.webp
+TRUE,KS-119-R,R,Kankuro,Secret Black Move: Iron Maiden,5,5,"Team Baki, Jutsu",Sand Village,"UPGRADE, MAIN",↯ On play,"**UPGRADE** [↯] Move any character in play.
+
+**MAIN** [↯] Defeat an enemy character with Power 3 or less in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/119_R_Kankuro_Iron_Maiden-1920w.webp
+TRUE,KS-119-RART,RA,Kankuro,...We'll have a Puppet Show!,5,5,"Team Baki, Jutsu",Sand Village,"UPGRADE, MAIN",↯ On play,"**UPGRADE** [↯] Move any character in play.
+
+**MAIN** [↯] Defeat an enemy character with Power 3 or less in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/119_R_ART_Kankuro_Iron_Maiden-1920w.webp
+TRUE,KS-120-MV,MV,Gaara,Sand Coffin,4,4,"Team Baki, Jutsu",Sand Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Defeat up to 1 enemy character with Power 1 or less in every mission.
+
+**UPGRADE** [↯] **POWERUP X**, where X is the number of characters defeated by the MAIN effect.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/120_M_Gaara-1920w.webp
+TRUE,KS-120-R,R,Gaara,Sand Coffin,4,4,"Team Baki, Jutsu",Sand Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Defeat up to 1 enemy character with Power 1 or less in every mission.
+
+**UPGRADE** [↯] **POWERUP X**, where X is the number of characters defeated by the MAIN effect.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/120_R_Gaara_Sand_Coffin-1920w.webp
+TRUE,KS-120-RART,RA,Gaara,Sand Coffin,4,4,"Team Baki, Jutsu",Sand Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Defeat up to 1 enemy character with Power 1 or less in every mission.
+
+**UPGRADE** [↯] **POWERUP X**, where X is the number of characters defeated by the MAIN effect.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/120_R_ART_Gaara_Sand_Coffin-1920w.webp
+TRUE,KS-121-R,R,Temari,Wind Scythe Jutsu,5,5,"Team Baki, Jutsu",Sand Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Move any friendly character in play.
+
+**UPGRADE** [↯] Move any character in play.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/121_R_Temari_Wind_Scythe-1920w.webp
+TRUE,KS-121-RART,RA,Temari,It's finished.,5,5,"Team Baki, Jutsu",Sand Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Move any friendly character in play.
+
+**UPGRADE** [↯] Move any character in play.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/121_R_ART_Temari_Wind_Scythe-1920w.webp
+TRUE,KS-122-R,R,Jirobo,Slamming Palm,5,6,"Sound Four, Taijutsu",Sound Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] **POWERUP X** where X is the number of characters in this mission.
+
+**UPGRADE** [↯] Defeat an enemy character with Power 1 or less in this mission.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/122_R_Jirobo_Slamming_Palm.webp
+TRUE,KS-122-RART,RA,Jirobo,Slamming Palm!,5,6,"Sound Four, Taijutsu",Sound Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] **POWERUP X** where X is the number of characters in this mission.
+
+**UPGRADE** [↯] Defeat an enemy character with Power 1 or less in this mission.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/122_R_ART_Jirobo_Slamming_Palm.webp
+TRUE,KS-123-R,R,Kimimaro,Earth Curse Mark,6,8,Jutsu,Sound Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] At the end of the round, you must defeat this character if you have no cards in hand.
+
+**UPGRADE** [↯] Discard a card to defeat a character in play with cost 5 or less.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/123_R_Kimimaro_Earth_Curse.webp
+TRUE,KS-123-RART,RA,Kimimaro,It's over.,6,8,Jutsu,Sound Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] At the end of the round, you must defeat this character if you have no cards in hand
+
+**UPGRADE** [↯] Discard a card to defeat a character in play with cost 5 or less.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/123_R_ART_Kimimaro_Earth_Curse.webp
+TRUE,KS-124-R,R,Kidomaru,Gum Style Spider Thread,5,5,"Sound Four, Jutsu",Sound Village,"AMBUSH, UPGRADE",↯ On play,"**AMBUSH** [↯] Defeat an enemy character with Power 3 or less in another mission.
+
+**UPGRADE** AMBUSH effect: Instead, the Power limit is 5 or less.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/124_R_Kidomaru_Gum_Style.webp
+TRUE,KS-124-RART,RA,Kidomaru,I trapped you.,5,5,"Sound Four, Jutsu",Sound Village,"AMBUSH, UPGRADE",↯ On play,"**AMBUSH** [↯] Defeat an enemy character with Power 3 or less in another mission.
+
+**UPGRADE** AMBUSH effect: Instead, the Power limit is 5 or less.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/124_R_ART_Kidomaru_Gum_Style.webp
+TRUE,KS-125-R,R,Tayuya,Demon Flute: Chains of Fantasia,5,5,"Sound Four, Jutsu",Sound Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] Non-hidden enemy characters costs an additional 1 Chakra to play in this mission.
+
+**UPGRADE** [↯] Play a *Sound village* character, paying 2 less.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/125_R_Tayuya_Demon_Flute.webp
+TRUE,KS-125-RART,RA,Tayuya,This flute is my only weapon!,5,5,"Sound Four, Jutsu",Sound Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] Non-hidden enemy characters costs an additional 1 Chakra to play in this mission.
+
+**UPGRADE** [↯] Play a *Sound village* character, paying 2 less.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/125_R_ART_Tayuya_Demon_Flute.webp
+TRUE,KS-126-R,R,Orochimaru,Stay out of my way,7,7,Sannin,Sound Village,"SCORE, UPGRADE",↯ On play,"**SCORE** [↯] Defeat the weakest non-hidden enemy character in play.
+
+**UPGRADE** [↯] **POWERUP 3**.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/126_R_Orochimaru_Stay_Out.webp
+TRUE,KS-126-RART,RA,Orochimaru,Stay out of my Way,7,7,Sannin,Sound Village,"SCORE, UPGRADE",↯ On play,"**SCORE** [↯] Defeat the weakest non-hidden enemy character in play.
+
+**UPGRADE** [↯] **POWERUP 3**.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/126_R_Orochimaru_Snake_Sword.webp
+TRUE,KS-127-R,R,Sakon,Fists Barrage,5,5,"Sound Four, Jutsu",Sound Village,"MAIN, AMBUSH","↯ On play, ⧗ Continuous","**MAIN** [⧗] You can play this character as an upgrade over any *Sound Village* character.
+**AMBUSH** [↯]  Hide an enemy character in this mission with Power 5 or less.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/127_R_Sakon_Fists_barrage.webp
+TRUE,KS-127-RART,RA,Sakon,Don't you mess with me!,5,5,"Sound Four, Jutsu",Sound Village,"MAIN, AMBUSH","↯ On play, ⧗ Continuous","**MAIN** [⧗] You can play this character as an upgrade over any *Sound Village* character.
+**AMBUSH** [↯]  Hide an enemy character in this mission with Power 5 or less.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/127_R_ART_Sakon_Fists_barrage.webp
+TRUE,KS-128-MV,MV,Itachi Uchiha,Amaterasu,6,6,"Rogue Ninja, Jutsu",Akatsuki,"UPGRADE, MAIN","↯ On play, ⧗ Continuous","**UPGRADE** [↯] Move a friendly character in play.
+
+**MAIN** [⧗] Every enemy character in this mission has -1 Power.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/128_M_Itachi-1920w.webp
+TRUE,KS-128-R,R,Itachi Uchiha,Amaterasu,6,6,"Rogue Ninja, Jutsu",Akatsuki,"UPGRADE, MAIN","↯ On play, ⧗ Continuous","**UPGRADE** [↯] Move a friendly character in play.
+
+**MAIN** [⧗] Every enemy character in this mission has -1 Power.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/128_R_Itachi_Control-1920w.webp
+TRUE,KS-128-RART,RA,Itachi Uchiha,I control them all.,6,6,Rogue Ninja,Akatsuki,"UPGRADE, MAIN","↯ On play, ⧗ Continuous","**UPGRADE** [↯] Move a friendly character in play.
+
+**MAIN** [⧗] Every enemy character in this mission has -1 Power.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/128_R_ART_Itachi_Amaterasu.webp
+TRUE,KS-129-R,R,Nine-Tailed Fox,You better be grateful to me...,7,10,Tailed Beast,Independent,MAIN,⧗ Continuous,"**MAIN** [⧗] You can play this character as an upgrade over *Naruto Uzumaki*.
+
+**MAIN** [⧗] Can't be hidden or defeated by enemy effects.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/129_R_Nine-Tailed_Grateful.webp
+TRUE,KS-129-RART,RA,Nine-Tailed Fox,You better be grateful to me...,7,10,Tailed Beast,Independent,MAIN,⧗ Continuous,"**MAIN** [⧗] You can play this character as an upgrade over *Naruto Uzumaki*.
+
+**MAIN** [⧗] Can't be hidden or defeated by enemy effects.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/129_R_ART_Nine-Tailed_Fox_Cloak.webp
+TRUE,KS-130-R,R,One-tail,I hope you're ready to die!,7,10,"Tailed Beast, Jutsu",Independent,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] Can't be hidden or defeated by enemy effects.
+
+**UPGRADE** [↯] Choose a mission and defeat all hidden enemy characters assigned to it.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/130_R_One_Tail_Reeady.webp
+TRUE,KS-130-RART,RA,One-tail,I hope you're ready to die!,7,10,"Tailed Beast, Jutsu",Independent,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] Can't be hidden or defeated by enemy effects.
+
+**UPGRADE** [↯] Choose a mission and defeat all hidden enemy characters assigned to it.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/130_R_ART_One_Tail_Playing_Possum-1920w.webp
+TRUE,KS-131-S,S,Tsunade,Fifth Hokage,7,6,"Sannin, Hokage",Leaf Village,MAIN,↯ On play,**MAIN** [↯] **POWERUP 1** every friendly *Leaf Village* character in play.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/131_Secret_GOLD_Tsunade_Hokage-1920w.webp
+TRUE,KS-131-SV,SV,Tsunade,Fifth Hokage,7,6,"Sannin, Hokage",Leaf Village,MAIN,↯ On play,**MAIN** [↯] **POWERUP 1** every friendly *Leaf Village* character in play.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/131_SecretV_GOLD_Tsunade_Hokage-1920w.webp
+TRUE,KS-132-S,S,Jiraiya,Toad Mouth Trap,8,8,"Sannin, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Play a *Summon* character anywhere, paying 5 less.
+
+**UPGRADE** [↯] The opponent must choose characters to be defeated until they only have up to 2 assigned in each mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/132_Secret_GOLD_Jiraiya_Toad_Mouth-1920w.webp
+TRUE,KS-133-MV,MV,Naruto Uzumaki,"Ready or not, Ramen, here I come!",6,6,"Team 7, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Hide an enemy character with Power 5 or less in this mission and another enemy character with Power 2 or less in play. 
+
+**UPGRADE** **MAIN** effect: Instead, defeat both of them.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/133_M_Naruto_Ramen-1920w.webp
+TRUE,KS-133-MV2,MV,Naruto Uzumaki,Ninja Art! Summoning Jutsu!,6,6,"Team 7, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Hide an enemy character with Power 5 or less in this mission and another enemy character with Power 2 or less in play. 
+
+**UPGRADE** **MAIN** effect: Instead, defeat both of them.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/133_M_Naruto_pennello.webp
+TRUE,KS-133-S,S,Naruto Uzumaki,Rasengan,6,6,"Team 7, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Hide an enemy character with Power 5 or less in this mission and another enemy character with Power 2 or less in play. 
+
+**UPGRADE** **MAIN** effect: Instead, defeat both of them.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/133_Secret_GOLD_Naruto_Rasengan-1920w.webp
+TRUE,KS-133-SV,SV,Naruto Uzumaki,Rasengan,6,6,"Team 7, Jutsu",Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Hide an enemy character with Power 5 or less in this mission and another enemy character with Power 2 or less in play. 
+
+**UPGRADE** **MAIN** effect: Instead, defeat both of them.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/133_SecretV_GOLD_Naruto_Rasengan-1920w.webp
+TRUE,KS-134-S,S,Nine-Tailed Fox,Destruction,8,12,Tailed Beast,Independent,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] Can't be hidden or defeated by enemy effects.
+
+**UPGRADE** [↯] Hide any number of non-hidden characters in play with total Power of 6 or less.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/134_Secret_GOLD_Nine_Tail_Fox_Destruction.webp
+TRUE,KS-135-S,S,Sakura Haruno,The Leaf Medical Corps,5,4,Team 7,Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Look at the top 3 cards of your deck. Play one character anywhere and discard the other cards.
+
+**UPGRADE** **MAIN** effect: Instead, play the card paying 4 less.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/135_Secret_GOLD_Sakura_Recovery_Team-1920w.webp
+TRUE,KS-135-MV,MV,Sakura Haruno,He’s looking... right at me!,5,4,Team 7,Leaf Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Look at the top 3 cards of your deck. Play one character anywhere and discard the other cards.
+
+**UPGRADE** **MAIN** effect: Instead, play the card paying 4 less.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/135_Secret_GOLD_Sakura_Recovery_Team-1920w.webp
+TRUE,KS-136-S,S,Sasuke Uchiha,Heaven Curse Mark,7,8,"Team 7, Jutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] When a character is defeated, gain 1 Chakra. 
+
+**UPGRADE** [↯] You must choose a friendly non-hidden character and any enemy character in this mission and defeat them, if able.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/136_Secret_GOLD_Sasuke_Heaven_Curse_Mark-1920w.webp
+TRUE,KS-136-SV,SV,Sasuke Uchiha,Heaven Curse Mark,7,8,"Team 7, Jutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] When a character is defeated, gain 1 Chakra. 
+
+**UPGRADE** [↯] You must choose a friendly non-hidden character and any enemy character in this mission and defeat them, if able.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/136_SecretV_GOLD_Sasuke_Heaven_Curse_Mark-1920w.webp
+TRUE,KS-136-MV,MV,Sasuke Uchiha,You're annonying.,7,8,"Team 7, Jutsu",Leaf Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] When a character is defeated, gain 1 Chakra. 
+
+**UPGRADE** [↯] You must choose a friendly non-hidden character and any enemy character in this mission and defeat them, if able.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/136_M_Sasuke_pennello.webp
+TRUE,KS-137-S,S,Kakashi Hatake,Lightning Blade,7,7,"Team 7, Jutsu",Leaf Village,"UPGRADE, MAIN",↯ On play,"**UPGRADE** [↯] Move this character.
+
+**MAIN** [↯] Hide an upgraded character in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/137_Secret_GOLD_Kakashi_Lightning_Blade-1920w.webp
+TRUE,KS-137-SV,SV,Kakashi Hatake,Lightning Blade,7,7,"Team 7, Jutsu",Leaf Village,"UPGRADE, MAIN",↯ On play,"**UPGRADE** [↯] Move this character.
+
+**MAIN** [↯] Hide an upgraded character in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/137_SecretV_GOLD_Kakashi_Lightning_Blade-1920w.webp
+TRUE,KS-137-MV,MV,Kakashi Hatake,I won’t be able to read Make-Out Paradise now.,7,7,"Team 7, Jutsu",Leaf Village,"UPGRADE, MAIN",↯ On play,"**UPGRADE** [↯] Move this character.
+
+**MAIN** [↯] Hide an upgraded character in this mission.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/137_M_Kakashi_pennello.webp
+TRUE,KS-138-S,S,Orochimaru,Reanimation,6,8,"Sannin, Jutsu",Sound Village,"MAIN, UPGRADE","⧗ Continuous, ↯ On play","**MAIN** [⧗] You can play this character as an upgrade to any character that is not a *Summon* nor *Orochimaru*.
+
+**UPGRADE** [↯] Gain 2 Mission points if the character you upgraded from had Power 6 or more.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/138_Secret_GOLD_Orochimaru_Transference_Ritual-1920w.webp
+TRUE,KS-139-S,S,Gaara,Sand Burial,5,4,"Team Baki, Jutsu",Sand Village,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] Defeat an enemy character with a cost less than the number of friendly hidden characters in play.
+
+**UPGRADE** MAIN effect: In addition, hide one other enemy character with same name and cost less than the defeated character.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/139_Secret_GOLD_Gaara_Sand_Burial.webp
+TRUE,KS-140-S,S,Itachi Uchiha,Tsukuyomi,7,7,"Rogue Ninja, Jutsu",Akatsuki,"MAIN, UPGRADE",↯ On play,"**MAIN** [↯] The opponent discards their entire hand, then draws the same number of cards discarded in this way.
+
+**UPGRADE** [↯] Defeat a character in play with cost X or less, where X is the number of cards discarded by the MAIN effect.",Konoha Shidō,https://irp.cdn-website.com/99e556bf/dms3rep/multi/140_Secret_GOLD_Itachi_Tsukuyomi.webp
+TRUE,KS-141-M,M,Naruto Uzumaki,Challenging Sasuke,5,4,Team 7,Leaf Village,MAIN,↯ On play,"**MAIN** [↯] Discard a card. If you do, hide an enemy character with Power 4 of less in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/141_M_Special_Naruto_Challenging-1920w.webp
+TRUE,KS-142-M,M,Sasuke Uchiha,Challenging Naruto,5,4,Team 7,Leaf Village,MAIN,↯ On play,"**MAIN** [↯] Discard a card. If you do, **POWERUP X+1** where X is the number of enemy characters in this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/142_M_Special_Sasuke_Challenging-1920w.webp
+TRUE,KS-143-M,M,Itachi Uchiha,Hunting Naruto,5,5,Rogue Ninja,Akatsuki,"MAIN, AMBUSH",↯ On play,"**MAIN** [↯] Move a friendly character to this mission.
+
+**AMBUSH** [↯] Move an enemy character to this mission.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/143_M_Special_Itachi_Hunting-1920w.webp
+TRUE,KS-144-M,M,Kisame Hoshigaki,Chakra Absorb,6,6,Rogue Ninja,Akatsuki,MAIN,↯ On play,**MAIN** [↯] Steal 1 Chakra from the opponent pool.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/144_M_Special_Kisame_Chakra_absorb-1920w.webp
+TRUE,KS-145-M,M,Naruto Uzumaki,Original Team 7,5,5,Team 7,Leaf Village,MAIN,⧗ Continuous,"**MAIN** [⧗] If you have the Edge, your hidden characters in this mission have +1 Power.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/145_M_Naruto_Original_Team-1920w.webp
+TRUE,KS-146-M,M,Sasuke Uchiha,Original Team 7,3,3,Team 7,Leaf Village,MAIN,↯ On play,"**MAIN** [↯] Give the Edge to the opponent. If you do so, **POWERUP 3**.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/146_M_Sasuke_Original_Team-1920w.webp
+TRUE,KS-147-M,M,Sakura Haruno,Original Team 7,3,3,Team 7,Leaf Village,MAIN,⧗ Continuous,"**MAIN** [⧗] If you don't have the Edge, **CHAKRA +2**.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/147_M_Sakura_Original_Team-1920w.webp
+TRUE,KS-148-M,M,Kakashi Hatake,Original Team 7,4,5,Team 7,Leaf Village,"MAIN, AMBUSH",↯ On play,"**MAIN** [↯] Gain the Edge.
+
+**AMBUSH** [↯] Copy a instant effect (↯) of another friendly *Team 7* character in play.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/148_M_Kakashi_Original_Team-1920w.webp
+TRUE,KS-001-MMS,MMS,Call for support,,0,1,,,SCORE,↯ On play,**SCORE** [↯] **POWERUP 2** a character in play.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/M1_Call-for-support-1920w.webp
+TRUE,KS-002-MMS,MMS,Chunin Exam,,0,2,,,,⧗ Continuous,[⧗] All non-hidden characters in this mission have +1 Power.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/M2_Chunin-exam-1920w.webp
+TRUE,KS-003-MMS,MMS,Find the traitor,,0,1,,,SCORE,↯ On play,**SCORE** [↯] Opponent discards a card from hand.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/M3_Find-the-traitor-1920w.webp
+TRUE,KS-004-MMS,MMS,Assassination,,0,1,,,SCORE,↯ On play,**SCORE** [↯] Defeat an enemy hidden character.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/M4_Assassination-1920w.webp
+TRUE,KS-005-MMS,MMS,Bring it back,,0,3,,,SCORE,↯ On play,"**SCORE** [↯] You must return one friendly non-hidden character in this mission to your hand, if able.",Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/M5_Bring-it-back-1920w.webp
+TRUE,KS-006-MMS,MMS,Rescue a friend,,0,1,,,SCORE,↯ On play,**SCORE** [↯] Draw a card.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/M6_Free-a-friend-1920w.webp
+TRUE,KS-007-MMS,MMS,I have to go,,0,2,,,SCORE,↯ On play,**SCORE** [↯] Move a friendly hidden character in play.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/M7_I-have-to-go-1920w.webp
+TRUE,KS-008-MMS,MMS,Set a trap,,0,2,,,SCORE,↯ On play,**SCORE** [↯] Put a card from your hand as a hidden character to any mission.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/M8_Set-a-trap-1920w.webp
+TRUE,KS-009-MMS,MMS,Protect the Leader,,0,2,,,,⧗ Continuous,[⧗] Characters with 4 Power or more in this mission have +1 Power.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/M9_Guard-a-VIP-1920w.webp
+TRUE,KS-010-MMS,MMS,Chakra Training,,0,2,,,,⧗ Continuous,[⧗] **CHAKRA +1** for both players.,Konoha Shidō,https://lirp.cdn-website.com/99e556bf/dms3rep/multi/opt/M10_Chakra-improvement-1920w.webp

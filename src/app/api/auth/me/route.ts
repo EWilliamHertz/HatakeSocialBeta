@@ -1,0 +1,37 @@
+import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { decrypt } from '@/lib/auth';
+import { db } from '@/lib/db';
+
+export async function GET() {
+  const token = cookies().get('hatake_session')?.value;
+  if (!token) {
+    return NextResponse.json({ user: null });
+  }
+  
+  try {
+    const session = await decrypt(token);
+    if (!session || !session.id) return NextResponse.json({ user: null });
+    
+    const user = await db.user.findUnique({
+      where: { id: session.id as string },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        shippingName: true,
+        addressLine1: true,
+        addressLine2: true,
+        city: true,
+        state: true,
+        postalCode: true,
+        country: true,
+        paypalEmail: true,
+        bankIban: true
+      }
+    });
+    return NextResponse.json({ user });
+  } catch {
+    return NextResponse.json({ user: null });
+  }
+}
