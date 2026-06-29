@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Search, Plus, TrendingUp, Filter, X, Check, Box, Loader2, Store, Upload } from 'lucide-react';
+import { Search, Plus, TrendingUp, Filter, X, Check, Box, Loader2, Upload } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useI18n } from '@/lib/i18nContext';
 import ListForSaleModal from '@/components/ListForSaleModal';
+import BulkEditModal from '@/components/BulkEditModal';
 
 type Tab = 'ALL_CARDS' | 'YOUR_COLLECTION' | 'SEALED';
 type Game = 'MAGIC' | 'POKEMON' | 'ONE_PIECE' | 'NARUTO' | 'LORCANA' | 'RIFTBOUND';
@@ -19,6 +20,7 @@ type CardData = {
   apiId?: string;
   setCode?: string;
   collectorNumber?: string;
+  prices?: any;
 };
 
 export default function CollectionPage() {
@@ -35,7 +37,6 @@ export default function CollectionPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [myInstances, setMyInstances] = useState<any[]>([]);
   const [mySealedInstances, setMySealedInstances] = useState<any[]>([]);
-  const [showImportModal, setShowImportModal] = useState(false);
   const { t } = useI18n();
 
   useEffect(() => {
@@ -56,7 +57,7 @@ export default function CollectionPage() {
 
   const totalValue = 
     myInstances.reduce((sum, inst) => sum + (inst.cardReference.price || 0), 0) +
-    mySealedInstances.reduce((sum, inst) => sum + (inst.sealedReference.price || 0), 0);
+    mySealedInstances.reduce((sum, inst) => sum + (inst.sealedReference?.price || 0), 0);
   
   const cardsOwnedCount = myInstances.length;
   const activeListingsCount = myInstances.filter(inst => 
@@ -205,7 +206,25 @@ function AllCardsTab() {
       const data = await res.json();
 
       if (data.cards) {
-        const newCards = data.cards.map((c: any) => ({
+        // Massive frontend hygiene filter to aggressively block sealed products
+        const sealedKeywords = [
+          'booster box', 'elite trainer box', 'etb', 'booster pack', 'blister', 'theme deck', 
+          'display case', 'premium collection', 'bundle', 'tin', 'sleeved booster', 'master carton',
+          'build & battle', 'fat pack', 'commander deck', 'display', 'ultra-premium', 'collection box'
+        ];
+        
+        // Exceptions for genuine gameplay cards that share sealed keywords
+        const whitelistExceptions = ['booster energy', 'ancient booster', 'future booster', 'trainer\'s toolkit'];
+
+        const filteredCards = data.cards.filter((c: any) => {
+          const nameStr = c.name.toLowerCase();
+          const isException = whitelistExceptions.some(ex => nameStr.includes(ex));
+          if (isException) return true; // Keep genuine cards
+          const isSealed = sealedKeywords.some(kw => nameStr.includes(kw));
+          return !isSealed; // Block anything that matches sealed keywords
+        });
+        
+        const newCards = filteredCards.map((c: any) => ({
           id: c.apiId,
           name: c.name,
           game: c.game,
@@ -213,7 +232,9 @@ function AllCardsTab() {
           price: c.price || 0,
           setCode: c.setCode,
           collectorNumber: c.collectorNumber,
-        }));
+          prices: c.apiPayload?.prices || null  
+      }));
+
         setCards(prev => (append ? [...prev, ...newCards] : newCards));
         setPage(currentPage);
         setHasMore(newCards.length >= 50);
@@ -281,20 +302,14 @@ function AllCardsTab() {
 
         {(game === 'MAGIC' || game === 'POKEMON' || game === 'ONE_PIECE' || game === 'LORCANA' || game === 'RIFTBOUND') && (
           <>
-            <select 
+            <input 
+              type="text" 
+              placeholder="Set Code (e.g. LOR)" 
               value={setCode}
-              onChange={(e) => {
-                setSetCode(e.target.value);
-                setPage(1);
-                setHasMore(true);
-              }}
-              className="w-48 bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-cyan-500"
-            >
-              <option value="">All Sets ({availableSets.length})</option>
-              {availableSets.map(s => (
-                <option key={s.setCode} value={s.setCode}>{s.setCode} ({s.count})</option>
-              ))}
-            </select>
+              onChange={(e) => setSetCode(e.target.value.toUpperCase())}
+              onKeyDown={handleSearch}
+              className="w-36 bg-slate-950 border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-cyan-500 font-bold placeholder:text-slate-600 placeholder:font-normal" 
+            />
             
             <input 
               type="text" 
@@ -302,7 +317,7 @@ function AllCardsTab() {
               value={collectorNumber}
               onChange={(e) => setCollectorNumber(e.target.value)}
               onKeyDown={handleSearch}
-              className="w-24 bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-cyan-500" 
+              className="w-36 bg-slate-950 border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-cyan-500 font-bold placeholder:text-slate-600 placeholder:font-normal" 
             />
           </>
         )}
@@ -417,194 +432,6 @@ function AllCardsTab() {
   );
 }
 
-function BulkListModal({ instances, onClose, onComplete }: { instances: any[], onClose: () => void, onComplete: () => void }) {
-  const [multiplier, setMultiplier] = useState(100);
-  const [listings, setListings] = useState(
-    instances.map(inst => ({
-      ...inst,
-      listPrice: Math.round((inst.cardReference.price || 0) * 1.0),
-      customImageUrl: inst.customImageUrl || '',
-      notes: inst.notes || ''
-    }))
-  );
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadingId, setUploadingId] = useState<string | null>(null);
-
-  const applyMultiplier = () => {
-    setListings(prev => prev.map(l => ({
-      ...l,
-      listPrice: Math.round((l.cardReference.price || 0) * (multiplier / 100))
-    })));
-  };
-
-  const handlePriceChange = (id: string, newPrice: number) => {
-    setListings(prev => prev.map(l => l.id === id ? { ...l, listPrice: newPrice } : l));
-  };
-
-  const handleImageChange = (id: string, url: string) => {
-    setListings(prev => prev.map(l => l.id === id ? { ...l, customImageUrl: url } : l));
-  };
-
-  const handleNotesChange = (id: string, notes: string) => {
-    setListings(prev => prev.map(l => l.id === id ? { ...l, notes } : l));
-  };
-
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    const file = e.target.files[0];
-    
-    setUploadingId(id);
-    const formData = new FormData();
-    formData.append('image', file);
-    
-    try {
-      const res = await fetch(`https://api.imgbb.com/1/upload?key=b2492f987920d3e2a7903861b72ae3a4`, {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
-      if (data.success) {
-        handleImageChange(id, data.data.url);
-      } else {
-        alert('Image upload failed.');
-      }
-    } catch (err) {
-      console.error('ImgBB upload failed', err);
-      alert('Upload error.');
-    }
-    setUploadingId(null);
-  };
-
-  const handleSubmit = async () => {
-    setIsSubmitting(true);
-    const payload = listings.map(l => ({
-      cardInstanceId: l.id,
-      price: l.listPrice,
-      customImageUrl: l.customImageUrl || undefined,
-      notes: l.notes || undefined
-    }));
-
-    try {
-      const res = await fetch('/api/market', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (res.ok) {
-        alert(`Successfully listed ${payload.length} cards!`);
-        onComplete();
-      } else {
-        alert('Failed to list cards.');
-      }
-    } catch {
-      alert('Network error');
-    }
-    setIsSubmitting(false);
-  };
-
-  return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-slate-900 border border-white/10 rounded-3xl p-6 md:p-8 max-w-5xl w-full flex flex-col shadow-2xl relative max-h-[90vh] overflow-hidden"
-      >
-        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 rounded-full p-2 z-10">
-          <X size={20} />
-        </button>
-        
-        <h2 className="text-3xl font-black text-white mb-6">Bulk List for Sale</h2>
-
-        {/* Global Multiplier */}
-        <div className="flex items-center gap-4 bg-slate-800 p-4 rounded-xl mb-6">
-          <div className="flex-1">
-            <p className="text-sm font-bold text-slate-300">Set Base Percentage</p>
-            <p className="text-xs text-slate-500">Apply a % multiplier to the market price for all cards.</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <input 
-              type="number" 
-              value={multiplier} 
-              onChange={e => setMultiplier(Number(e.target.value))} 
-              className="w-20 bg-slate-950 border border-white/10 text-white px-3 py-2 rounded-lg text-center font-bold"
-            />
-            <span className="text-slate-400 font-bold">%</span>
-            <button onClick={applyMultiplier} className="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-lg font-bold transition-colors">Apply</button>
-          </div>
-        </div>
-
-        {/* Individual Adjustments */}
-        <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-          {listings.map(l => (
-            <div key={l.id} className="bg-slate-950 border border-white/5 p-4 rounded-xl flex flex-col md:flex-row gap-4 items-start md:items-center">
-              <div className="relative w-16 h-24 flex-shrink-0 group">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={l.customImageUrl || (l.cardReference.imageUrl ? `/api/proxy?url=${encodeURIComponent(l.cardReference.imageUrl)}` : null) || 'https://i.imgur.com/B06rBhI.png'} className="w-full h-full object-cover rounded-lg border border-white/10" alt={l.cardReference.name} />
-                
-                {/* Photo Upload Overlay Button */}
-                <label className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                  {uploadingId === l.id ? (
-                    <Loader2 className="animate-spin text-white" size={20} />
-                  ) : (
-                    <span className="text-[10px] text-white font-bold tracking-wider text-center px-1">
-                      Upload <br/> Photo
-                    </span>
-                  )}
-                  {/* File input accepting camera on mobile */}
-                  <input type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => handleFileUpload(e, l.id)} disabled={uploadingId === l.id} />
-                </label>
-              </div>
-              
-              <div className="flex-1 w-full">
-                <h3 className="text-white font-bold">{l.cardReference.name}</h3>
-                <p className="text-xs text-slate-500 mb-2">Market: ${l.cardReference.price?.toLocaleString('en-US')} | {l.condition.replace('_', ' ')} {l.isSigned && ' | Signed'}</p>
-                <div className="flex flex-col md:flex-row gap-2 mt-2">
-                  <input 
-                    type="text" 
-                    placeholder="Custom Image URL (Optional)" 
-                    value={l.customImageUrl}
-                    onChange={e => handleImageChange(l.id, e.target.value)}
-                    className="flex-1 bg-slate-900 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white"
-                  />
-                  <input 
-                    type="text" 
-                    placeholder="Notes (e.g. signed in blue sharpie)" 
-                    value={l.notes}
-                    onChange={e => handleNotesChange(l.id, e.target.value)}
-                    className="flex-1 bg-slate-900 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white"
-                  />
-                </div>
-              </div>
-              
-              <div className="flex flex-col items-end flex-shrink-0">
-                <label className="text-xs font-bold text-slate-500 mb-1">Your Price (€)</label>
-                <input 
-                  type="number" 
-                  step="any"
-                  value={l.listPrice}
-                  onChange={e => handlePriceChange(l.id, Number(e.target.value))}
-                  className="w-24 bg-slate-900 border border-emerald-500/30 text-emerald-400 font-black px-3 py-2 rounded-lg text-right focus:border-emerald-500 outline-none"
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-6 pt-6 border-t border-white/10 flex justify-end">
-          <button 
-            disabled={isSubmitting}
-            onClick={handleSubmit} 
-            className="bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-black px-8 py-4 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all flex items-center gap-2"
-          >
-            {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : <Check size={20} />} Confirm & List {listings.length} Cards
-          </button>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
 // ─── Your Collection Tab ────────────────────────────────────────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function YourCollectionTab({ instances, sealedInstances = [] }: { instances: any[], sealedInstances?: any[] }) {
@@ -615,6 +442,7 @@ function YourCollectionTab({ instances, sealedInstances = [] }: { instances: any
   const [sortBy, setSortBy] = useState('PRICE_DESC');
   const [selectedCards, setSelectedCards] = useState<Set<string>>(new Set());
   const [showBulkModal, setShowBulkModal] = useState(false);
+  const [showBulkEditModal, setShowBulkEditModal] = useState(false);
   const [statsMode, setStatsMode] = useState(false);
   
   // Mock pseudo-random daily delta (-7.5% to +7.5%) based on card ID
@@ -646,6 +474,24 @@ function YourCollectionTab({ instances, sealedInstances = [] }: { instances: any
     if (newSet.has(id)) newSet.delete(id);
     else newSet.add(id);
     setSelectedCards(newSet);
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Warning: Are you completely sure you want to delete all ${selectedCards.size} selected items from your vault? This reset cannot be undone.`)) return;
+    try {
+      const res = await fetch('/api/collection/delete-bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: Array.from(selectedCards) })
+      });
+      if (res.ok) {
+        alert('Selection permanently deleted from database.');
+        setSelectedCards(new Set());
+        window.location.reload();
+      }
+    } catch {
+      alert('Failed to process bulk deletion network vector.');
+    }
   };
 
   // Filter instances
@@ -699,6 +545,17 @@ function YourCollectionTab({ instances, sealedInstances = [] }: { instances: any
             }} 
           />
         )}
+        {showBulkEditModal && (
+          <BulkEditModal
+            selectedIds={Array.from(selectedCards)}
+            onClose={() => setShowBulkEditModal(false)}
+            onComplete={() => {
+              setShowBulkEditModal(false);
+              setSelectedCards(new Set());
+              window.location.reload();
+            }}
+          />
+        )}
         {editingCard && (
           <EditCollectionCardModal 
             instance={editingCard} 
@@ -741,30 +598,58 @@ function YourCollectionTab({ instances, sealedInstances = [] }: { instances: any
             >
               <TrendingUp size={14} className="inline mr-1" /> Stats
             </button>
-            <button 
-              onClick={() => setSelectedCards(new Set(processedInstances.map(i => i.id)))}
-              className="text-xs font-bold text-slate-400 hover:text-white transition-colors"
-            >
-              Select All
-            </button>
-            <button 
-              onClick={() => setSelectedCards(new Set())}
-              className="text-xs font-bold text-slate-400 hover:text-white transition-colors"
-            >
-              Clear
-            </button>
-            <button 
-              disabled={selectedCards.size === 0}
-              onClick={() => setShowBulkModal(true)}
-              className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-lg transition-all flex items-center gap-2"
-            >
-              <TrendingUp size={16} /> List {selectedCards.size} Selected
-            </button>
+
+            {/* Unified Master State Action Bar */}
+            <div className="flex bg-slate-950 p-1 rounded-xl border border-white/10 items-center gap-3">
+              <button
+                onClick={() => {
+                  if (selectedCards.size === processedInstances.length) setSelectedCards(new Set());
+                  else setSelectedCards(new Set(processedInstances.map(i => i.id)));
+                }}
+                className={`w-5 h-5 ml-2 rounded border transition-all flex items-center justify-center ${selectedCards.size === processedInstances.length ? 'bg-cyan-500 border-cyan-500 text-white' : 'border-white/30 bg-slate-900 hover:border-cyan-500'}`}
+              >
+                {selectedCards.size === processedInstances.length && <Check size={12} />}
+              </button>
+              
+              <button 
+                onClick={() => {
+                  if (selectedCards.size === processedInstances.length) setSelectedCards(new Set());
+                  else setSelectedCards(new Set(processedInstances.map(i => i.id)));
+                }}
+                className="text-xs font-black uppercase tracking-wider text-slate-400 hover:text-white pr-2 border-r border-white/10"
+              >
+                {selectedCards.size === processedInstances.length ? 'Deselect All' : 'Select All'}
+              </button>
+
+              <AnimatePresence>
+                {selectedCards.size > 0 && (
+                  <motion.div initial={{ width: 0, opacity: 0 }} animate={{ width: 'auto', opacity: 1 }} exit={{ width: 0, opacity: 0 }} className="flex items-center gap-1 overflow-hidden pl-1">
+                    <button 
+                      onClick={() => setShowBulkEditModal(true)} 
+                      className="px-3 py-1 bg-slate-900 hover:bg-slate-800 text-cyan-400 font-bold text-xs rounded border border-white/5 whitespace-nowrap"
+                    >
+                      Edit ({selectedCards.size})
+                    </button>
+                    <button 
+                      onClick={handleBulkDelete} 
+                      className="px-3 py-1 bg-red-950/40 hover:bg-red-900/60 text-red-400 font-bold text-xs rounded border border-red-500/20 whitespace-nowrap"
+                    >
+                      Delete All
+                    </button>
+                    <button 
+                      onClick={() => setShowBulkModal(true)} 
+                      className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded shadow whitespace-nowrap"
+                    >
+                      Sell Selection
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
         
         <div className="flex flex-wrap gap-6 items-center">
-          {/* Game Toggles */}
           <div className="flex flex-wrap gap-2 mr-4 items-center">
             {availableGames.map(g => (
               <button
@@ -974,8 +859,7 @@ function YourCollectionTab({ instances, sealedInstances = [] }: { instances: any
     </div>
   );
 }
-
-// ─── Edit Card Modal ────────────────────────────────────────────────────────
+// ─── Edit Collection Card Modal ─────────────────────────────────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function EditCollectionCardModal({ instance, onClose, onComplete }: { instance: any, onClose: () => void, onComplete: () => void }) {
   const [condition, setCondition] = useState(instance.condition);
@@ -1120,11 +1004,6 @@ function EditCollectionCardModal({ instance, onClose, onComplete }: { instance: 
             <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Notes</label>
               <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="e.g. graded 9.5, or blue sharpie signature" className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500" />
-            </div>
-
-            <div>
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Custom Photo URL</label>
-              <input type="text" value={customImageUrl} onChange={(e) => setCustomImageUrl(e.target.value)} placeholder="https://..." className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500" />
             </div>
           </div>
 
@@ -1295,61 +1174,107 @@ function EditSealedProductModal({ instance, onClose, onComplete }: { instance: a
   );
 }
 
-// ─── Sealed Tab ─────────────────────────────────────────────────────────────
+// ─── Sealed Action Modal (High-Res & Pack Cracking) ─────────────────────────
+function SealedActionModal({ product, onClose, onAddVault }: { product: any, onClose: () => void, onAddVault: (id: string) => void }) {
+  const [cracking, setCracking] = useState(false);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        className="bg-slate-900 border border-white/10 rounded-3xl p-6 md:p-8 max-w-5xl w-full flex flex-col md:flex-row gap-8 shadow-2xl relative overflow-hidden"
+      >
+        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 rounded-full p-2 z-10 transition-colors">
+          <X size={20} />
+        </button>
+
+        {/* Left: High-Res Image Display */}
+        <div className="w-full md:w-1/2 flex flex-col items-center justify-center bg-slate-950 rounded-2xl p-8 border border-white/5 relative group">
+          <div className="absolute top-4 left-4 flex flex-col gap-2">
+            <span className="bg-fuchsia-600/20 text-fuchsia-400 text-[10px] font-black uppercase px-3 py-1.5 rounded-lg border border-fuchsia-500/30 tracking-widest">
+              {product.game.replace('_', ' ')}
+            </span>
+            {product.setCode && (
+              <span className="bg-slate-800 text-slate-300 text-[10px] font-black uppercase px-3 py-1.5 rounded-lg border border-white/10 tracking-widest">
+                SET: {product.setCode}
+              </span>
+            )}
+          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img 
+            src={product.imageUrl || 'https://i.imgur.com/B06rBhI.png'} 
+            alt={product.name} 
+            className="max-h-[400px] w-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-transform duration-500 group-hover:scale-105" 
+          />
+        </div>
+
+        {/* Right: Controls & Details */}
+        <div className="w-full md:w-1/2 flex flex-col justify-between py-2">
+          <div>
+            <p className="text-fuchsia-400 font-black text-xs uppercase tracking-widest mb-2">{product.type?.replace('_', ' ') || 'Sealed Product'}</p>
+            <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-4">{product.name}</h2>
+            <div className="flex items-end gap-3 mb-8">
+              <span className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Market Avg:</span>
+              <span className="text-emerald-400 font-black text-3xl">
+                {product.price ? `€${product.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 'N/A'}
+              </span>
+            </div>
+            
+            <p className="text-slate-400 text-sm leading-relaxed bg-slate-800/50 p-4 rounded-xl border border-white/5">
+              This global database entry tracks the market price for factory-sealed condition. Add it to your personal vault to track your inventory, or simulate a pack opening based on community pull rates.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3 mt-8">
+            <button 
+              onClick={() => {
+                setCracking(true);
+                setTimeout(() => { alert("Simulator connecting to pull-rate database... (Phase 4 Feature)"); setCracking(false); }, 1500);
+              }}
+              disabled={cracking}
+              className="w-full py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-black rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all flex justify-center items-center gap-2"
+            >
+              {cracking ? <Loader2 className="animate-spin" size={20} /> : <Box size={20} />} 
+              {cracking ? 'Generating Pulls...' : 'Crack Packs (Emulate Opening)'}
+            </button>
+            <div className="flex gap-3">
+              <button onClick={() => onAddVault(product.id)} className="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl transition-all flex justify-center items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                <Check size={18} /> Add to Vault
+              </button>
+              <button className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-xl transition-all flex justify-center items-center gap-2 border border-white/5">
+                <Plus size={18} /> Add to Want List
+              </button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// ─── Sealed Tab (The Overhaul) ──────────────────────────────────────────────
 function SealedTab() {
   const [inventory, setInventory] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
   
-  // Search State
-  const [game, setGame] = useState<Game>('MAGIC');
+  // High-Level State
+  const [activeSubTab, setActiveSubTab] = useState<'GLOBAL' | 'VAULT'>('GLOBAL');
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  const [editingSealed, setEditingSealed] = useState<any | null>(null);
+
+  // Search & Pagination State
+  const [game, setGame] = useState<Game | 'ALL'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [searching, setSearching] = useState(false);
+  const [globalSealed, setGlobalSealed] = useState<any[]>([]);
+  const [loadingGlobal, setLoadingGlobal] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   // New Reference State
   const [showNewRef, setShowNewRef] = useState(false);
   const [newRef, setNewRef] = useState({ name: '', game: 'MAGIC', type: 'BOOSTER_BOX', setCode: '', edition: 'Unlimited', price: '', imageUrl: '' });
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [editingSealed, setEditingSealed] = useState<any | null>(null);
-
-  const [uploadingSealedId, setUploadingSealedId] = useState<string | null>(null);
-
-  const handleSealedFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
-    if (!e.target.files || e.target.files.length === 0) return;
-    const file = e.target.files[0];
-    
-    setUploadingSealedId(id);
-    const formData = new FormData();
-    formData.append('image', file);
-    
-    try {
-      const res = await fetch(`https://api.imgbb.com/1/upload?key=b2492f987920d3e2a7903861b72ae3a4`, {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
-      if (data.success) {
-        const patchRes = await fetch('/api/sealed/inventory', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id, customImageUrl: data.data.url })
-        });
-        if (patchRes.ok) {
-           fetchInventory();
-        } else {
-           alert('Failed to update image in database');
-        }
-      } else {
-        alert('Image upload failed.');
-      }
-    } catch (err) {
-      console.error('ImgBB upload failed', err);
-      alert('Upload error.');
-    }
-    setUploadingSealedId(null);
-  };
 
   const fetchInventory = async () => {
     setLoading(true);
@@ -1357,7 +1282,7 @@ function SealedTab() {
       const res = await fetch('/api/sealed/inventory');
       if (res.ok) {
         const data = await res.json();
-        setInventory(data.inventory);
+        setInventory(data.inventory || []);
       }
     } catch (e) {
       console.error(e);
@@ -1365,41 +1290,52 @@ function SealedTab() {
     setLoading(false);
   };
 
+  const fetchGlobalSealed = async (append = false, overridePage?: number) => {
+    if (!append) setGlobalSealed([]);
+    setLoadingGlobal(true);
+    try {
+      const currentPage = overridePage ?? (append ? page + 1 : 1);
+      const gameParam = game === 'ALL' ? '' : game;
+      
+      const res = await fetch(`/api/sealed/search?game=${gameParam}&q=${encodeURIComponent(searchQuery)}&page=${currentPage}`);
+      if (res.ok) {
+        const data = await res.json();
+        const newProducts = data.products || [];
+        
+        if (game === 'ALL' && !searchQuery && !append) {
+           newProducts.sort(() => Math.random() - 0.5);
+        }
+
+        setGlobalSealed(prev => append ? [...prev, ...newProducts] : newProducts);
+        setPage(currentPage);
+        setHasMore(newProducts.length >= 24); 
+      } else {
+        setHasMore(false);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setLoadingGlobal(false);
+  };
+
   useEffect(() => {
     fetchInventory();
   }, []);
 
-  const handleSearch = async () => {
-    setSearching(true);
-    try {
-      const res = await fetch(`/api/sealed/search?game=${game}&q=${encodeURIComponent(searchQuery)}`);
-      if (res.ok) {
-        const data = await res.json();
-        setSearchResults(data.products);
-      }
-    } catch (e) {
-      console.error(e);
+  useEffect(() => {
+    if (activeSubTab === 'GLOBAL') {
+      setPage(1);
+      setHasMore(true);
+      fetchGlobalSealed(false, 1);
     }
-    setSearching(false);
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [game, activeSubTab]);
 
-  const handleCreateRef = async () => {
-    try {
-      const res = await fetch('/api/sealed/reference', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...newRef, name: `${newRef.name} [${newRef.edition}]` })
-      });
-      if (res.ok) {
-        alert('Product added to Global Database! You can now search for it.');
-        setShowNewRef(false);
-        handleSearch();
-      } else {
-        alert('Failed to add product.');
-      }
-    } catch (e) {
-      console.error(e);
-    }
+  const handleSearch = (e?: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e && e.key !== 'Enter') return;
+    setPage(1);
+    setHasMore(true);
+    fetchGlobalSealed(false, 1);
   };
 
   const handleAddToInventory = async (refId: string) => {
@@ -1411,8 +1347,27 @@ function SealedTab() {
       });
       if (res.ok) {
         alert('Added to your sealed vault!');
-        setShowSearch(false);
         fetchInventory();
+        setSelectedProduct(null); 
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleCreateRef = async () => {
+    try {
+      const res = await fetch('/api/sealed/reference', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...newRef, name: `${newRef.name} [${newRef.edition}]` })
+      });
+      if (res.ok) {
+        alert('Product added to Global Database!');
+        setShowNewRef(false);
+        fetchGlobalSealed();
+      } else {
+        alert('Failed to add product.');
       }
     } catch (e) {
       console.error(e);
@@ -1421,174 +1376,315 @@ function SealedTab() {
 
   return (
     <div className="space-y-8">
-      <div className="bg-slate-900 border border-white/5 p-6 rounded-2xl shadow-xl flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-black text-white flex items-center gap-2"><Box /> Sealed Product Vault</h2>
-          <p className="text-slate-400 text-sm mt-1">Track your booster boxes, ETBs, and blister packs.</p>
+      {/* Header and Sub-Tabs */}
+      <div className="bg-slate-900 border border-white/5 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
+        <div className="absolute -right-20 -top-20 w-64 h-64 bg-fuchsia-500/10 blur-3xl rounded-full pointer-events-none" />
+        <div className="relative z-10">
+          <h2 className="text-2xl font-black text-white flex items-center gap-2"><Box className="text-fuchsia-400" /> Sealed Product Hub</h2>
+          <p className="text-slate-400 text-sm mt-1">Thousands of tracked products across 6 major TCGs. Crack packs, track your ETBs, and manage investments.</p>
         </div>
-        <button onClick={() => setShowSearch(!showSearch)} className="px-6 py-3 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold rounded-xl shadow-lg transition-colors flex items-center gap-2">
-          {showSearch ? <X size={18} /> : <Plus size={18} />} {showSearch ? 'Close Search' : 'Add Sealed Product'}
-        </button>
+        <div className="flex bg-slate-950 p-1 rounded-xl border border-white/10 relative z-10">
+          <button 
+            onClick={() => setActiveSubTab('GLOBAL')}
+            className={`px-6 py-2.5 rounded-lg font-bold text-sm transition-all ${activeSubTab === 'GLOBAL' ? 'bg-fuchsia-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+          >
+            Global Database
+          </button>
+          <button 
+            onClick={() => setActiveSubTab('VAULT')}
+            className={`px-6 py-2.5 rounded-lg font-bold text-sm transition-all flex items-center gap-2 ${activeSubTab === 'VAULT' ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'}`}
+          >
+            Your Vault <span className="bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full text-xs">{inventory.length}</span>
+          </button>
+        </div>
       </div>
 
       <AnimatePresence>
-        {editingSealed && (
-          <EditSealedProductModal 
-            instance={editingSealed} 
-            onClose={() => setEditingSealed(null)} 
-            onComplete={() => {
-              setEditingSealed(null);
-              fetchInventory();
-            }} 
-          />
+        {selectedProduct && (
+          <SealedActionModal product={selectedProduct} onClose={() => setSelectedProduct(null)} onAddVault={handleAddToInventory} />
         )}
       </AnimatePresence>
 
-      <AnimatePresence>
-        {showSearch && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-            <div className="bg-slate-900 border border-fuchsia-500/30 p-6 rounded-2xl shadow-xl mb-8">
-              
-              <div className="flex flex-wrap gap-2 mb-6">
-                {['MAGIC', 'POKEMON', 'ONE_PIECE'].map(g => (
-                  <button key={g} onClick={() => setGame(g as Game)} className={`px-4 py-2 rounded-lg text-xs font-bold uppercase transition-all ${game === g ? 'bg-fuchsia-600 text-white' : 'bg-slate-950 text-slate-400 hover:bg-slate-800'}`}>
-                    {g.replace('_', ' ')}
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex gap-4 mb-6">
-                <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSearch()} placeholder="Search for a booster box..." className="flex-1 bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-fuchsia-500" />
-                <button onClick={handleSearch} disabled={searching} className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl">
-                  {searching ? <Loader2 className="animate-spin" /> : 'Search'}
+      {/* GLOBAL DATABASE VIEW */}
+      {activeSubTab === 'GLOBAL' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          
+          {/* Filters & Search */}
+          <div className="bg-slate-900 border border-fuchsia-500/20 p-4 rounded-2xl shadow-xl flex flex-col md:flex-row flex-wrap gap-4 items-center justify-between">
+            <div className="flex flex-wrap gap-2 w-full md:w-auto">
+              {['ALL', 'POKEMON', 'MAGIC', 'ONE_PIECE', 'LORCANA', 'RIFTBOUND', 'NARUTO'].map(g => (
+                <button 
+                  key={g} 
+                  onClick={() => setGame(g as Game | 'ALL')} 
+                  className={`px-4 py-2 rounded-lg text-xs font-bold uppercase transition-all ${game === g ? 'bg-fuchsia-600 text-white shadow-[0_0_10px_rgba(217,70,239,0.3)]' : 'bg-slate-950 border border-white/10 text-slate-400 hover:border-white/30'}`}
+                >
+                  {g.replace('_', ' ')}
                 </button>
-              </div>
+              ))}
+            </div>
+            
+            <div className="flex-1 w-full md:min-w-[300px] flex gap-2">
+              <input 
+                type="text" 
+                value={searchQuery} 
+                onChange={e => setSearchQuery(e.target.value)} 
+                onKeyDown={handleSearch} 
+                placeholder={game === 'ALL' ? "Search across all games..." : `Search ${game.replace('_', ' ')} products or set codes...`} 
+                className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-fuchsia-500 transition-colors" 
+              />
+              <button onClick={() => { setPage(1); fetchGlobalSealed(false, 1); }} className="px-6 py-3 bg-fuchsia-600/20 hover:bg-fuchsia-600 text-fuchsia-400 hover:text-white font-black rounded-xl transition-all border border-fuchsia-500/30 shrink-0">
+                Search
+              </button>
+            </div>
+          </div>
 
-              {searchResults.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                  {searchResults.map(res => (
-                    <div key={res.id} className="bg-slate-950 border border-white/5 p-4 rounded-xl flex items-center gap-4 hover:border-fuchsia-500/30 transition-colors">
-                      <div className="w-16 h-16 bg-slate-900 rounded-lg flex items-center justify-center shrink-0 p-1">
-                        {res.imageUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={res.imageUrl} alt={res.name} className="max-w-full max-h-full object-contain" />
-                        ) : (
-                          <Box className="text-slate-700" size={24} />
+          {/* Strict Grid Layout (No warped buttons) */}
+          {loadingGlobal && globalSealed.length === 0 ? (
+            <div className="py-20 flex justify-center text-fuchsia-500"><Loader2 className="animate-spin" size={36} /></div>
+          ) : globalSealed.length === 0 ? (
+            <div className="text-center py-20 bg-slate-900/50 rounded-2xl border border-white/5">
+              <p className="text-slate-400 text-lg font-bold">No products found matching your criteria.</p>
+              <button onClick={() => setShowNewRef(!showNewRef)} className="px-4 py-2 mt-4 border border-fuchsia-500 text-fuchsia-400 hover:bg-fuchsia-500/10 rounded-lg text-sm font-bold">
+                Create New Product Definition
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {globalSealed.map(res => (
+                  <div 
+                    key={res.id} 
+                    onClick={() => setSelectedProduct(res)}
+                    className="flex flex-col h-[380px] bg-slate-900 border border-white/5 rounded-2xl overflow-hidden shadow-lg hover:border-fuchsia-500/50 hover:shadow-[0_0_20px_rgba(217,70,239,0.2)] transition-all cursor-pointer group"
+                  >
+                    {/* Fixed Height Image Container */}
+                    <div className="h-[200px] w-full bg-slate-950 relative p-4 flex items-center justify-center shrink-0 border-b border-white/5">
+                      {res.imageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={res.imageUrl} alt={res.name} className="max-h-full max-w-full object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-110" />
+                      ) : (
+                        <Box size={48} className="text-slate-800" />
+                      )}
+                      
+                      <div className="absolute top-2 left-2 flex flex-col gap-1">
+                        <span className="bg-fuchsia-600/90 text-white text-[9px] font-black uppercase px-2 py-1 rounded shadow-lg backdrop-blur-sm">
+                          {res.game.replace('_', ' ')}
+                        </span>
+                        {res.setCode && (
+                          <span className="bg-slate-800/90 text-slate-300 text-[9px] font-black uppercase px-2 py-1 rounded border border-white/10 backdrop-blur-sm">
+                            SET: {res.setCode}
+                          </span>
                         )}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-white font-bold text-sm truncate">{res.name}</p>
-                        <p className="text-xs text-slate-400 truncate">
-                          {res.type.replace('_', ' ')} {res.setCode ? `• Set: ${res.setCode}` : ''} {res.price ? `• €${res.price.toFixed(2)}` : ''}
+                    </div>
+                    
+                    {/* Fixed Flex Content Container */}
+                    <div className="p-4 flex flex-col flex-1 bg-slate-900">
+                      <p className="text-[10px] text-fuchsia-400 uppercase tracking-widest font-black mb-1 shrink-0">{res.type?.replace('_', ' ') || 'OTHER'}</p>
+                      <h3 className="text-white font-bold text-sm line-clamp-2 leading-snug">{res.name}</h3>
+                      
+                      {/* Pushes price & buttons to the absolute bottom of the card */}
+                      <div className="mt-auto pt-3 flex items-end justify-between shrink-0">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Market</span>
+                          <span className="text-emerald-400 font-black text-lg leading-none">
+                            {res.price ? `€${res.price.toFixed(2)}` : 'N/A'}
+                          </span>
+                        </div>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); handleAddToInventory(res.id); }} 
+                          className="h-10 px-4 rounded-xl bg-slate-800 hover:bg-emerald-600 text-slate-300 hover:text-white flex items-center gap-2 transition-colors font-bold text-xs border border-white/10"
+                        >
+                          <Plus size={16} /> Add
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Pagination */}
+              {hasMore && (
+                <button
+                  onClick={() => fetchGlobalSealed(true)}
+                  disabled={loadingGlobal}
+                  className="w-full py-4 mt-6 bg-slate-900 border border-white/10 hover:bg-slate-800 text-fuchsia-400 font-black tracking-widest uppercase text-sm rounded-xl transition-colors disabled:opacity-50"
+                >
+                  {loadingGlobal ? 'Loading More Products...' : 'Load More Products'}
+                </button>
+              )}
+            </>
+          )}
+
+          {showNewRef && (
+            <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-900 border border-fuchsia-500/30 p-6 rounded-2xl shadow-xl">
+              <input type="text" placeholder="Product Name (e.g. Base Set Booster Box)" value={newRef.name} onChange={e => setNewRef({...newRef, name: e.target.value})} className="bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white" />
+              <select value={newRef.type} onChange={e => setNewRef({...newRef, type: e.target.value})} className="bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white">
+                <option value="BOOSTER_BOX">Booster Box</option>
+                <option value="ELITE_TRAINER_BOX">Elite Trainer Box / Bundle</option>
+                <option value="BLISTER">Blister Pack</option>
+                <option value="CASE">Sealed Case</option>
+                <option value="OTHER">Other</option>
+              </select>
+              <select value={newRef.edition} onChange={e => setNewRef({...newRef, edition: e.target.value})} className="bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white">
+                <option value="Unlimited">Unlimited / Standard</option>
+                <option value="1st Edition">1st Edition</option>
+                <option value="Shadowless">Shadowless</option>
+                <option value="Alpha/Beta">Alpha/Beta</option>
+                <option value="Promo">Promo</option>
+              </select>
+              <input type="text" placeholder="Set Code (e.g. BS)" value={newRef.setCode} onChange={e => setNewRef({...newRef, setCode: e.target.value})} className="bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white" />
+              <input type="number" step="any" placeholder="Estimated Market Price (€)" value={newRef.price} onChange={e => setNewRef({...newRef, price: e.target.value})} className="bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white" />
+              <button onClick={handleCreateRef} className="md:col-span-2 px-6 py-3 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold rounded-xl mt-2">
+                Submit to Global Database
+              </button>
+            </div>
+          )}
+        </motion.div>
+      )}
+
+      {/* YOUR VAULT VIEW */}
+      {activeSubTab === 'VAULT' && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {loading ? (
+              <div className="col-span-full py-10 flex justify-center text-emerald-500"><Loader2 className="animate-spin" size={32} /></div>
+            ) : inventory.length === 0 ? (
+              <div className="col-span-full text-center py-20 bg-slate-900/50 rounded-2xl border border-white/5 text-slate-500">
+                <Box size={48} className="mx-auto mb-4 opacity-50" />
+                <p className="text-lg font-bold">Your sealed vault is empty.</p>
+                <p className="text-sm mt-1">Switch to the Global Database tab to search and add products.</p>
+              </div>
+            ) : (
+              inventory.map(inst => (
+                <div 
+                  key={inst.id} 
+                  onClick={() => setEditingSealed && setEditingSealed(inst)} 
+                  className="flex flex-col h-[380px] bg-slate-900 border border-white/5 rounded-2xl overflow-hidden shadow-xl hover:border-emerald-500/50 transition-all group cursor-pointer relative"
+                >
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity z-20 pointer-events-none backdrop-blur-sm">
+                    <span className="text-white font-black tracking-widest text-sm uppercase px-4 py-2 border-2 border-white/20 rounded-xl">Click to Manage</span>
+                  </div>
+                  
+                  <div className="h-[200px] w-full bg-slate-950 relative p-4 flex items-center justify-center shrink-0 border-b border-white/5">
+                    {inst.customImageUrl || inst.sealedReference?.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={inst.customImageUrl || inst.sealedReference.imageUrl} alt={inst.sealedReference?.name} className="max-h-full max-w-full object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-105" />
+                    ) : (
+                      <Box size={48} className="text-slate-800" />
+                    )}
+                    <div className="absolute top-2 left-2 bg-emerald-600/90 text-white text-[9px] font-black uppercase px-2 py-1 rounded shadow-lg backdrop-blur-sm">
+                      {inst.sealedReference?.game.replace('_', ' ') || 'UNKNOWN'}
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 flex flex-col flex-1 bg-slate-900">
+                    <p className="text-[10px] text-slate-400 uppercase tracking-widest font-black mb-1 shrink-0">{inst.sealedReference?.type?.replace('_', ' ')}</p>
+                    <h3 className="text-white font-bold text-sm line-clamp-2 leading-snug">{inst.sealedReference?.name}</h3>
+                    
+                    <div className="mt-auto pt-3 flex justify-between items-end border-t border-white/5 shrink-0">
+                      <div>
+                        <p className="text-[9px] text-slate-500 uppercase font-black tracking-wider">Condition</p>
+                        <p className="text-xs text-white font-bold">{inst.condition.replace('_', ' ')}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[9px] text-slate-500 uppercase font-black tracking-wider">Market Price</p>
+                        <p className="text-base text-emerald-400 font-black leading-none">
+                          {inst.sealedReference?.price ? `€${inst.sealedReference.price.toFixed(2)}` : 'N/A'}
                         </p>
                       </div>
-                      <button onClick={() => handleAddToInventory(res.id)} className="w-10 h-10 shrink-0 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center transition-transform hover:scale-110">
-                        <Plus size={20} />
-                      </button>
                     </div>
-                  ))}
+                  </div>
                 </div>
-              )}
-
-              {searchResults.length === 0 && searchQuery && !searching && (
-                <div className="text-center py-6 bg-slate-950 rounded-xl border border-white/5">
-                  <p className="text-slate-400 mb-4">Can't find the product? Add it to the global database!</p>
-                  <button onClick={() => setShowNewRef(!showNewRef)} className="px-4 py-2 border border-fuchsia-500 text-fuchsia-400 hover:bg-fuchsia-500/10 rounded-lg text-sm font-bold">
-                    Create New Product Definition
-                  </button>
-                </div>
-              )}
-
-              {showNewRef && (
-                <div className="mt-6 pt-6 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <input type="text" placeholder="Product Name (e.g. Base Set Booster Box)" value={newRef.name} onChange={e => setNewRef({...newRef, name: e.target.value})} className="bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white" />
-                  <select value={newRef.type} onChange={e => setNewRef({...newRef, type: e.target.value})} className="bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white">
-                    <option value="BOOSTER_BOX">Booster Box</option>
-                    <option value="ELITE_TRAINER_BOX">Elite Trainer Box / Bundle</option>
-                    <option value="BLISTER">Blister Pack</option>
-                    <option value="CASE">Sealed Case</option>
-                    <option value="OTHER">Other</option>
-                  </select>
-                  <select value={newRef.edition} onChange={e => setNewRef({...newRef, edition: e.target.value})} className="bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white">
-                    <option value="Unlimited">Unlimited / Standard</option>
-                    <option value="1st Edition">1st Edition</option>
-                    <option value="Shadowless">Shadowless</option>
-                    <option value="Alpha/Beta">Alpha/Beta</option>
-                    <option value="Promo">Promo</option>
-                  </select>
-                  <input type="text" placeholder="Set Code (e.g. BS)" value={newRef.setCode} onChange={e => setNewRef({...newRef, setCode: e.target.value})} className="bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white" />
-                  <input type="number" step="any" placeholder="Estimated Market Price (€)" value={newRef.price} onChange={e => setNewRef({...newRef, price: e.target.value})} className="bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white" />
-                  <button onClick={handleCreateRef} className="md:col-span-2 px-6 py-3 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold rounded-xl mt-2">
-                    Submit to Global Database
-                  </button>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {loading ? (
-          <div className="col-span-full py-10 flex justify-center text-fuchsia-500"><Loader2 className="animate-spin" size={32} /></div>
-        ) : inventory.length === 0 ? (
-          <div className="col-span-full text-center py-20 text-slate-500">
-            <Box size={48} className="mx-auto mb-4 opacity-50" />
-            <p>Your sealed vault is empty. Search and add products to start tracking.</p>
+              ))
+            )}
           </div>
-        ) : (
-          inventory.map(inst => (
-            <div key={inst.id} onClick={() => setEditingSealed(inst)} className="bg-slate-900 border border-white/5 rounded-2xl overflow-hidden shadow-xl hover:border-fuchsia-500/30 transition-all group cursor-pointer relative">
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity z-10 pointer-events-none">
-                <span className="text-white font-bold tracking-widest text-sm uppercase">Click to Edit</span>
-              </div>
-              <div className="aspect-[4/3] bg-slate-950 relative p-4 flex items-center justify-center">
-                {inst.customImageUrl || inst.sealedReference.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={inst.customImageUrl || inst.sealedReference.imageUrl} alt={inst.sealedReference.name} className="max-w-full max-h-full object-contain drop-shadow-2xl" />
-                ) : (
-                  <Box size={64} className="text-slate-800" />
-                )}
-                
-                <div className="absolute top-3 left-3 bg-fuchsia-600 text-white text-[10px] font-black uppercase px-2 py-1 rounded shadow-lg">
-                  {inst.sealedReference.game.replace('_', ' ')}
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="font-bold text-white text-sm line-clamp-2 mb-1">{inst.sealedReference.name}</h3>
-                <p className="text-xs text-slate-400 uppercase tracking-widest mb-3">{inst.sealedReference.type.replace('_', ' ')}</p>
-                <div className="flex justify-between items-center border-t border-white/5 pt-3">
-                  <div>
-                    <p className="text-[10px] text-slate-500 uppercase font-bold">Condition</p>
-                    <p className="text-xs text-white">{inst.condition.replace('_', ' ')}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[10px] text-slate-500 uppercase font-bold">Market Price</p>
-                    <p className="text-sm text-emerald-400 font-black">
-                      {inst.sealedReference.price ? `€${inst.sealedReference.price.toFixed(2)}` : 'N/A'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+        </motion.div>
+      )}
     </div>
   );
 }
 
-// ─── Card Action Modal ──────────────────────────────────────────────────────
+// ─── Edit Card Modal ────────────────────────────────────────────────────────
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CardModal({ card, onClose }: { card: CardData, onClose: () => void }) {
   const [condition, setCondition] = useState('Near Mint');
   const [quantity, setQuantity] = useState(1);
   const [isFoil, setIsFoil] = useState(false);
+  const [isHolo, setIsHolo] = useState(false);
+  const [isReverseHolo, setIsReverseHolo] = useState(false);
   const [isSigned, setIsSigned] = useState(false);
   const [signedByArtist, setSignedByArtist] = useState(false);
   const [signedByElse, setSignedByElse] = useState(false);
   const [isAltered, setIsAltered] = useState(false);
-  const [edition, setEdition] = useState('Unlimited / Standard');
+  
+  const [customImageUrl, setCustomImageUrl] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
   const [adding, setAdding] = useState(false);
+
+ // Dynamic Price Estimator
+  const getEstimatedPrice = () => {
+    let base = card.price || 0;
+    
+    // 1. Look for explicit TCGCSV variant pricing
+    if (card.prices) {
+      if ((isFoil || isHolo) && card.prices.foil) {
+        base = card.prices.foil;
+      } else if (isReverseHolo && card.prices.reverseHolo) {
+        base = card.prices.reverseHolo;
+      } else if (!isFoil && !isHolo && !isReverseHolo && card.prices.normal) {
+        base = card.prices.normal; // Base standard price
+      }
+    }
+
+    if (base === 0) return 0;
+    
+    // 2. Depreciate based on condition
+    let conditionMultiplier = 1.0;
+    if (condition === 'Mint') conditionMultiplier = 1.2;
+    if (condition === 'Lightly Played') conditionMultiplier = 0.8;
+    if (condition === 'Moderately Played') conditionMultiplier = 0.65;
+    if (condition === 'Heavily Played') conditionMultiplier = 0.45;
+    if (condition === 'Damaged') conditionMultiplier = 0.25;
+
+    let calculatedPrice = base * conditionMultiplier;
+
+    // 3. Flat €8 Premium for Signatures (Temporary until Artist DB is built)
+    if (isSigned) {
+      calculatedPrice += 8.00;
+    }
+    
+    return calculatedPrice;
+  };
+  const estimatedPrice = getEstimatedPrice();
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY || 'b2492f987920d3e2a7903861b72ae3a4';
+      const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        setCustomImageUrl(data.data.url);
+      } else {
+        alert('Image upload failed.');
+      }
+    } catch (err) {
+      console.error('ImgBB upload failed', err);
+      alert('Upload failed. Check your network or API key.');
+    }
+    setIsUploading(false);
+  };
 
   const handleAddToHave = async () => {
     setAdding(true);
@@ -1601,17 +1697,19 @@ function CardModal({ card, onClose }: { card: CardData, onClose: () => void }) {
           game: card.game,
           name: card.name,
           imageUrl: card.imageUrl,
+          customImageUrl: customImageUrl || undefined,
           condition,
           quantity,
-          isFoil,
+          isFoil: isFoil || isHolo, 
+          isHolo,
+          isReverseHolo,
           isSigned,
           signedByArtist,
           signedByElse,
           isAltered,
           setCode: card.setCode,
           collectorNumber: card.collectorNumber,
-          price: card.price,
-          notes: edition !== 'Unlimited / Standard' ? edition : undefined
+          price: estimatedPrice 
         })
       });
       if (res.ok) {
@@ -1634,39 +1732,71 @@ function CardModal({ card, onClose }: { card: CardData, onClose: () => void }) {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-slate-900 border border-white/10 rounded-3xl p-6 md:p-8 max-w-4xl w-full flex flex-col md:flex-row gap-8 shadow-2xl relative"
+        className="bg-slate-900 border border-white/10 rounded-3xl p-6 md:p-8 max-w-5xl w-full flex flex-col md:flex-row gap-8 shadow-2xl relative"
       >
-        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 rounded-full p-2">
+        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 rounded-full p-2 z-10">
           <X size={20} />
         </button>
 
-        {/* Card Image */}
-        <div className="w-full md:w-1/3">
-          <div className="rounded-xl overflow-hidden border border-white/10 shadow-lg relative bg-slate-800 aspect-[2.5/3.5]">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={card.imageUrl ? `/api/proxy?url=${encodeURIComponent(card.imageUrl)}` : 'https://i.imgur.com/B06rBhI.png'} alt={card.name} className="w-full h-full object-cover" />
-          </div>
+        {/* Left Side: Card Image & Upload */}
+        <div className="w-full md:w-1/3 flex flex-col gap-4">
+          <label className={`relative w-full cursor-pointer group ${isUploading ? 'opacity-50' : ''}`}>
+            <div className="rounded-xl overflow-hidden border border-white/10 shadow-lg relative bg-slate-800 aspect-[2.5/3.5] transition-transform duration-300 group-hover:scale-[1.02]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={customImageUrl || (card.imageUrl ? `/api/proxy?url=${encodeURIComponent(card.imageUrl)}` : 'https://i.imgur.com/B06rBhI.png')} alt={card.name} className="w-full h-full object-cover" />
+              
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity backdrop-blur-sm">
+                <Upload size={32} className="text-white mb-2" />
+                <span className="text-white font-black uppercase tracking-wider text-xs px-4 text-center">
+                  {isUploading ? 'Uploading...' : 'Upload Specific Card Photo'}
+                </span>
+              </div>
+            </div>
+            <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleImageUpload} disabled={isUploading} />
+          </label>
+          
+          {customImageUrl && (
+            <button onClick={() => setCustomImageUrl('')} className="w-full py-2 bg-red-500/20 text-red-400 font-bold rounded-lg border border-red-500/30 hover:bg-red-500/30 transition-colors text-sm">
+              Remove Custom Photo
+            </button>
+          )}
         </div>
 
-        {/* Controls */}
+        {/* Right Side: Controls & Dynamic Pricing */}
         <div className="w-full md:w-2/3 flex flex-col justify-between">
           <div>
-            <h2 className="text-3xl font-black text-white mb-2">{card.name}</h2>
-            <p className="text-emerald-400 font-black text-xl mb-6">
-              {card.game === 'NARUTO' || (card.game === 'POKEMON' && (card.price === 0 || card.price === 0.3)) ? (
-                <span className="text-slate-500">No Market Data</span>
-              ) : (
-                `Market: €${card.price.toLocaleString('en-US')}`
-              )}
-            </p>
+            <div className="flex justify-between items-start mb-2 gap-4">
+              <h2 className="text-3xl md:text-4xl font-black text-white leading-tight">{card.name}</h2>
+              <div className="flex gap-2 shrink-0">
+                <span className="bg-slate-800 text-slate-300 border border-white/10 text-[10px] font-black uppercase px-2 py-1 rounded tracking-widest">{card.setCode || 'NO SET'}</span>
+                {card.collectorNumber && <span className="bg-slate-800 text-slate-300 border border-white/10 text-[10px] font-black uppercase px-2 py-1 rounded tracking-widest">#{card.collectorNumber}</span>}
+              </div>
+            </div>
             
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="bg-slate-950 p-4 rounded-xl border border-white/5 mb-6 flex justify-between items-center">
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Condition</label>
+                <p className="text-slate-500 text-xs font-bold uppercase tracking-wider mb-1">Base Market Avg</p>
+                <p className="text-white text-sm">€{(card.price || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-cyan-500 text-xs font-bold uppercase tracking-wider mb-1">Estimated Attributed Value</p>
+                <p className="text-cyan-400 font-black text-2xl">
+                  {card.game === 'NARUTO' || (card.game === 'POKEMON' && (card.price === 0 || card.price === 0.3)) ? (
+                    <span className="text-slate-500 text-lg">N/A</span>
+                  ) : (
+                    `€${estimatedPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                  )}
+                </p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Condition</label>
                 <select 
                   value={condition}
                   onChange={e => setCondition(e.target.value)}
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-cyan-500"
+                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-cyan-500 transition-colors"
                 >
                   <option>Mint</option>
                   <option>Near Mint</option>
@@ -1677,66 +1807,74 @@ function CardModal({ card, onClose }: { card: CardData, onClose: () => void }) {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Set / Edition</label>
-                <select 
-                  value={edition}
-                  onChange={e => setEdition(e.target.value)}
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-cyan-500"
-                >
-                  <option value="Unlimited / Standard">Unlimited / Standard</option>
-                  <option value="1st Edition">1st Edition</option>
-                  <option value="Shadowless">Shadowless</option>
-                  <option value="Alpha/Beta">Alpha/Beta</option>
-                  <option value="Promo">Promo</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2">Quantity</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Quantity</label>
                 <input 
                   type="number" 
                   min="1" 
                   value={quantity}
                   onChange={e => setQuantity(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-cyan-500"
+                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
             </div>
 
-            <div className="flex gap-6 mb-8">
-              <label className="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white">
-                <input type="checkbox" checked={isFoil} onChange={e => setIsFoil(e.target.checked)} className="w-5 h-5 rounded border-white/10 bg-slate-950 accent-cyan-500" />
-                <span className="font-semibold">Foil / Holo</span>
-              </label>
-              <div className="flex flex-col gap-2">
-                <label className="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white">
-                  <input type="checkbox" checked={isSigned} onChange={e => setIsSigned(e.target.checked)} className="w-5 h-5 rounded border-white/10 bg-slate-950 accent-cyan-500" />
-                  <span className="font-semibold">Signed</span>
-                </label>
-                {isSigned && (
-                  <div className="flex flex-col gap-2 ml-6 p-3 bg-slate-900 border border-white/10 rounded-lg shadow-inner">
-                    <label className="flex items-center gap-2 cursor-pointer text-slate-400 hover:text-white text-sm">
-                      <input type="checkbox" checked={signedByArtist} onChange={e => setSignedByArtist(e.target.checked)} className="w-4 h-4 rounded border-white/10 bg-slate-950 accent-fuchsia-500" />
-                      <span className="font-semibold">By artist</span>
+            <div className="bg-slate-800/30 border border-white/5 rounded-xl p-4 mb-8">
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Card Attributes (Affects Value)</label>
+              <div className="flex flex-wrap gap-4">
+                
+                {card.game === 'POKEMON' ? (
+                  <>
+                    <label className="flex items-center gap-2 cursor-pointer bg-slate-950 px-3 py-2 rounded-lg border border-white/10 hover:border-cyan-500/50 transition-colors">
+                      <input type="checkbox" checked={isHolo} onChange={e => { setIsHolo(e.target.checked); setIsReverseHolo(false); }} className="w-4 h-4 rounded border-white/10 bg-slate-950 accent-cyan-500" />
+                      <span className="font-bold text-sm text-white">Holo</span>
                     </label>
-                    <label className="flex items-center gap-2 cursor-pointer text-slate-400 hover:text-white text-sm">
-                      <input type="checkbox" checked={signedByElse} onChange={e => setSignedByElse(e.target.checked)} className="w-4 h-4 rounded border-white/10 bg-slate-950 accent-fuchsia-500" />
-                      <span className="font-semibold">By else</span>
+                    <label className="flex items-center gap-2 cursor-pointer bg-slate-950 px-3 py-2 rounded-lg border border-white/10 hover:border-cyan-500/50 transition-colors">
+                      <input type="checkbox" checked={isReverseHolo} onChange={e => { setIsReverseHolo(e.target.checked); setIsHolo(false); }} className="w-4 h-4 rounded border-white/10 bg-slate-950 accent-cyan-500" />
+                      <span className="font-bold text-sm text-white">Reverse Holo</span>
                     </label>
-                  </div>
+                  </>
+                ) : (
+                  <label className="flex items-center gap-2 cursor-pointer bg-slate-950 px-3 py-2 rounded-lg border border-white/10 hover:border-cyan-500/50 transition-colors">
+                    <input type="checkbox" checked={isFoil} onChange={e => setIsFoil(e.target.checked)} className="w-4 h-4 rounded border-white/10 bg-slate-950 accent-cyan-500" />
+                    <span className="font-bold text-sm text-white">Foil</span>
+                  </label>
                 )}
+
+                <label className="flex items-center gap-2 cursor-pointer bg-slate-950 px-3 py-2 rounded-lg border border-white/10 hover:border-fuchsia-500/50 transition-colors">
+                  <input type="checkbox" checked={isSigned} onChange={e => setIsSigned(e.target.checked)} className="w-4 h-4 rounded border-white/10 bg-slate-950 accent-fuchsia-500" />
+                  <span className="font-bold text-sm text-white">Signed</span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer bg-slate-950 px-3 py-2 rounded-lg border border-white/10 hover:border-cyan-500/50 transition-colors">
+                  <input type="checkbox" checked={isAltered} onChange={e => setIsAltered(e.target.checked)} className="w-4 h-4 rounded border-white/10 bg-slate-950 accent-cyan-500" />
+                  <span className="font-bold text-sm text-white">Altered Art</span>
+                </label>
               </div>
-              <label className="flex items-center gap-2 cursor-pointer text-slate-300 hover:text-white">
-                <input type="checkbox" checked={isAltered} onChange={e => setIsAltered(e.target.checked)} className="w-5 h-5 rounded border-white/10 bg-slate-950 accent-cyan-500" />
-                <span className="font-semibold">Altered</span>
-              </label>
+
+              <AnimatePresence>
+                {isSigned && (
+                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                    <div className="flex gap-4 mt-3 pt-3 border-t border-white/10">
+                      <label className="flex items-center gap-2 cursor-pointer text-slate-400 hover:text-white text-xs font-bold">
+                        <input type="checkbox" checked={signedByArtist} onChange={e => setSignedByArtist(e.target.checked)} className="w-3 h-3 rounded bg-slate-950 accent-fuchsia-500" />
+                        By Artist
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer text-slate-400 hover:text-white text-xs font-bold">
+                        <input type="checkbox" checked={signedByElse} onChange={e => setSignedByElse(e.target.checked)} className="w-3 h-3 rounded bg-slate-950 accent-fuchsia-500" />
+                        By Other (Player/Pro)
+                      </label>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-white/10">
+          <div className="flex flex-col sm:flex-row gap-4">
             <button disabled={adding} onClick={handleAddToHave} className="flex-1 py-4 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white font-black rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] flex justify-center items-center gap-2">
               {adding ? <Loader2 className="animate-spin" size={20} /> : <Check size={20} />} Add to Have List
             </button>
-            <button className="flex-1 py-4 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-black rounded-xl transition-all shadow-[0_0_20px_rgba(217,70,239,0.3)] flex justify-center items-center gap-2">
+            <button className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-xl transition-all border border-white/10 flex justify-center items-center gap-2">
               <Plus size={20} /> Add to Want List
             </button>
           </div>

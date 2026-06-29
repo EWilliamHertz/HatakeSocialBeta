@@ -64,21 +64,20 @@ export async function GET(request: Request) {
       take: 200
     });
 
-    // In-memory filter for complex JSON attributes (MTG Colors, Pokemon Energy)
+    // In-memory filter for complex JSON attributes
     if (mtgColors.length > 0) {
       listings = listings.filter(l => {
-        if (l.cardInstance.cardReference.game !== 'MTG') return true; // Only filter MTG
+        if (l.cardInstance?.cardReference?.game !== 'MTG') return true; 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const payload: any = l.cardInstance.cardReference.apiPayload;
         const colors = payload?.colors || [];
-        // If mtgColors requires exact match, or at least one match. Let's do: must include AT LEAST ONE selected color
         return mtgColors.some(c => colors.includes(c));
       });
     }
 
     if (pokemonTypes.length > 0) {
       listings = listings.filter(l => {
-        if (l.cardInstance.cardReference.game !== 'POKEMON') return true;
+        if (l.cardInstance?.cardReference?.game !== 'POKEMON') return true;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const payload: any = l.cardInstance.cardReference.apiPayload;
         const types = payload?.types || [];
@@ -103,7 +102,7 @@ export async function POST(request: Request) {
 
     const payload = await request.json();
     
-    // Support either single object or array of listings
+    // Support either single object or array of listings (Bulk List Handler)
     const listingsPayload = Array.isArray(payload) ? payload : [payload];
 
     if (listingsPayload.length === 0) {
@@ -141,7 +140,7 @@ export async function POST(request: Request) {
             packageTitle,
             packageDesc,
             packageImageUrl,
-            type,
+            type: type || 'FIXED_PRICE',
             price: Number(price),
             currentBid: type === 'AUCTION' ? Number(price) : null,
             auctionEndsAt,
@@ -155,7 +154,7 @@ export async function POST(request: Request) {
         continue;
       }
 
-      // Individual Listing
+      // Individual / Bulk Item Listing
       const { cardInstanceId, price, customImageUrl, notes, type, auctionDays, condition, isFoil, isSigned, isAltered, isGraded, isHolo, isReverseHolo, isManga } = item;
 
       if (!cardInstanceId || price === undefined) continue;
@@ -168,6 +167,7 @@ export async function POST(request: Request) {
         continue;
       }
 
+      // Sync any updated instance fields from the modal
       await db.cardInstance.update({
         where: { id: cardInstanceId },
         data: {
@@ -190,12 +190,14 @@ export async function POST(request: Request) {
         auctionEndsAt.setDate(auctionEndsAt.getDate() + Number(auctionDays));
       }
 
+      const listingType = type || 'FIXED_PRICE';
+
       const listing = await db.marketListing.upsert({
         where: { cardInstanceId },
         update: {
           price: Number(price),
-          type,
-          ...(type === 'AUCTION' && { currentBid: Number(price) }),
+          type: listingType,
+          ...(listingType === 'AUCTION' && { currentBid: Number(price) }),
           auctionEndsAt,
           status: 'ACTIVE'
         },
@@ -203,9 +205,10 @@ export async function POST(request: Request) {
           sellerId: user.id as string,
           cardInstanceId,
           price: Number(price),
-          type,
-          ...(type === 'AUCTION' && { currentBid: Number(price) }),
-          auctionEndsAt
+          type: listingType,
+          ...(listingType === 'AUCTION' && { currentBid: Number(price) }),
+          auctionEndsAt,
+          status: 'ACTIVE'
         },
         include: {
           cardInstance: {
