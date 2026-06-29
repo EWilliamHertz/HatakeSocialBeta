@@ -1177,83 +1177,213 @@ function EditSealedProductModal({ instance, onClose, onComplete }: { instance: a
 // ─── Sealed Action Modal (High-Res & Pack Cracking) ─────────────────────────
 function SealedActionModal({ product, onClose, onAddVault }: { product: any, onClose: () => void, onAddVault: (id: string) => void }) {
   const [cracking, setCracking] = useState(false);
+  
+  // Pack Simulator State
+  const [pulls, setPulls] = useState<any[]>([]);
+  const [revealIndex, setRevealIndex] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [savingPulls, setSavingPulls] = useState(false);
+
+  const handleCrack = async () => {
+    if (!product.setCode) {
+      alert("This product is missing a Set Code, so the simulator doesn't know which cards to pull from.");
+      return;
+    }
+    setCracking(true);
+    try {
+      const res = await fetch(`/api/sealed/crack?setCode=${product.setCode}&game=${product.game}`);
+      const data = await res.json();
+      if (data.pulls) {
+        setPulls(data.pulls);
+        setRevealIndex(0);
+        setIsFlipped(false);
+      } else {
+        alert(data.error || 'Failed to connect to pull-rate database.');
+      }
+    } catch (e) {
+      alert('Network error while simulating pack.');
+    }
+    setCracking(false);
+  };
+
+  const handleCardClick = () => {
+    if (!isFlipped) {
+      setIsFlipped(true); // Flip over
+    } else {
+      setIsFlipped(false); // Reset flip
+      setTimeout(() => setRevealIndex(prev => prev + 1), 150); // Move to next card
+    }
+  };
+
+  const savePullsToVault = async () => {
+    setSavingPulls(true);
+    try {
+      // Loop the additions (Bulk logic can be used here too, but simple loop is fine for 10 cards)
+      await Promise.all(pulls.map(c => 
+        fetch('/api/collection/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            cardId: c.id, game: c.game, name: c.name, imageUrl: c.imageUrl, 
+            condition: 'Mint', quantity: 1, price: c.price, 
+            setCode: c.setCode, collectorNumber: c.collectorNumber 
+          })
+        })
+      ));
+      alert(`Added ${pulls.length} cards to your Have List!`);
+      onClose();
+    } catch (e) {
+      alert('Failed to save some pulls.');
+    }
+    setSavingPulls(false);
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-md">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         className="bg-slate-900 border border-white/10 rounded-3xl p-6 md:p-8 max-w-5xl w-full flex flex-col md:flex-row gap-8 shadow-2xl relative overflow-hidden"
       >
-        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 rounded-full p-2 z-10 transition-colors">
+        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 rounded-full p-2 z-[100] transition-colors">
           <X size={20} />
         </button>
 
-        {/* Left: High-Res Image Display */}
-        <div className="w-full md:w-1/2 flex flex-col items-center justify-center bg-slate-950 rounded-2xl p-8 border border-white/5 relative group">
-          <div className="absolute top-4 left-4 flex flex-col gap-2">
-            <span className="bg-fuchsia-600/20 text-fuchsia-400 text-[10px] font-black uppercase px-3 py-1.5 rounded-lg border border-fuchsia-500/30 tracking-widest">
-              {product.game.replace('_', ' ')}
-            </span>
-            {product.setCode && (
-              <span className="bg-slate-800 text-slate-300 text-[10px] font-black uppercase px-3 py-1.5 rounded-lg border border-white/10 tracking-widest">
-                SET: {product.setCode}
-              </span>
+        {pulls.length > 0 ? (
+          // ─── PACK OPENING SIMULATOR VIEW ───────────────────────────
+          <div className="w-full flex flex-col items-center justify-center min-h-[500px]">
+            {revealIndex < pulls.length ? (
+              <div className="flex flex-col items-center">
+                <div className="text-slate-400 font-bold tracking-widest text-xs uppercase mb-8">
+                  Card {revealIndex + 1} of {pulls.length}
+                </div>
+                
+                {/* 3D Flip Container */}
+                <div 
+                  className="relative w-64 h-80 sm:w-80 sm:h-[450px] cursor-pointer group" 
+                  style={{ perspective: '1000px' }}
+                  onClick={handleCardClick}
+                >
+                  <motion.div 
+                    className="w-full h-full relative"
+                    animate={{ rotateY: isFlipped ? 180 : 0 }}
+                    transition={{ duration: 0.6, type: "spring", stiffness: 260, damping: 20 }}
+                    style={{ transformStyle: 'preserve-3d' }}
+                  >
+                    {/* Front of Card (Face Down / Card Back) */}
+                    <div className="absolute inset-0 w-full h-full bg-slate-800 rounded-xl border-2 border-white/10 shadow-xl flex items-center justify-center backface-hidden" style={{ backfaceVisibility: 'hidden' }}>
+                      {/* Generic Hatake Back or Game Back */}
+                      <img src="https://i.imgur.com/B06rBhI.png" alt="Card Back" className="w-full h-full object-cover rounded-lg opacity-50" />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg group-hover:bg-black/20 transition-colors">
+                        <span className="text-white font-black tracking-widest text-sm bg-slate-900/80 px-4 py-2 rounded-full border border-white/20">CLICK TO REVEAL</span>
+                      </div>
+                    </div>
+                    
+                    {/* Back of Card (Face Up / Revealed) */}
+                    <div className="absolute inset-0 w-full h-full rounded-xl shadow-[0_0_40px_rgba(217,70,239,0.3)] backface-hidden" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
+                      <img 
+                        src={pulls[revealIndex].imageUrl || 'https://i.imgur.com/B06rBhI.png'} 
+                        alt={pulls[revealIndex].name} 
+                        className="w-full h-full object-cover rounded-xl"
+                      />
+                      <div className="absolute -bottom-16 left-0 right-0 text-center">
+                        <h3 className="text-white font-black text-xl">{pulls[revealIndex].name}</h3>
+                        <p className="text-emerald-400 font-bold">€{(pulls[revealIndex].price || 0).toFixed(2)}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+            ) : (
+              // End of Pack Summary
+              <div className="flex flex-col items-center w-full">
+                <h2 className="text-3xl font-black text-white mb-2">Pack Complete!</h2>
+                <p className="text-slate-400 mb-8">Here is what you pulled from {product.name}</p>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 w-full max-h-[400px] overflow-y-auto p-2 border border-white/5 rounded-2xl bg-slate-950/50">
+                  {pulls.map((c, i) => (
+                    <div key={i} className="bg-slate-900 rounded-xl overflow-hidden border border-white/10 flex flex-col items-center p-2">
+                      <img src={c.imageUrl || 'https://i.imgur.com/B06rBhI.png'} alt={c.name} className="w-full h-auto rounded-lg mb-2" />
+                      <p className="text-white font-bold text-[10px] text-center truncate w-full">{c.name}</p>
+                      <p className="text-emerald-400 font-black text-xs">€{(c.price || 0).toFixed(2)}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-4 mt-8 w-full max-w-md">
+                  <button onClick={() => { setPulls([]); setRevealIndex(0); setIsFlipped(false); }} className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-colors">
+                    Close Pack
+                  </button>
+                  <button onClick={savePullsToVault} disabled={savingPulls} className="flex-[2] py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] flex justify-center items-center gap-2">
+                    {savingPulls ? <Loader2 className="animate-spin" size={20} /> : <Check size={20} />} Add Pulls to Have List
+                  </button>
+                </div>
+              </div>
             )}
           </div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img 
-            src={product.imageUrl || 'https://i.imgur.com/B06rBhI.png'} 
-            alt={product.name} 
-            className="max-h-[400px] w-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-transform duration-500 group-hover:scale-105" 
-          />
-        </div>
-
-        {/* Right: Controls & Details */}
-        <div className="w-full md:w-1/2 flex flex-col justify-between py-2">
-          <div>
-            <p className="text-fuchsia-400 font-black text-xs uppercase tracking-widest mb-2">{product.type?.replace('_', ' ') || 'Sealed Product'}</p>
-            <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-4">{product.name}</h2>
-            <div className="flex items-end gap-3 mb-8">
-              <span className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Market Avg:</span>
-              <span className="text-emerald-400 font-black text-3xl">
-                {product.price ? `€${product.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 'N/A'}
-              </span>
+        ) : (
+          // ─── DEFAULT SEALED INFO VIEW (Unchanged) ───────────────────
+          <>
+            <div className="w-full md:w-1/2 flex flex-col items-center justify-center bg-slate-950 rounded-2xl p-8 border border-white/5 relative group">
+              <div className="absolute top-4 left-4 flex flex-col gap-2">
+                <span className="bg-fuchsia-600/20 text-fuchsia-400 text-[10px] font-black uppercase px-3 py-1.5 rounded-lg border border-fuchsia-500/30 tracking-widest">
+                  {product.game.replace('_', ' ')}
+                </span>
+                {product.setCode && (
+                  <span className="bg-slate-800 text-slate-300 text-[10px] font-black uppercase px-3 py-1.5 rounded-lg border border-white/10 tracking-widest">
+                    SET: {product.setCode}
+                  </span>
+                )}
+              </div>
+              <img 
+                src={product.imageUrl || 'https://i.imgur.com/B06rBhI.png'} 
+                alt={product.name} 
+                className="max-h-[400px] w-auto object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] transition-transform duration-500 group-hover:scale-105" 
+              />
             </div>
-            
-            <p className="text-slate-400 text-sm leading-relaxed bg-slate-800/50 p-4 rounded-xl border border-white/5">
-              This global database entry tracks the market price for factory-sealed condition. Add it to your personal vault to track your inventory, or simulate a pack opening based on community pull rates.
-            </p>
-          </div>
 
-          <div className="flex flex-col gap-3 mt-8">
-            <button 
-              onClick={() => {
-                setCracking(true);
-                setTimeout(() => { alert("Simulator connecting to pull-rate database... (Phase 4 Feature)"); setCracking(false); }, 1500);
-              }}
-              disabled={cracking}
-              className="w-full py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-black rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all flex justify-center items-center gap-2"
-            >
-              {cracking ? <Loader2 className="animate-spin" size={20} /> : <Box size={20} />} 
-              {cracking ? 'Generating Pulls...' : 'Crack Packs (Emulate Opening)'}
-            </button>
-            <div className="flex gap-3">
-              <button onClick={() => onAddVault(product.id)} className="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl transition-all flex justify-center items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-                <Check size={18} /> Add to Vault
-              </button>
-              <button className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-xl transition-all flex justify-center items-center gap-2 border border-white/5">
-                <Plus size={18} /> Add to Want List
-              </button>
+            <div className="w-full md:w-1/2 flex flex-col justify-between py-2">
+              <div>
+                <p className="text-fuchsia-400 font-black text-xs uppercase tracking-widest mb-2">{product.type?.replace('_', ' ') || 'Sealed Product'}</p>
+                <h2 className="text-3xl md:text-4xl font-black text-white leading-tight mb-4">{product.name}</h2>
+                <div className="flex items-end gap-3 mb-8">
+                  <span className="text-slate-400 text-sm font-bold uppercase tracking-wider mb-1">Market Avg:</span>
+                  <span className="text-emerald-400 font-black text-3xl">
+                    {product.price ? `€${product.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}` : 'N/A'}
+                  </span>
+                </div>
+                
+                <p className="text-slate-400 text-sm leading-relaxed bg-slate-800/50 p-4 rounded-xl border border-white/5">
+                  This global database entry tracks the market price for factory-sealed condition. Add it to your personal vault to track your inventory, or simulate a pack opening based on community pull rates.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-3 mt-8">
+                <button 
+                  onClick={handleCrack}
+                  disabled={cracking}
+                  className="w-full py-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-black rounded-xl shadow-[0_0_20px_rgba(245,158,11,0.3)] transition-all flex justify-center items-center gap-2"
+                >
+                  {cracking ? <Loader2 className="animate-spin" size={20} /> : <Box size={20} />} 
+                  {cracking ? 'Generating Pulls...' : 'Crack Packs (Emulate Opening)'}
+                </button>
+                <div className="flex gap-3">
+                  <button onClick={() => onAddVault(product.id)} className="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl transition-all flex justify-center items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                    <Check size={18} /> Add to Vault
+                  </button>
+                  <button className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-xl transition-all flex justify-center items-center gap-2 border border-white/5">
+                    <Plus size={18} /> Add to Want List
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </>
+        )}
       </motion.div>
     </div>
   );
 }
-
 // ─── Sealed Tab (The Overhaul) ──────────────────────────────────────────────
 function SealedTab() {
   const [inventory, setInventory] = useState<any[]>([]);
