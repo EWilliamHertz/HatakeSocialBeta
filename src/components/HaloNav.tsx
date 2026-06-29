@@ -204,7 +204,7 @@ export default function HaloNav() {
         {/* ─── Center Login / Profile bubble at apex of halo ────────────── */}
         <div
           className="absolute left-1/2 -translate-x-1/2"
-          style={{ top: '-12px' }}
+          style={{ top: '-32px' }}
         >
           {isLoggedIn ? (
             <Link href="/profile" data-testid="halo-nav-profile" className="relative group block">
@@ -220,11 +220,35 @@ export default function HaloNav() {
                     '0 0 30px rgba(6,182,212,0.55), 0 0 60px rgba(217,70,239,0.35), inset 0 0 18px rgba(0,0,0,0.4)',
                 }}
               >
-                <div className="absolute inset-[3px] rounded-full bg-slate-950 flex flex-col items-center justify-center">
-                  <User size={26} className="mb-0.5 text-white" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.22em] text-white max-w-[80px] truncate px-1">
-                    {username || t('nav.profile')}
-                  </span>
+                <div className="absolute inset-[3px] rounded-full bg-slate-950 flex flex-col items-center justify-center px-2">
+                  <User size={22} className="mb-1 text-white" />
+                  {(() => {
+                    const name = username || t('nav.profile');
+                    const trimmed = name.trim();
+                    let top = trimmed;
+                    let bottom = '';
+                    const spaceIdx = trimmed.indexOf(' ');
+                    if (spaceIdx > 0) {
+                      top = trimmed.slice(0, spaceIdx);
+                      bottom = trimmed.slice(spaceIdx + 1);
+                    } else if (trimmed.length > 5) {
+                      const mid = Math.ceil(trimmed.length / 2);
+                      top = trimmed.slice(0, mid);
+                      bottom = trimmed.slice(mid);
+                    }
+                    return (
+                      <div className="flex flex-col items-center leading-[1.05] text-white max-w-[78px]">
+                        <span className="text-[10px] font-black uppercase tracking-[0.15em] truncate w-full text-center">
+                          {top}
+                        </span>
+                        {bottom && (
+                          <span className="text-[10px] font-black uppercase tracking-[0.15em] truncate w-full text-center">
+                            {bottom}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               </motion.div>
             </Link>
