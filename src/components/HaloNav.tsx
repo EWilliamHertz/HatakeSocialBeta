@@ -51,15 +51,15 @@ export default function HaloNav() {
   ];
 
   // ─── Arc geometry ─────────────────────────────────────────────────────────
-  // We treat the halo as a half-ellipse with rx = 46% of container width and
-  // ry = 110px tall. Icons are placed at fixed angles measured from vertical
-  // top, sweeping outward to keep the apex free for the center button.
+  // Icons follow the inner dashed line path of the SVG arc:
+  //   M 60 190 A 440 148 0 0 1 940 190
+  // i.e. half-ellipse centered at (500, 190) with rx=440 (≈44%) and ry=148.
   const leftAngles = [-78, -55, -34, -14];          // 4 left icons
   const rightAngles = [14, 34, 55, 78];             // 4 right icons
-  const rx = 46;       // %
-  const ry = 110;      // px
-  const cx = 50;       // %  (horizontal center)
-  const cy = 130;      // px (bottom anchor of the arc)
+  const rx = 44;       // % of container width  (matches inner arc rx=440/1000)
+  const ry = 148;      // px                    (matches inner arc ry=148)
+  const cx = 50;       // %                     (horizontal center)
+  const cy = 190;      // px                    (bottom anchor of the arc)
 
   const computePos = (deg: number) => {
     const rad = (deg * Math.PI) / 180;
@@ -139,15 +139,6 @@ export default function HaloNav() {
             strokeWidth="2.5"
             strokeLinecap="round"
             filter="url(#haloGlow)"
-          />
-          {/* Inner dashed highlight */}
-          <path
-            d="M 60 190 A 440 148 0 0 1 940 190"
-            fill="none"
-            stroke="#ffffff"
-            strokeOpacity="0.4"
-            strokeWidth="1"
-            strokeDasharray="2 6"
           />
         </svg>
 
