@@ -67,9 +67,9 @@ export default function DealsPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
             <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 mb-2 flex items-center gap-4">
-              <Handshake size={48} className="text-emerald-400" /> Bytesaffärer
+              <Handshake size={48} className="text-emerald-400" /> Deals & Trades
             </h1>
-            <p className="text-slate-400 text-lg">Hantera dina aktiva, inkommande och utgående erbjudanden från marknaden.</p>
+            <p className="text-slate-400 text-lg">Manage your active, incoming, and outgoing offers from the market.</p>
           </div>
           {incomingOffers.length > 0 && (
             <div className="bg-slate-900 border border-emerald-500/30 rounded-2xl p-4 flex items-center gap-4 shadow-xl">
@@ -78,8 +78,8 @@ export default function DealsPage() {
                 <span className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-slate-900"></span>
               </div>
               <div>
-                <p className="text-white font-bold">Nytt Erbjudande!</p>
-                <p className="text-xs text-slate-500">Du har {incomingOffers.length} väntande erbjudande(n).</p>
+                <p className="text-white font-bold">New Offer!</p>
+                <p className="text-xs text-slate-500">You have {incomingOffers.length} pending offer(s).</p>
               </div>
             </div>
           )}
@@ -91,7 +91,7 @@ export default function DealsPage() {
             <div className="absolute -inset-2 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-500"></div>
             <div className="relative z-10 flex justify-between items-center">
               <div>
-                <p className="text-slate-500 font-bold uppercase tracking-wider text-xs mb-1">Aktiva Affärer</p>
+                <p className="text-slate-500 font-bold uppercase tracking-wider text-xs mb-1">Active Deals</p>
                 <p className="text-4xl font-black text-white">{activeDeals.length}</p>
               </div>
               <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-400">
@@ -104,7 +104,7 @@ export default function DealsPage() {
             <div className="absolute -inset-2 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-500"></div>
             <div className="relative z-10 flex justify-between items-center">
               <div>
-                <p className="text-slate-500 font-bold uppercase tracking-wider text-xs mb-1">Inkommande</p>
+                <p className="text-slate-500 font-bold uppercase tracking-wider text-xs mb-1">Incoming</p>
                 <p className="text-4xl font-black text-white">{incomingOffers.length}</p>
               </div>
               <div className="w-12 h-12 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-cyan-400">
@@ -117,7 +117,7 @@ export default function DealsPage() {
             <div className="absolute -inset-2 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-500"></div>
             <div className="relative z-10 flex justify-between items-center">
               <div>
-                <p className="text-slate-500 font-bold uppercase tracking-wider text-xs mb-1">Utgående</p>
+                <p className="text-slate-500 font-bold uppercase tracking-wider text-xs mb-1">Outgoing</p>
                 <p className="text-4xl font-black text-white">{outgoingOffers.length}</p>
               </div>
               <div className="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-400">
@@ -131,12 +131,12 @@ export default function DealsPage() {
         <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 shadow-xl">
           <div className="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
             <h2 className="text-2xl font-black text-white flex items-center gap-3">
-              <History className="text-slate-500" /> Senaste Aktivitet
+              <History className="text-slate-500" /> Recent Activity
             </h2>
             <div className="flex gap-2">
-              <button onClick={() => setFilter('ALL')} className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${filter === 'ALL' ? 'bg-cyan-600 border border-cyan-500 text-white shadow-lg' : 'bg-slate-950 border border-white/10 text-slate-400 hover:text-white'}`}>Alla</button>
-              <button onClick={() => setFilter('PENDING')} className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${filter === 'PENDING' ? 'bg-cyan-600 border border-cyan-500 text-white shadow-lg' : 'bg-slate-950 border border-white/10 text-slate-400 hover:text-white'}`}>Väntande</button>
-              <button onClick={() => setFilter('COMPLETED')} className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${filter === 'COMPLETED' ? 'bg-cyan-600 border border-cyan-500 text-white shadow-lg' : 'bg-slate-950 border border-white/10 text-slate-400 hover:text-white'}`}>Klara</button>
+              <button onClick={() => setFilter('ALL')} className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${filter === 'ALL' ? 'bg-cyan-600 border border-cyan-500 text-white shadow-lg' : 'bg-slate-950 border border-white/10 text-slate-400 hover:text-white'}`}>All</button>
+              <button onClick={() => setFilter('PENDING')} className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${filter === 'PENDING' ? 'bg-cyan-600 border border-cyan-500 text-white shadow-lg' : 'bg-slate-950 border border-white/10 text-slate-400 hover:text-white'}`}>Pending</button>
+              <button onClick={() => setFilter('COMPLETED')} className={`px-4 py-2 rounded-xl text-xs font-bold transition-colors ${filter === 'COMPLETED' ? 'bg-cyan-600 border border-cyan-500 text-white shadow-lg' : 'bg-slate-950 border border-white/10 text-slate-400 hover:text-white'}`}>Completed</button>
             </div>
           </div>
           
@@ -146,7 +146,7 @@ export default function DealsPage() {
                 <Loader2 className="animate-spin text-cyan-500" size={32} />
               </div>
             ) : filteredDeals.length === 0 ? (
-              <div className="text-center py-10 text-slate-500 font-bold">Inga affärer hittades.</div>
+              <div className="text-center py-10 text-slate-500 font-bold">No deals found.</div>
             ) : filteredDeals.map(deal => {
               const isIncoming = deal.sellerId === currentUser.id;
               const cardName = deal.listing?.cardInstance?.cardReference?.name || deal.listing?.cardInstance?.sealedReference?.name || 'Unknown Item';
@@ -161,7 +161,7 @@ export default function DealsPage() {
                     </div>
                     <div>
                       <p className="text-sm font-bold text-white">
-                        {isIncoming ? 'Inkommande från ' : 'Utgående till '}
+                        {isIncoming ? 'Incoming from ' : 'Outgoing to '}
                         <span className={isIncoming ? 'text-cyan-400' : 'text-amber-400'}>@{otherUser}</span>
                       </p>
                       <p className="text-xs text-slate-500">{new Date(deal.createdAt).toLocaleDateString()}</p>
@@ -175,7 +175,7 @@ export default function DealsPage() {
                     </div>
                     <Handshake size={16} className="text-slate-600 shrink-0" />
                     <div className="text-center">
-                      <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Pris</p>
+                      <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Price</p>
                       <span className="text-sm text-emerald-400 font-bold px-3 py-1 bg-emerald-500/10 rounded border border-emerald-500/20">€{price.toFixed(2)}</span>
                     </div>
                   </div>
@@ -184,11 +184,11 @@ export default function DealsPage() {
                     {deal.status === 'PENDING' || deal.status === 'PENDING_PAYMENT' ? (
                       isIncoming ? (
                         <>
-                          <button onClick={() => handleUpdateDeal(deal.id, 'ACCEPTED')} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors">Acceptera</button>
-                          <button onClick={() => handleUpdateDeal(deal.id, 'CANCELLED')} className="px-4 py-2 bg-slate-800 hover:bg-red-500 text-slate-300 hover:text-white rounded-xl text-xs font-bold transition-colors">Neka</button>
+                          <button onClick={() => handleUpdateDeal(deal.id, 'ACCEPTED')} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors">Accept</button>
+                          <button onClick={() => handleUpdateDeal(deal.id, 'CANCELLED')} className="px-4 py-2 bg-slate-800 hover:bg-red-500 text-slate-300 hover:text-white rounded-xl text-xs font-bold transition-colors">Decline</button>
                         </>
                       ) : (
-                        <span className="px-4 py-2 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-xl text-xs font-bold whitespace-nowrap">Väntar på svar</span>
+                        <span className="px-4 py-2 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-xl text-xs font-bold whitespace-nowrap">Waiting for response</span>
                       )
                     ) : (
                       <span className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${
@@ -201,13 +201,13 @@ export default function DealsPage() {
                     )}
                     
                     {deal.status === 'ACCEPTED' && !isIncoming && (
-                      <button onClick={() => handleUpdateDeal(deal.id, 'PAID')} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors">Markera Betald</button>
+                      <button onClick={() => handleUpdateDeal(deal.id, 'PAID')} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors">Mark Paid</button>
                     )}
                     {deal.status === 'PAID' && isIncoming && (
-                      <button onClick={() => handleUpdateDeal(deal.id, 'SHIPPED')} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors">Markera Skickad</button>
+                      <button onClick={() => handleUpdateDeal(deal.id, 'SHIPPED')} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors">Mark Shipped</button>
                     )}
                     {deal.status === 'SHIPPED' && !isIncoming && (
-                      <button onClick={() => handleUpdateDeal(deal.id, 'DELIVERED')} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors">Markera Levererad</button>
+                      <button onClick={() => handleUpdateDeal(deal.id, 'DELIVERED')} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-colors">Mark Delivered</button>
                     )}
                   </div>
                 </div>
