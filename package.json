@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node server.js",
     "build": "next build",
-    "start": "next start",
+    "start": "NODE_ENV=production node server.js",
     "lint": "next lint",
     "postinstall": "prisma generate"
   },
@@ -25,6 +25,8 @@
     "react-dom": "^18",
     "react-toastify": "^11.1.0",
     "recharts": "^3.9.0",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "stripe": "^22.3.0"
   },
   "devDependencies": {

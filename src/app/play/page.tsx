@@ -23,11 +23,11 @@ const GAMES = [
     id: 'euryx',
     name: 'Pokémon TCG',
     clientName: 'Euryx',
-    description: 'Catch and battle. Fast-paced action with the legacy Euryx client.',
+    description: 'Catch and battle. Fast-paced action with the legacy Euryx client, now native to Hatake.',
     color: 'from-amber-400 to-red-600',
     shadow: 'shadow-amber-500/50',
-    deckUrl: '/euryx/deck-builder',
-    queueUrl: '/euryx/play',
+    deckUrl: '/deck-builder',
+    queueUrl: '/play/pokemon',
     image: '/pkm-art.jpg', // Local generated Pokemon art
   }
 ];
