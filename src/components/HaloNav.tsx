@@ -23,6 +23,11 @@ export default function HaloNav() {
   const [username, setUsername] = useState<string | null>(null);
   const { t } = useI18n();
 
+  // Hide HaloNav completely on gameplay clients
+  if (pathname.startsWith('/play')) {
+    return null;
+  }
+
   useEffect(() => {
     fetch('/api/auth/me')
       .then((r) => (r.ok ? r.json() : { user: null }))

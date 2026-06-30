@@ -67,7 +67,8 @@ async function upsertCard(card: any) {
       apiPayload: {
         tcgplayer_id: card.tcgplayer_id,
         cmc: card.cmc,
-        collector_number: card.collector_number
+        collector_number: card.collector_number,
+        artist: card.artist
       },
     },
     create: {
@@ -82,7 +83,8 @@ async function upsertCard(card: any) {
       apiPayload: {
         tcgplayer_id: card.tcgplayer_id,
         cmc: card.cmc,
-        collector_number: card.collector_number
+        collector_number: card.collector_number,
+        artist: card.artist
       },
     },
   });
