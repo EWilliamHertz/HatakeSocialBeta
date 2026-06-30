@@ -1,8 +1,9 @@
-import prisma from '../../../lib/db.js';
+import db from '@/lib/db';
+import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const count = await prisma.cardReference.count();
+    const count = await db.cardReference.count();
     return Response.json({ cardCount: count });
   } catch (error) {
     return Response.json({ cardCount: 0 });
