@@ -26,19 +26,19 @@ const nextConfig = {
       // === Ouyrie (MTG Client) Routing ===
       {
         source: '/mtg',
-        destination: 'https://mtg-liart-seven.vercel.app/',
+        destination: 'https://mtg2-suqj.onrender.com/ouyrie',
       },
       {
         source: '/mtg/:path*',
-        destination: 'https://mtg-liart-seven.vercel.app/:path*',
+        destination: 'https://mtg2-suqj.onrender.com/ouyrie/:path*',
       },
       {
         source: '/ouyrie',
-        destination: 'https://mtg-liart-seven.vercel.app/',
+        destination: 'https://mtg2-suqj.onrender.com/ouyrie',
       },
       {
         source: '/ouyrie/:path*',
-        destination: 'https://mtg-liart-seven.vercel.app/:path*',
+        destination: 'https://mtg2-suqj.onrender.com/ouyrie/:path*',
       },
       
       // === Euryx (Pokémon Client) Routing ===
