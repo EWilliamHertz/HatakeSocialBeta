@@ -57,6 +57,7 @@ export async function GET(request: Request) {
           game: 'MAGIC',
           imageUrl: c.image_uris?.normal || c.image_uris?.large || c.card_faces?.[0]?.image_uris?.normal || '',
           price: parseFloat(c.prices?.usd || c.prices?.eur || '0'),
+          foilPrice: parseFloat(c.prices?.usd_foil || c.prices?.eur_foil || '0'),
           setCode: c.set ? c.set.toUpperCase() : '',
           collectorNumber: c.collector_number || '',
           apiPayload: c
@@ -112,6 +113,8 @@ export async function GET(request: Request) {
         game: game,
         imageUrl: c.imageUrl,
         price: c.price || 0,
+        foilPrice: c.foilPrice || 0,
+        reverseHoloPrice: c.reverseHoloPrice || 0,
         setCode: c.setCode || '',
         collectorNumber: c.apiId || '',
         apiPayload: c.apiPayload

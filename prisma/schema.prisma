@@ -160,8 +160,9 @@ model CardReference {
   imageUrl      String
   setCode       String?
   rarity        String?
-  price         Float?    // Average market price
-
+  price           Float?    // Average market price
+  foilPrice       Float?    // Foil / Holo price
+  reverseHoloPrice Float?   // Reverse Holo price
   
   // The actual JSON data from the API (oracle_text, colors, HP, abilities, etc.)
   apiPayload    Json
@@ -378,11 +379,33 @@ model Product {
   images        String[] // Gallery of images
   stripeProductId String?
   stripePriceId String?
+  
+  // Dropshipping & Shipping
+  weight        Float    @default(0)
+  shippingPrice Float    @default(0)
+  notificationEmails String? @db.Text
   isActive      Boolean  @default(true)
   stock         Int      @default(0)
   
+  orders        Order[]
+
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+model Order {
+  id              String   @id @default(cuid())
+  referenceCode   String   @unique
+  productId       String
+  product         Product  @relation(fields: [productId], references: [id])
+  buyerEmail      String
+  buyerName       String?
+  shippingAddress String?  @db.Text
+  totalAmount     Float
+  status          String   @default("PENDING") // "PENDING", "PAID", "SHIPPED", "CANCELLED"
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 // ─── 8. Reputation & Reviews ───────────────────────────────────────────────

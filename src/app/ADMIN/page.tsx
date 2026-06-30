@@ -264,9 +264,9 @@ export default function AdminDashboard() {
            <button onClick={() => setActiveTab('USERS')} className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'USERS' ? 'bg-cyan-600 text-white' : 'bg-slate-900 text-slate-400 hover:bg-slate-800'}`}>
              <Users size={18} /> Users
            </button>
-           <button onClick={() => setActiveTab('PRODUCTS')} className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'PRODUCTS' ? 'bg-emerald-600 text-white' : 'bg-slate-900 text-slate-400 hover:bg-slate-800'}`}>
-             <ShoppingCart size={18} /> Shop Products
-           </button>
+           <a href="/admin/products" className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600 hover:text-white border border-emerald-500/30`}>
+             <ShoppingCart size={18} /> Dropship Dashboard
+           </a>
            <button onClick={() => setActiveTab('GIVEAWAYS')} className={`px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${activeTab === 'GIVEAWAYS' ? 'bg-amber-600 text-white' : 'bg-slate-900 text-slate-400 hover:bg-slate-800'}`}>
              <Sparkles size={18} /> Giveaways
            </button>

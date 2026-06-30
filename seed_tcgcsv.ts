@@ -43,28 +43,34 @@ async function syncCategory(categoryId: number, game: typeof GameType.ONE_PIECE 
     if (prRes.ok) {
       const prData = await prRes.json();
       for (const pr of (prData.results || [])) {
-        pricesMap.set(pr.productId, pr.marketPrice || pr.midPrice || 0);
+        if (!pricesMap.has(pr.productId)) pricesMap.set(pr.productId, { price: 0, foilPrice: null, reverseHoloPrice: null });
+        const pObj = pricesMap.get(pr.productId);
+        const pVal = pr.marketPrice || pr.midPrice || 0;
+        if (pr.subTypeName === 'Normal') pObj.price = pVal;
+        else if (pr.subTypeName === 'Foil' || pr.subTypeName === 'Holofoil') pObj.foilPrice = pVal;
+        else if (pr.subTypeName === 'Reverse Holofoil' || pr.subTypeName === 'Reverse Holo') pObj.reverseHoloPrice = pVal;
+        else pObj.price = pObj.price || pVal; // fallback
       }
     }
 
     const products = pData.results || [];
     for (const card of products) {
       const imageUrl = card.imageUrl || 'https://i.imgur.com/B06rBhI.png';
-      const price = pricesMap.get(card.productId) || 0;
+      const pObj = pricesMap.get(card.productId) || { price: 0, foilPrice: null, reverseHoloPrice: null };
       const setCode = group.abbreviation || group.name;
       const isSealed = isSealedProduct(card.name);
 
       if (isSealed) {
         await prisma.sealedReference.upsert({
           where: { id: card.productId.toString() }, // Using id as fallback since SealedReference might not have apiId
-          update: { name: card.name, imageUrl, setCode, price, type: 'SEALED_PRODUCT' },
+          update: { name: card.name, imageUrl, setCode, price: pObj.price, type: 'SEALED_PRODUCT' },
           create: {
             id: card.productId.toString(), // Hardcode id so we don't duplicate
             game,
             name: card.name,
             imageUrl,
             setCode,
-            price,
+            price: pObj.price,
             type: 'SEALED_PRODUCT',
             apiPayload: card as any
           }
@@ -72,14 +78,16 @@ async function syncCategory(categoryId: number, game: typeof GameType.ONE_PIECE 
       } else {
         await prisma.cardReference.upsert({
           where: { apiId: card.productId.toString() },
-          update: { name: card.name, imageUrl, setCode, price },
+          update: { name: card.name, imageUrl, setCode, price: pObj.price, foilPrice: pObj.foilPrice, reverseHoloPrice: pObj.reverseHoloPrice },
           create: {
             apiId: card.productId.toString(),
             game,
             name: card.name,
             imageUrl,
             setCode,
-            price,
+            price: pObj.price,
+            foilPrice: pObj.foilPrice,
+            reverseHoloPrice: pObj.reverseHoloPrice,
             apiPayload: card as any
           }
         });

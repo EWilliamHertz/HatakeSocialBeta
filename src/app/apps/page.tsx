@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Gamepad2, Package, TrendingUp, Building, Swords } from 'lucide-react';
 
-const EURYX_URL = process.env.NEXT_PUBLIC_EURYX_URL || 'https://tcg-nexus-play.preview.emergentagent.com/dashboard';
+const EURYX_URL = process.env.NEXT_PUBLIC_EURYX_URL || '/euryx';
 
 export default function AppsDashboard() {
   return (

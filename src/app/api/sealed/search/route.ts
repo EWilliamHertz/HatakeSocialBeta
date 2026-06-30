@@ -11,14 +11,19 @@ export async function GET(request: Request) {
   }
 
   try {
+    const whereClause: any = {
+      name: {
+        contains: query || '',
+        mode: 'insensitive'
+      }
+    };
+
+    if (game !== 'ALL') {
+      whereClause.game = game as any;
+    }
+
     const products = await db.sealedReference.findMany({
-      where: {
-        game: game as any,
-        name: {
-          contains: query || '',
-          mode: 'insensitive'
-        }
-      },
+      where: whereClause,
       take: 20,
       orderBy: { name: 'asc' }
     });

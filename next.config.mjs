@@ -42,22 +42,21 @@ const nextConfig = {
       },
       
       // === Euryx (Pokémon Client) Routing ===
-      // Replace YOUR_EURYX_VERCEL_URL when you deploy the Euryx repository
       {
         source: '/pkmn',
-        destination: 'https://YOUR_EURYX_VERCEL_URL.vercel.app/',
+        destination: 'https://euryx.onrender.com/',
       },
       {
         source: '/pkmn/:path*',
-        destination: 'https://YOUR_EURYX_VERCEL_URL.vercel.app/:path*',
+        destination: 'https://euryx.onrender.com/:path*',
       },
       {
         source: '/euryx',
-        destination: 'https://YOUR_EURYX_VERCEL_URL.vercel.app/',
+        destination: 'https://euryx.onrender.com/',
       },
       {
         source: '/euryx/:path*',
-        destination: 'https://YOUR_EURYX_VERCEL_URL.vercel.app/:path*',
+        destination: 'https://euryx.onrender.com/:path*',
       }
     ];
   },

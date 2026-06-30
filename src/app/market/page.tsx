@@ -311,7 +311,7 @@ export default function MarketPage() {
               <div key={listing.id} className="bg-slate-900 border border-white/5 rounded-2xl overflow-hidden shadow-xl hover:border-cyan-500/30 transition-all group">
                 <div className="h-64 bg-slate-800 relative flex items-center justify-center overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={listing.isPackage ? (listing.packageImageUrl || 'https://i.imgur.com/B06rBhI.png') : (listing.cardInstance?.customImageUrl || (listing.cardInstance?.cardReference?.imageUrl ? `/api/proxy?url=${encodeURIComponent(listing.cardInstance.cardReference.imageUrl)}` : 'https://i.imgur.com/B06rBhI.png'))} alt={listing.isPackage ? listing.packageTitle : listing.cardInstance?.cardReference?.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                  <img src={listing.isPackage ? (listing.packageImageUrl || 'https://i.imgur.com/B06rBhI.png') : (listing.cardInstance?.customImageUrl || (listing.cardInstance?.cardReference?.imageUrl ? `/api/proxy?url=${encodeURIComponent(listing.cardInstance?.cardReference?.imageUrl)}` : 'https://i.imgur.com/B06rBhI.png'))} alt={listing.isPackage ? listing.packageTitle : listing.cardInstance?.cardReference?.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
                   
                   {/* Overlay Badges */}
                   <div className="absolute top-2 left-2 flex flex-col gap-1">
@@ -325,7 +325,7 @@ export default function MarketPage() {
                     )}
                     {!listing.isPackage && listing.cardInstance?.condition && (
                       <span className="bg-black/80 backdrop-blur-md px-2 py-1 rounded border border-white/20 text-[10px] font-black uppercase text-white tracking-wider">
-                        {listing.cardInstance.condition.replace('_', ' ')}
+                        {listing.cardInstance?.condition.replace('_', ' ')}
                       </span>
                     )}
                     {!listing.isPackage && listing.cardInstance?.isFoil && (
@@ -333,9 +333,14 @@ export default function MarketPage() {
                         FOIL
                       </span>
                     )}
-                    {listing.cardInstance.isSigned && (
+                    {listing.cardInstance?.isSigned && (
                       <span className="bg-gradient-to-r from-purple-500 to-pink-500 px-2 py-1 rounded border border-pink-500/50 text-[10px] font-black uppercase text-white tracking-wider shadow-[0_0_10px_rgba(236,72,153,0.5)]">
                         SIGNED
+                      </span>
+                    )}
+                    {listing.cardInstance?.isAltered && (
+                      <span className="bg-gradient-to-r from-amber-500 to-orange-500 px-2 py-1 rounded border border-orange-500/50 text-[10px] font-black uppercase text-white tracking-wider shadow-[0_0_10px_rgba(245,158,11,0.5)]">
+                        ALTERED
                       </span>
                     )}
                   </div>

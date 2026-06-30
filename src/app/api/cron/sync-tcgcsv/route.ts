@@ -69,24 +69,32 @@ export async function GET(request: Request) {
         if (prRes.ok) {
           const prData = await prRes.json();
           for (const pr of (prData.results || [])) {
-            pricesMap.set(pr.productId, pr.marketPrice || pr.midPrice || 0);
+            if (!pricesMap.has(pr.productId)) pricesMap.set(pr.productId, { price: 0, foilPrice: null, reverseHoloPrice: null });
+            const pObj = pricesMap.get(pr.productId);
+            const pVal = pr.marketPrice || pr.midPrice || 0;
+            if (pr.subTypeName === 'Normal') pObj.price = pVal;
+            else if (pr.subTypeName === 'Foil' || pr.subTypeName === 'Holofoil') pObj.foilPrice = pVal;
+            else if (pr.subTypeName === 'Reverse Holofoil' || pr.subTypeName === 'Reverse Holo') pObj.reverseHoloPrice = pVal;
+            else pObj.price = pObj.price || pVal; // fallback
           }
         }
 
         for (const card of (pData.results || [])) {
           const imageUrl = card.imageUrl || 'https://i.imgur.com/B06rBhI.png';
-          const price = pricesMap.get(card.productId) || 0;
+          const pObj = pricesMap.get(card.productId) || { price: 0, foilPrice: null, reverseHoloPrice: null };
           
           await db.cardReference.upsert({
             where: { apiId: card.productId.toString() },
-            update: { name: card.name, imageUrl, setCode: group.abbreviation || group.name, price },
+            update: { name: card.name, imageUrl, setCode: group.abbreviation || group.name, price: pObj.price, foilPrice: pObj.foilPrice, reverseHoloPrice: pObj.reverseHoloPrice },
             create: {
               apiId: card.productId.toString(),
               game,
               name: card.name,
               imageUrl,
               setCode: group.abbreviation || group.name,
-              price,
+              price: pObj.price,
+              foilPrice: pObj.foilPrice,
+              reverseHoloPrice: pObj.reverseHoloPrice,
               apiPayload: card
             }
           });

@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, name, price, stock, stripeProductId, stripePriceId, isActive } = body;
+    const { id, name, price, stock, stripeProductId, stripePriceId, isActive, weight, shippingPrice, notificationEmails } = body;
     
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
@@ -37,7 +37,10 @@ export async function PUT(request: Request) {
         stock,
         stripeProductId,
         stripePriceId,
-        isActive
+        isActive,
+        weight,
+        shippingPrice,
+        notificationEmails
       }
     });
     return NextResponse.json({ product: updated });

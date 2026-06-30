@@ -6,6 +6,8 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const setCode = searchParams.get('setCode');
     const game = searchParams.get('game') || 'MAGIC';
+    const packCountStr = searchParams.get('packCount');
+    const packCount = packCountStr ? parseInt(packCountStr, 10) : 1;
 
     if (!setCode) {
       return NextResponse.json({ error: 'Set code is required to crack a pack.' }, { status: 400 });
@@ -41,20 +43,24 @@ export async function GET(req: Request) {
       return picked;
     };
 
-    let pulls = [];
+    let packs = [];
     
-    // Distribution Mathematics
-    if (game === 'MAGIC' || game === 'LORCANA') {
-      // Standard MTG/Lorcana layout: 10 C, 3 U, 1 Rare/Mythic
-      pulls = [...pickRandom(poolC, 10), ...pickRandom(poolU, 3), ...pickRandom(poolR, 1)];
-    } else {
-      // Standard Pokemon/One Piece layout: 6 C, 3 U, 1 Rare/Holo
-      pulls = [...pickRandom(poolC, 6), ...pickRandom(poolU, 3), ...pickRandom(poolR, 1)];
+    for (let p = 0; p < packCount; p++) {
+      let pulls = [];
+      // Distribution Mathematics
+      if (game === 'MAGIC' || game === 'LORCANA') {
+        // Standard MTG/Lorcana layout: 10 C, 3 U, 1 Rare/Mythic
+        pulls = [...pickRandom(poolC, 10), ...pickRandom(poolU, 3), ...pickRandom(poolR, 1)];
+      } else {
+        // Standard Pokemon/One Piece layout: 6 C, 3 U, 1 Rare/Holo
+        pulls = [...pickRandom(poolC, 6), ...pickRandom(poolU, 3), ...pickRandom(poolR, 1)];
+      }
+      packs.push(pulls);
     }
 
     // We keep the Rare card at the very end of the array (the "pack hit")
     
-    return NextResponse.json({ pulls });
+    return NextResponse.json({ pulls: packs[0], packs });
 
   } catch (error) {
     console.error('Pack crack error:', error);
