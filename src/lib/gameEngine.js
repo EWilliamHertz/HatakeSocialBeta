@@ -7,7 +7,7 @@ const { parseCardData } = require('./cardParser.js');
 // Upkeep Triggers, Activated Abilities, Delayed End-Step Triggers
 // ============================================================
 
-export class GameEngine {
+class GameEngine {
   constructor(mode, players, isBO3 = false) {
     this.state = {
       id: uuidv4(),

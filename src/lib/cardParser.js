@@ -484,4 +484,5 @@ function parseCardData(rawCard) {
   }
 
   return card;
-}module.exports = { parseCardData, parseCardText, parseCost };
+}
+module.exports = { parseCardData };
