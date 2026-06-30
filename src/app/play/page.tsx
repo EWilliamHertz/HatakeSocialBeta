@@ -12,11 +12,11 @@ const GAMES = [
     id: 'ouyrie',
     name: 'Magic: The Gathering',
     clientName: 'Ouyrie',
-    description: 'Enter the multiverse. Build your deck and battle with the Hatake Engine.',
+    description: 'Enter the multiverse. Build your deck and battle with the Hatake Engine, now native.',
     color: 'from-fuchsia-600 to-purple-800',
     shadow: 'shadow-fuchsia-500/50',
-    deckUrl: '/ouyrie/deck-builder',
-    queueUrl: '/ouyrie/play',
+    deckUrl: '/play/mtg/deck-builder',
+    queueUrl: '/play/mtg',
     image: '/mtg-art.jpg', // Local generated MTG art
   },
   {
@@ -139,10 +139,7 @@ export default function PlayHub() {
                           
                           <div className="flex flex-col sm:flex-row gap-4 pt-4">
                             <a href={game.queueUrl} className={`flex-1 py-4 px-6 bg-gradient-to-r ${game.color} text-white font-black rounded-2xl text-center shadow-lg ${game.shadow} hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 text-lg`}>
-                              <Swords size={24} /> Enter Queue
-                            </a>
-                            <a href={game.deckUrl} className="flex-1 py-4 px-6 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-2xl text-center border border-white/10 hover:border-white/20 transition-all flex items-center justify-center gap-3">
-                              <Activity size={20} /> Deck Builder
+                              <Swords size={24} /> Enter Client
                             </a>
                           </div>
 

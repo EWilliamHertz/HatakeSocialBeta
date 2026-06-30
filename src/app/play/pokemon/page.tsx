@@ -80,23 +80,23 @@ export default function PokemonEngineLobby() {
             <p className="text-slate-400 text-lg mb-8 leading-relaxed">
               The official Pokémon TCG engine built directly into Hatake. Construct your decks using your collection, queue up against other trainers, and battle in real-time.
             </p>
-            <button className="px-8 py-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl shadow-[0_0_30px_rgba(245,158,11,0.3)] transition-all flex items-center gap-3 hover:scale-105">
-              <Swords size={24} /> Enter Matchmaking
+            <button className="px-8 py-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl shadow-[0_0_30px_rgba(245,158,11,0.3)] transition-all flex items-center gap-3 hover:scale-105" onClick={() => router.push('/play/pokemon/queue')}>
+              <Swords size={24} /> Queue Up
             </button>
           </div>
         </div>
 
         {/* Action Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-amber-500/30 transition-all group cursor-pointer">
+          <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-amber-500/30 transition-all group cursor-pointer" onClick={() => router.push('/play/pokemon/game?mode=goldfish')}>
             <div className="w-16 h-16 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-500 mb-6 group-hover:scale-110 transition-transform">
               <Users size={32} />
             </div>
-            <h3 className="text-2xl font-black text-white mb-2">Direct Challenge</h3>
-            <p className="text-slate-400 text-sm leading-relaxed">Challenge a friend from your Hatake friends list to a private match.</p>
+            <h3 className="text-2xl font-black text-white mb-2">Goldfish Mode</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">Play against yourself to test out your deck consistency and setups.</p>
           </div>
 
-          <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-emerald-500/30 transition-all group cursor-pointer" onClick={() => router.push('/deck-builder')}>
+          <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-emerald-500/30 transition-all group cursor-pointer" onClick={() => router.push('/play/pokemon/deck-builder')}>
             <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-500 mb-6 group-hover:scale-110 transition-transform">
               <ShieldAlert size={32} />
             </div>

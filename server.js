@@ -4,6 +4,7 @@ const { parse } = require("url");
 const next = require("next");
 const { Server } = require("socket.io");
 const { randomUUID } = require("crypto");
+const { registerSocketHandlers } = require("./src/lib/socketHandler.js");
 
 const dev = process.env.NODE_ENV !== "production";
 const hostname = process.env.HOSTNAME || "0.0.0.0";
@@ -93,6 +94,13 @@ app.prepare().then(() => {
       console.log(`[socket] disconnected ${socket.id}`);
     });
   });
+
+  const ioMtg = new Server(httpServer, {
+    path: "/ouyrie/socket.io",
+    cors: { origin: "*", methods: ["GET", "POST"], credentials: true },
+    transports: ["websocket", "polling"],
+  });
+  registerSocketHandlers(ioMtg);
 
   httpServer
     .once("error", (err) => {

@@ -115,11 +115,11 @@ export default function DeckBuilderPage() {
             <input
               value={deckName}
               onChange={(e) => setDeckName(e.target.value)}
-              className="input-euryx w-56"
+              className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors w-56"
               placeholder="Deck name"
               data-testid="deck-name-input"
             />
-            <button onClick={saveDeck} className="btn-neon btn-neon-fuchsia" data-testid="deck-save-btn">
+            <button onClick={saveDeck} className="px-6 py-3 bg-fuchsia-600 hover:bg-fuchsia-500 text-white font-bold rounded-xl transition-all" data-testid="deck-save-btn">
               <Save className="w-4 h-4" />
               Save Deck
             </button>
@@ -204,7 +204,7 @@ export default function DeckBuilderPage() {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="input-euryx"
+              className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-amber-500 transition-colors"
               placeholder="charizard, mewtwo, full art..."
               data-testid="deckbuilder-search-input"
             />

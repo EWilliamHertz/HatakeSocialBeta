@@ -71,7 +71,7 @@ export default function QueuePage() {
         <p className="text-slate-400 font-mono text-sm mb-6">
           You must be authenticated to enter matchmaking.
         </p>
-        <a href="/login" className="btn-neon btn-neon-cyan" data-testid="queue-signin-link">
+        <a href="/login" className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl transition-all" data-testid="queue-signin-link">
           Sign in
         </a>
       </div>
@@ -149,17 +149,17 @@ export default function QueuePage() {
 
         <div className="mt-10 flex justify-center gap-3">
           {status === "idle" && (
-            <button onClick={joinQueue} className="btn-neon btn-neon-cyan" data-testid="queue-join-btn">
+            <button onClick={joinQueue} className="px-6 py-3 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl transition-all w-full flex items-center justify-center gap-2" data-testid="queue-join-btn">
               <Swords className="w-4 h-4" /> Enter Queue
             </button>
           )}
           {status === "queued" && (
-            <button onClick={leaveQueue} className="btn-neon btn-neon-fuchsia" data-testid="queue-leave-btn">
+            <button onClick={leaveQueue} className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl transition-all w-full" data-testid="queue-leave-btn">
               <X className="w-4 h-4" /> Leave Queue
             </button>
           )}
           {status === "matching" && (
-            <div className="btn-neon btn-neon-cyan animate-pulse-glow cursor-default" data-testid="queue-matched-state">
+            <div className="px-6 py-3 bg-emerald-600 text-white font-bold rounded-xl animate-pulse cursor-default text-center" data-testid="queue-matched-state">
               Establishing battle channel…
             </div>
           )}
