@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import HaloNav from '@/components/HaloNav';
 import Footer from '@/components/Footer';
 import { Swords, LogOut, ArrowRight, Activity, Zap } from 'lucide-react';
-import Link from 'next/link';
-import MatchHistoryDisplay from '@/components/MatchHistoryDisplay'; // Re-use the Elo display!
+import MatchHistoryDisplay from '@/components/MatchHistoryDisplay';
 
 const GAMES = [
   {
@@ -18,6 +17,7 @@ const GAMES = [
     shadow: 'shadow-fuchsia-500/50',
     deckUrl: '/ouyrie/deck-builder',
     queueUrl: '/ouyrie/play',
+    image: 'https://i.imgur.com/G5y1uYj.png', // Random MTG art
   },
   {
     id: 'euryx',
@@ -28,27 +28,21 @@ const GAMES = [
     shadow: 'shadow-amber-500/50',
     deckUrl: '/euryx/deck-builder',
     queueUrl: '/euryx/play',
-  },
-  {
-    id: 'scrydex',
-    name: 'One Piece TCG',
-    clientName: 'Scrydex',
-    description: 'Set sail! Construct your crew and challenge the Grand Line.',
-    color: 'from-cyan-400 to-blue-700',
-    shadow: 'shadow-cyan-500/50',
-    deckUrl: '/scrydex/deck-builder',
-    queueUrl: '/scrydex/play',
+    image: 'https://i.imgur.com/8Q5Z2Xy.png', // Random Pokemon art
   }
 ];
 
 export default function PlayHub() {
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
+  const [matches, setMatches] = useState([]);
+  const [ratings, setRatings] = useState([]);
+  const [userId, setUserId] = useState('unknown');
 
   return (
     <div className="min-h-screen bg-slate-950 font-sans text-white selection:bg-cyan-500/30 flex flex-col relative overflow-hidden">
       {/* Dynamic Background Orbs based on selection */}
       <div className="absolute top-0 w-full h-[500px] overflow-hidden -z-10 pointer-events-none">
-        <div className={`absolute top-[-20%] left-1/4 w-[800px] h-[500px] rounded-[100%] blur-[120px] opacity-20 mix-blend-screen transition-colors duration-1000 ${selectedGame === 'ouyrie' ? 'bg-fuchsia-600' : selectedGame === 'euryx' ? 'bg-amber-500' : selectedGame === 'scrydex' ? 'bg-cyan-500' : 'bg-slate-700'}`} />
+        <div className={`absolute top-[-20%] left-1/4 w-[800px] h-[500px] rounded-[100%] blur-[120px] opacity-20 mix-blend-screen transition-colors duration-1000 ${selectedGame === 'ouyrie' ? 'bg-fuchsia-600' : selectedGame === 'euryx' ? 'bg-amber-500' : 'bg-slate-700'}`} />
       </div>
 
       <HaloNav />
@@ -94,7 +88,7 @@ export default function PlayHub() {
         </AnimatePresence>
 
         {/* Game Cards / Selected View */}
-        <div className={`grid gap-6 ${selectedGame ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-3'}`}>
+        <div className={`grid gap-6 ${selectedGame ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 max-w-4xl mx-auto'}`}>
           <AnimatePresence mode="popLayout">
             {GAMES.map((game) => (
               (!selectedGame || selectedGame === game.id) && (
@@ -112,12 +106,18 @@ export default function PlayHub() {
                   `}
                 >
                   {/* Card Header styling */}
-                  <div className={`h-32 bg-gradient-to-br ${game.color} opacity-80 group-hover:opacity-100 transition-opacity p-8 flex items-end relative overflow-hidden`}>
+                  <div className={`h-48 bg-gradient-to-br ${game.color} opacity-80 group-hover:opacity-100 transition-opacity p-8 flex items-end relative overflow-hidden`}>
                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20 mix-blend-overlay"></div>
+                    
+                    {/* Character/Art Image overlay */}
+                    {game.image && (
+                      <div className="absolute right-0 bottom-0 w-1/2 h-[150%] opacity-50 group-hover:opacity-70 group-hover:scale-105 transition-all duration-700 pointer-events-none" style={{ backgroundImage: `url(${game.image})`, backgroundSize: 'contain', backgroundPosition: 'bottom right', backgroundRepeat: 'no-repeat' }} />
+                    )}
+
                     <h2 className="text-3xl font-black text-white relative z-10 drop-shadow-xl tracking-tight">
                       {game.name}
                     </h2>
-                    <span className="absolute top-4 right-4 bg-black/30 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white/90 uppercase tracking-widest border border-white/10">
+                    <span className="absolute top-4 right-4 bg-black/50 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white/90 uppercase tracking-widest border border-white/10 z-10">
                       {game.clientName}
                     </span>
                   </div>
@@ -126,7 +126,7 @@ export default function PlayHub() {
                   <div className="p-8">
                     {!selectedGame ? (
                       <div>
-                        <p className="text-slate-400 leading-relaxed mb-6">{game.description}</p>
+                        <p className="text-slate-400 leading-relaxed mb-6 relative z-10">{game.description}</p>
                         <div className="flex items-center text-cyan-400 font-bold text-sm uppercase tracking-widest group-hover:text-cyan-300">
                           Initialize <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
                         </div>
@@ -158,7 +158,7 @@ export default function PlayHub() {
 
                         {/* Right Side: Elo & Match History */}
                         <div className="bg-black/20 rounded-2xl p-6 border border-white/5">
-                           <MatchHistoryDisplay />
+                           <MatchHistoryDisplay userId={userId} matches={matches} ratings={ratings} />
                         </div>
                       </div>
                     )}
