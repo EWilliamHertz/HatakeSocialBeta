@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import ReputationStars from '@/components/ReputationStars';
 import CollectionValueChart from '@/components/CollectionValueChart';
+import MatchHistoryDisplay from '@/components/MatchHistoryDisplay';
 
 const prisma = new PrismaClient();
 
@@ -28,6 +29,23 @@ export default async function ProfilePage() {
         include: {
           cardReference: true
         }
+      },
+      ratings: true,
+      matchesAsPlayer1: {
+        include: {
+          player2: { select: { username: true } },
+          winner: { select: { id: true } }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 20
+      },
+      matchesAsPlayer2: {
+        include: {
+          player1: { select: { username: true } },
+          winner: { select: { id: true } }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 20
       }
     }
   });
@@ -45,6 +63,8 @@ export default async function ProfilePage() {
     createdAt: dbUser.createdAt,
     reputationScore: dbUser.reputationScore,
     totalReviews: dbUser.totalReviews,
+    ratings: dbUser.ratings || [],
+    matches: [...(dbUser.matchesAsPlayer1 || []), ...(dbUser.matchesAsPlayer2 || [])].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
   };
 
   // Calculate stats
@@ -200,13 +220,12 @@ export default async function ProfilePage() {
           </div>
         </div>
 
-        {/* Recent Activity */}
-        <div className="bg-slate-900/50 border border-white/5 rounded-2xl p-8">
-          <h3 className="text-xl font-bold text-white mb-6">Senaste Aktivitet</h3>
-          <div className="text-slate-400 text-center py-12">
-            Ingen aktivitet hittades på de europeiska servrarna.
-          </div>
-        </div>
+        {/* Recent Activity / Match History */}
+        <MatchHistoryDisplay 
+          userId={session.id as string} 
+          matches={user.matches} 
+          ratings={user.ratings} 
+        />
       </div>
     </div>
   );

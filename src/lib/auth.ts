@@ -1,7 +1,9 @@
 import { jwtVerify, SignJWT } from "jose";
 
-// Ensure a strong secret in production.
-const SECRET_KEY = process.env.JWT_SECRET || "SUPER_SECRET_HATAKE_NETWORK_KEY_99";
+if (!process.env.JWT_SECRET) {
+  throw new Error("FATAL: JWT_SECRET environment variable is not set.");
+}
+const SECRET_KEY = process.env.JWT_SECRET;
 const key = new TextEncoder().encode(SECRET_KEY);
 
 export async function encrypt(payload: Record<string, unknown>) {

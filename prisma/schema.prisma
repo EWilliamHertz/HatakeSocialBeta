@@ -60,6 +60,12 @@ model User {
   // Notifications
   notifications   Notification[]
 
+  // Matches & Ratings
+  matchesAsPlayer1 Match[] @relation("Player1Matches")
+  matchesAsPlayer2 Match[] @relation("Player2Matches")
+  matchesWon       Match[] @relation("MatchWins")
+  ratings          PlayerRating[] @relation("UserRatings")
+
   // Collection value tracking over time
   collectionValueHistory CollectionValueHistory[]
 
@@ -533,4 +539,39 @@ model Bid {
   bidder      User     @relation("BidsPlaced", fields: [bidderId], references: [id], onDelete: Cascade)
   
   createdAt   DateTime @default(now())
+}
+
+// ─── 10. Match History & Ratings ─────────────────────────────────────────────
+model Match {
+  id          String   @id @default(cuid())
+  game        GameType
+  
+  player1Id   String
+  player1     User     @relation("Player1Matches", fields: [player1Id], references: [id])
+  player2Id   String
+  player2     User     @relation("Player2Matches", fields: [player2Id], references: [id])
+  
+  winnerId    String?
+  winner      User?    @relation("MatchWins", fields: [winnerId], references: [id])
+  
+  // Elo rating adjustments
+  player1EloChange Float @default(0)
+  player2EloChange Float @default(0)
+  
+  durationSeconds Int?
+  
+  createdAt   DateTime @default(now())
+}
+
+model PlayerRating {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation("UserRatings", fields: [userId], references: [id])
+  game        GameType
+  elo         Float    @default(1200)
+  matchesPlayed Int    @default(0)
+  wins        Int      @default(0)
+  losses      Int      @default(0)
+  
+  @@unique([userId, game])
 }
