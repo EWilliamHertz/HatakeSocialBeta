@@ -1,5 +1,5 @@
 import { GameEngine } from './gameEngine.js';
-import pool from './db.js';
+import { db as pool } from './db.js';
 import { v4 as uuidv4 } from 'uuid';
 
 export const lobbies = new Map();

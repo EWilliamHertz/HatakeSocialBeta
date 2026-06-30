@@ -9,4 +9,4 @@ const prisma = new PrismaClient();
 
 console.log('✓ Prisma client initialized');
 
-module.exports = prisma;
+module.exports = { db: prisma };
