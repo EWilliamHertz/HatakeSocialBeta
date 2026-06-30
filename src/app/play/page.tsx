@@ -17,7 +17,7 @@ const GAMES = [
     shadow: 'shadow-fuchsia-500/50',
     deckUrl: '/ouyrie/deck-builder',
     queueUrl: '/ouyrie/play',
-    image: 'https://i.imgur.com/G5y1uYj.png', // Random MTG art
+    image: '/mtg-art.jpg', // Local generated MTG art
   },
   {
     id: 'euryx',
@@ -28,7 +28,7 @@ const GAMES = [
     shadow: 'shadow-amber-500/50',
     deckUrl: '/euryx/deck-builder',
     queueUrl: '/euryx/play',
-    image: 'https://i.imgur.com/8Q5Z2Xy.png', // Random Pokemon art
+    image: '/pkm-art.jpg', // Local generated Pokemon art
   }
 ];
 
