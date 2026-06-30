@@ -23,52 +23,9 @@ export async function GET(request: Request) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let externalCards: any[] = [];
 
-    // Magic (Scryfall)
-    if (game === 'MAGIC') {
-      let q = query ? query : '';
-      
-      const oracle = searchParams.get('oracle');
-      const power = searchParams.get('power');
-      const toughness = searchParams.get('toughness');
-      const colors = searchParams.get('colors');
-
-      if (setCode) q += ` set:${setCode}`;
-      if (collectorNumber) q += ` cn:${collectorNumber}`;
-      if (oracle) q += ` o:"${oracle}"`;
-      if (power) q += ` pow:${power}`;
-      if (toughness) q += ` tou:${toughness}`;
-      if (colors) q += ` c:${colors}`;
-      
-      if (!q) q = 'type:planeswalker'; // just a fallback so it doesn't fail empty
-
-      // Note: Scryfall supports &page=...
-      const res = await fetch(`https://api.scryfall.com/cards/search?q=${encodeURIComponent(q.trim())}&unique=prints&page=${page}`, {
-        headers: {
-          'User-Agent': 'HatakeSocialBeta/1.0',
-          'Accept': 'application/json'
-        }
-      });
-      if (res.ok) {
-        const scryData = await res.json();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        externalCards = (scryData.data || []).map((c: any) => ({
-          apiId: c.id,
-          name: c.name,
-          game: 'MAGIC',
-          imageUrl: c.image_uris?.normal || c.image_uris?.large || c.card_faces?.[0]?.image_uris?.normal || '',
-          price: parseFloat(c.prices?.usd || c.prices?.eur || '0'),
-          foilPrice: parseFloat(c.prices?.usd_foil || c.prices?.eur_foil || '0'),
-          setCode: c.set ? c.set.toUpperCase() : '',
-          collectorNumber: c.collector_number || '',
-          apiPayload: c
-        }));
-      }
-    }
-    
-    // (Removed api.pokemontcg.io fetch, now handled by local TCGCSV DB below)
-    
-    // Pokemon, Naruto, One Piece, Lorcana, Riftbound (Local Database)
-    else if (
+    // Pokemon, Naruto, One Piece, Lorcana, Riftbound, Magic (Local Database)
+    if (
+      game === 'MAGIC' ||
       game === 'POKEMON' ||
       game === 'NARUTO' ||
       game === 'ONE_PIECE' ||

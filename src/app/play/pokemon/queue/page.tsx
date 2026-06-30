@@ -40,7 +40,7 @@ export default function QueuePage() {
     s.on("match-found", ({ roomId }) => {
       setStatus("matching");
       const deck = new URLSearchParams(window.location.search).get("deck");
-      const target = deck ? `/play/${roomId}?deck=${deck}` : `/play/${roomId}`;
+      const target = deck ? `/play/pokemon/${roomId}?deck=${deck}` : `/play/pokemon/${roomId}`;
       setTimeout(() => router.push(target), 700);
     });
     return () => {

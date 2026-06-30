@@ -77,14 +77,29 @@ async function syncCategory(name: string) {
       ).catch(() => ({ results: [] })),
     ]);
 
-    const priceMap = new Map<number, number>();
+    const priceMap = new Map<number, { price: number; foilPrice: number; reverseHoloPrice: number }>();
     for (const pr of prData.results || []) {
-      priceMap.set(pr.productId, pr.marketPrice || pr.midPrice || pr.lowPrice || 0);
+      const amt = pr.marketPrice || pr.midPrice || pr.lowPrice || 0;
+      const st = (pr.subTypeName || '').toLowerCase();
+      const p = priceMap.get(pr.productId) || { price: 0, foilPrice: 0, reverseHoloPrice: 0 };
+      
+      if (st.includes('reverse')) {
+        p.reverseHoloPrice = amt;
+      } else if (st.includes('foil')) {
+        p.foilPrice = amt;
+      } else {
+        p.price = amt;
+      }
+      
+      priceMap.set(pr.productId, p);
     }
 
     for (const product of pData.results || []) {
       const imageUrl = product.imageUrl || 'https://i.imgur.com/B06rBhI.png';
-      const price = priceMap.get(product.productId) || 0;
+      const p = priceMap.get(product.productId) || { price: 0, foilPrice: 0, reverseHoloPrice: 0 };
+      // Fallback base price if only foil exists
+      if (!p.price && p.foilPrice) p.price = p.foilPrice;
+      
       const isSealed = SEALED_RE.test(product.name || '');
       const apiId = String(product.productId);
 
@@ -92,7 +107,7 @@ async function syncCategory(name: string) {
         if (isSealed) {
           await prisma.sealedReference.upsert({
             where: { id: apiId },
-            update: { name: product.name, imageUrl, setCode, price },
+            update: { name: product.name, imageUrl, setCode, price: p.price },
             create: {
               id: apiId,
               game,
@@ -100,7 +115,7 @@ async function syncCategory(name: string) {
               type: 'SEALED_PRODUCT',
               setCode,
               imageUrl,
-              price,
+              price: p.price,
               apiPayload: product,
             },
           });
@@ -113,7 +128,9 @@ async function syncCategory(name: string) {
               imageUrl,
               setCode,
               rarity: product.extendedData?.find((e: any) => e.name === 'Rarity')?.value || null,
-              price,
+              price: p.price,
+              foilPrice: p.foilPrice || null,
+              reverseHoloPrice: p.reverseHoloPrice || null,
             },
             create: {
               apiId,
@@ -123,7 +140,9 @@ async function syncCategory(name: string) {
               setCode,
               rarity:
                 product.extendedData?.find((e: any) => e.name === 'Rarity')?.value || null,
-              price,
+              price: p.price,
+              foilPrice: p.foilPrice || null,
+              reverseHoloPrice: p.reverseHoloPrice || null,
               apiPayload: product,
             },
           });

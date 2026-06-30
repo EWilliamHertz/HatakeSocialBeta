@@ -153,44 +153,36 @@ export default function MarketPage() {
           <ShoppingCart size={24} /> ENTER SHOP
         </button>
 
-        {/* D-Pad Game Selector */}
-        <div className="relative w-48 h-48 flex-shrink-0 bg-slate-900/50 rounded-full border border-white/5 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
-          {/* Top: MAGIC */}
-          <button 
-            onClick={() => toggleGame('MAGIC')}
-            className={`absolute top-2 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full flex items-center justify-center border-2 transition-all ${activeGames.includes('MAGIC') ? 'bg-gradient-to-tr from-fuchsia-600 to-fuchsia-400 border-fuchsia-400 shadow-[0_0_15px_rgba(217,70,239,0.5)]' : 'bg-slate-800 border-slate-700 hover:border-fuchsia-500/50 grayscale hover:grayscale-0'}`}
-          >
-            <span className="font-black text-[9px] text-white">MTG</span>
-          </button>
+        {/* Game Selector */}
+        <div className="flex flex-wrap justify-center md:justify-start gap-3">
+          {[
+            { id: 'MAGIC', label: 'MTG', color: 'fuchsia' },
+            { id: 'POKEMON', label: 'PKMN', color: 'yellow' },
+            { id: 'ONE_PIECE', label: 'OPCG', color: 'red' },
+            { id: 'NARUTO', label: 'NRT', color: 'orange' },
+            { id: 'RIFTBOUND', label: 'RIFT', color: 'emerald' },
+            { id: 'LORCANA', label: 'LORC', color: 'pink' }
+          ].map(g => {
+            const isActive = activeGames.includes(g.id as Game);
+            const colorClasses = {
+              fuchsia: isActive ? 'bg-gradient-to-tr from-fuchsia-600 to-fuchsia-400 border-fuchsia-400 shadow-[0_0_15px_rgba(217,70,239,0.5)] text-white' : 'bg-slate-800 border-slate-700 hover:border-fuchsia-500/50 text-slate-400',
+              yellow: isActive ? 'bg-gradient-to-tr from-yellow-500 to-yellow-300 border-yellow-300 shadow-[0_0_15px_rgba(234,179,8,0.5)] text-black' : 'bg-slate-800 border-slate-700 hover:border-yellow-500/50 text-slate-400',
+              red: isActive ? 'bg-gradient-to-tr from-red-600 to-red-400 border-red-400 shadow-[0_0_15px_rgba(239,68,68,0.5)] text-white' : 'bg-slate-800 border-slate-700 hover:border-red-500/50 text-slate-400',
+              orange: isActive ? 'bg-gradient-to-tr from-orange-600 to-orange-400 border-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.5)] text-white' : 'bg-slate-800 border-slate-700 hover:border-orange-500/50 text-slate-400',
+              emerald: isActive ? 'bg-gradient-to-tr from-emerald-600 to-emerald-400 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.5)] text-white' : 'bg-slate-800 border-slate-700 hover:border-emerald-500/50 text-slate-400',
+              pink: isActive ? 'bg-gradient-to-tr from-pink-600 to-pink-400 border-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.5)] text-white' : 'bg-slate-800 border-slate-700 hover:border-pink-500/50 text-slate-400',
+            }[g.color];
 
-          {/* Bottom: POKEMON */}
-          <button 
-            onClick={() => toggleGame('POKEMON')}
-            className={`absolute bottom-2 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full flex items-center justify-center border-2 transition-all ${activeGames.includes('POKEMON') ? 'bg-gradient-to-tr from-yellow-500 to-yellow-300 border-yellow-300 shadow-[0_0_15px_rgba(234,179,8,0.5)]' : 'bg-slate-800 border-slate-700 hover:border-yellow-500/50 grayscale hover:grayscale-0'}`}
-          >
-            <span className="font-black text-[9px] text-black">PKMN</span>
-          </button>
-
-          {/* Left: ONE PIECE */}
-          <button 
-            onClick={() => toggleGame('ONE_PIECE')}
-            className={`absolute left-2 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center border-2 transition-all ${activeGames.includes('ONE_PIECE') ? 'bg-gradient-to-tr from-red-600 to-red-400 border-red-400 shadow-[0_0_15px_rgba(239,68,68,0.5)]' : 'bg-slate-800 border-slate-700 hover:border-red-500/50 grayscale hover:grayscale-0'}`}
-          >
-            <span className="font-black text-[9px] text-white">OPCG</span>
-          </button>
-
-          {/* Right: NARUTO */}
-          <button 
-            onClick={() => toggleGame('NARUTO')}
-            className={`absolute right-2 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center border-2 transition-all ${activeGames.includes('NARUTO') ? 'bg-gradient-to-tr from-orange-600 to-orange-400 border-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.5)]' : 'bg-slate-800 border-slate-700 hover:border-orange-500/50 grayscale hover:grayscale-0'}`}
-          >
-            <span className="font-black text-[9px] text-white">NRT</span>
-          </button>
-
-          {/* Center */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-slate-950 border border-white/10 flex items-center justify-center">
-            <div className="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,1)]"></div>
-          </div>
+            return (
+              <button
+                key={g.id}
+                onClick={() => toggleGame(g.id as Game)}
+                className={`w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all ${colorClasses}`}
+              >
+                <span className="font-black text-[11px]">{g.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

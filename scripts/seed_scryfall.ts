@@ -49,6 +49,7 @@ async function upsertCard(card: any) {
     card.card_faces?.[0]?.image_uris?.normal ||
     'https://i.imgur.com/B06rBhI.png';
   const price = parseFloat(card.prices?.usd || card.prices?.usd_foil || '0') || 0;
+  const foilPrice = parseFloat(card.prices?.usd_foil || '0') || null;
   await prisma.cardReference.upsert({
     where: { apiId: card.id },
     update: {
@@ -57,6 +58,7 @@ async function upsertCard(card: any) {
       setCode: (card.set || '').toUpperCase(),
       rarity: card.rarity || null,
       price,
+      foilPrice,
       apiPayload: card,
     },
     create: {
@@ -67,6 +69,7 @@ async function upsertCard(card: any) {
       setCode: (card.set || '').toUpperCase(),
       rarity: card.rarity || null,
       price,
+      foilPrice,
       apiPayload: card,
     },
   });

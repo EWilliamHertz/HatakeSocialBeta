@@ -12,7 +12,7 @@ export default function PlayPage() {
   const { socket, isConnected } = useSocket();
   const lobbyRef = useRef(null);
 
-  // ─── State ───
+    // ─── State ───
   const [decks, setDecks] = useState([]);
   const [lobbies, setLobbies] = useState([]);
   const [selectedDeckId, setSelectedDeckId] = useState('');
@@ -20,6 +20,7 @@ export default function PlayPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [lobbyName, setLobbyName] = useState('');
   const [createDeckId, setCreateDeckId] = useState('');
+  const [createFormat, setCreateFormat] = useState('Casual');
   const [waitingLobby, setWaitingLobby] = useState(null);
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState('');
@@ -124,7 +125,7 @@ export default function PlayPage() {
     };
 
     const handleGameStart = ({ gameId, playerId }) => {
-      router.push(`/game?gameId=${gameId}&playerId=${playerId}`);
+      router.push(`/play/mtg/game?gameId=${gameId}&playerId=${playerId}`);
     };
 
     const handleError = (msg) => {
@@ -200,15 +201,16 @@ export default function PlayPage() {
     try {
       if (socket) {
         socket.emit('create-lobby', {
-          name: lobbyName || `${playerName}'s Lobby`,
+          name: lobbyName || `${playerName}'s Custom Game`,
           mode: '1v1',
+          format: createFormat,
           playerName,
           deckId: createDeckId
         });
 
         const onLobbyCreated = ({ lobbyId, lobby }) => {
           socket.off('lobby-created', onLobbyCreated);
-          setWaitingLobby(lobby || { id: lobbyId, name: lobbyName || `${playerName}'s Lobby` });
+          setWaitingLobby(lobby || { id: lobbyId, name: lobbyName || `${playerName}'s Custom Game` });
           setShowCreateModal(false);
           setIsReady(false);
           setLoading(false);
@@ -220,7 +222,7 @@ export default function PlayPage() {
       setTimeout(() => setError(''), 4000);
       setLoading(false);
     }
-  }, [playerName, lobbyName, createDeckId, socket]);
+  }, [playerName, lobbyName, createDeckId, createFormat, socket]);
 
   // ─── Join lobby ───
   const handleJoinLobby = useCallback(
@@ -274,7 +276,7 @@ export default function PlayPage() {
 
   // ─── Open create modal ───
   const openCreateModal = useCallback(() => {
-    setLobbyName(`${playerName}'s Lobby`);
+    setLobbyName(`${playerName}'s Custom Game`);
     setShowCreateModal(true);
   }, [playerName]);
 
@@ -426,7 +428,7 @@ export default function PlayPage() {
             <span className={styles.modeIcon}>⚔️</span>
             <h2 className={styles.modeTitle}>Versus Mode</h2>
             <p className={styles.modeDesc}>
-              Challenge another player in a 1v1 match. Prove your mastery.
+              Challenge another player or invite a friend to a custom game.
             </p>
 
             <div className={styles.btnRow}>
@@ -435,7 +437,7 @@ export default function PlayPage() {
                 onClick={openCreateModal}
                 disabled={!playerName.trim()}
               >
-                Create Lobby
+                Custom Game
               </button>
               <button className={styles.btnSecondary} onClick={scrollToLobbies}>
                 Browse Lobbies
@@ -495,6 +497,7 @@ export default function PlayPage() {
               <thead>
                 <tr className={styles.lobbyHeaderRow}>
                   <th>Lobby</th>
+                  <th>Format</th>
                   <th>Host</th>
                   <th>Mode</th>
                   <th>Players</th>
@@ -509,6 +512,7 @@ export default function PlayPage() {
                   return (
                     <tr key={lobby.id} className={styles.lobbyRow}>
                       <td>{lobby.name}</td>
+                      <td>{lobby.format || 'Casual'}</td>
                       <td>{lobby.hostName || lobby.host || '—'}</td>
                       <td>{lobby.mode}</td>
                       <td>
@@ -567,7 +571,7 @@ export default function PlayPage() {
 
         {/* Nav Link */}
         <div className={styles.navRow}>
-          <Link href="/deck-builder" className={styles.navLink}>
+          <Link href="/play/mtg/deck-builder" className={styles.navLink}>
             Build a Deck →
           </Link>
         </div>
@@ -577,7 +581,7 @@ export default function PlayPage() {
       {showCreateModal && (
         <div className={styles.modalOverlay} onClick={() => setShowCreateModal(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <h3 className={styles.modalTitle}>Create Lobby</h3>
+            <h3 className={styles.modalTitle}>Custom Game</h3>
 
             <label className={styles.modalLabel} htmlFor="lobbyNameInput">
               Lobby Name
@@ -590,6 +594,21 @@ export default function PlayPage() {
               onChange={(e) => setLobbyName(e.target.value)}
               maxLength={40}
             />
+
+            <label className={styles.modalLabel} htmlFor="createFormatSelect">
+              Format
+            </label>
+            <select
+              id="createFormatSelect"
+              className={styles.deckSelect}
+              value={createFormat}
+              onChange={(e) => setCreateFormat(e.target.value)}
+            >
+              <option value="Casual">Casual</option>
+              <option value="Standard">Standard</option>
+              <option value="Modern">Modern</option>
+              <option value="Commander">Commander</option>
+            </select>
 
             <label className={styles.modalLabel} htmlFor="createDeckSelect">
               Select Deck

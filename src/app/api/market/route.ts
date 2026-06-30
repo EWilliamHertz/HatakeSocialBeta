@@ -31,19 +31,19 @@ export async function GET(request: Request) {
     }
 
     if (games.length > 0) {
-      // Map MAGIC to MTG for database query
-      const dbGames = games.map(g => g === 'MAGIC' ? 'MTG' : g);
+      // Map MAGIC to both MAGIC and MTG for backward compatibility
+      const dbGames = games.flatMap(g => g === 'MAGIC' ? ['MAGIC', 'MTG'] : g);
       if (!where.cardInstance) where.cardInstance = {};
       if (!where.cardInstance.cardReference) where.cardInstance.cardReference = {};
       where.cardInstance.cardReference.game = { in: dbGames };
     }
 
-    if (isFoil || isSigned || isAltered || condition) {
+    if (isFoil || isSigned || isAltered || condition && condition !== 'ALL') {
       if (!where.cardInstance) where.cardInstance = {};
       if (isFoil) where.cardInstance.isFoil = true;
       if (isSigned) where.cardInstance.isSigned = true;
       if (isAltered) where.cardInstance.isAltered = true;
-      if (condition) where.cardInstance.condition = condition;
+      if (condition && condition !== 'ALL') where.cardInstance.condition = condition;
     }
 
     let listings = await db.marketListing.findMany({
@@ -67,9 +67,10 @@ export async function GET(request: Request) {
     // In-memory filter for complex JSON attributes
     if (mtgColors.length > 0) {
       listings = listings.filter(l => {
-        if (l.cardInstance?.cardReference?.game !== 'MTG') return true; 
+        const game = l.cardInstance?.cardReference?.game;
+        if (game !== 'MTG' && game !== 'MAGIC') return true; 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const payload: any = l.cardInstance.cardReference.apiPayload;
+        const payload: any = l.cardInstance?.cardReference?.apiPayload;
         const colors = payload?.colors || [];
         return mtgColors.some(c => colors.includes(c));
       });

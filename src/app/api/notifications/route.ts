@@ -7,15 +7,15 @@ const prisma = new PrismaClient();
 
 export async function GET() {
   const cookieStore = cookies();
-  const session = cookieStore.get('session')?.value;
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const sessionCookie = cookieStore.get('hatake_session')?.value;
+  if (!sessionCookie) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const payload = await decrypt(session);
-  if (!payload?.userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const payload = await decrypt(sessionCookie);
+  if (!payload?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
     const notifications = await prisma.notification.findMany({
-      where: { userId: payload.userId as string },
+      where: { userId: payload.id as string },
       orderBy: { createdAt: 'desc' },
       take: 50
     });

@@ -6,6 +6,7 @@ import HaloNav from '@/components/HaloNav';
 import Footer from '@/components/Footer';
 import { Swords, LogOut, ArrowRight, Activity, Zap } from 'lucide-react';
 import MatchHistoryDisplay from '@/components/MatchHistoryDisplay';
+import Link from 'next/link';
 
 const GAMES = [
   {
@@ -138,9 +139,9 @@ export default function PlayHub() {
                           <p className="text-lg text-slate-300 leading-relaxed">{game.description}</p>
                           
                           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                            <a href={game.queueUrl} className={`flex-1 py-4 px-6 bg-gradient-to-r ${game.color} text-white font-black rounded-2xl text-center shadow-lg ${game.shadow} hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 text-lg`}>
+                            <Link href={game.queueUrl} onClick={(e) => e.stopPropagation()} className={`flex-1 py-4 px-6 bg-gradient-to-r ${game.color} text-white font-black rounded-2xl text-center shadow-lg ${game.shadow} hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 text-lg`}>
                               <Swords size={24} /> Enter Client
-                            </a>
+                            </Link>
                           </div>
 
                           <div className="p-6 bg-black/40 rounded-2xl border border-white/5 mt-8">

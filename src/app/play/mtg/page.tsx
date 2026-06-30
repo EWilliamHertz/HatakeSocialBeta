@@ -67,7 +67,7 @@ export default function MTGEngineLobby() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-emerald-500/30 transition-all group cursor-pointer" onClick={() => router.push('/play/mtg/game?mode=goldfish')}>
+          <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-emerald-500/30 transition-all group cursor-pointer" onClick={() => router.push('/play/mtg/lobby')}>
             <div className="w-16 h-16 rounded-2xl bg-emerald-500/20 flex items-center justify-center text-emerald-500 mb-6 group-hover:scale-110 transition-transform">
               <Users size={32} />
             </div>
@@ -83,7 +83,7 @@ export default function MTGEngineLobby() {
             <p className="text-slate-400 text-sm leading-relaxed">Construct a 60-card deck or a 100-card Commander deck.</p>
           </div>
 
-          <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-amber-500/30 transition-all group cursor-pointer">
+          <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-amber-500/30 transition-all group cursor-pointer" onClick={() => router.push('/leaderboard?game=MTG')}>
             <div className="w-16 h-16 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-500 mb-6 group-hover:scale-110 transition-transform">
               <Trophy size={32} />
             </div>

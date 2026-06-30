@@ -28,7 +28,9 @@ export default function Home() {
     { name: 'Magic: The Gathering', code: 'MTG', color: 'from-fuchsia-600 to-indigo-900', icon: 'M' },
     { name: 'Pokémon TCG', code: 'PKMN', color: 'from-yellow-400 to-red-500', icon: 'P' },
     { name: 'One Piece TCG', code: 'OP', color: 'from-orange-500 to-red-700', icon: 'O' },
-    { name: 'Naruto TCG', code: 'NRT', color: 'from-amber-400 to-orange-600', icon: 'N' },
+    { name: 'Naruto Mythos', code: 'NRT', color: 'from-amber-400 to-orange-600', icon: 'N' },
+    { name: 'Riftbound', code: 'RIFT', color: 'from-emerald-400 to-cyan-600', icon: 'R' },
+    { name: 'Lorcana', code: 'LORC', color: 'from-pink-400 to-purple-600', icon: 'L' },
   ];
 
   return (
@@ -55,8 +57,6 @@ export default function Home() {
           </div>
           <div className="flex flex-wrap gap-4 items-center" data-testid="landing-header-actions">
             <LanguageSwitcher />
-            <Link href="/login" data-testid="landing-login-btn" className="px-6 py-2.5 rounded-full text-sm font-bold bg-white/5 hover:bg-white/10 border border-white/10 transition-all">{t('landing.login')}</Link>
-            <Link href="/register" data-testid="landing-register-btn" className="px-6 py-2.5 rounded-full text-sm font-bold bg-cyan-600 hover:bg-cyan-500 text-white transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)]">{t('landing.join')}</Link>
           </div>
         </motion.div>
 

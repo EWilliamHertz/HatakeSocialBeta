@@ -1,79 +1,105 @@
-import pool from '@/lib/db';
+import { db } from '@/lib/db';
+import { cookies } from 'next/headers';
+import { decrypt } from '@/lib/auth';
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const q = searchParams.get('q');
-  const colors = searchParams.get('colors');
-  const type = searchParams.get('type');
-  const cmc_min = searchParams.get('cmc_min');
-  const cmc_max = searchParams.get('cmc_max');
-  const rarity = searchParams.get('rarity');
   
   const page = parseInt(searchParams.get('page') || '1', 10);
   let limit = parseInt(searchParams.get('limit') || '20', 10);
   if (limit > 100) limit = 100;
-  const offset = (page - 1) * limit;
-
-  let whereClauses = [];
-  let params = [];
-  let paramCount = 1;
-
+  
   const exact = searchParams.get('exact') === 'true';
-
+  
+  let userId = null;
+  try {
+    const token = cookies().get('hatake_session')?.value;
+    if (token) {
+      const session = await decrypt(token);
+      if (session && session.id) {
+        userId = session.id;
+      }
+    }
+  } catch (e) {
+    // Ignore auth errors
+  }
+  
+  const where = { game: 'MAGIC' };
+  
   if (q) {
     if (exact) {
-      whereClauses.push(`name ILIKE $${paramCount}`);
-      params.push(q);
+      where.name = { equals: q, mode: 'insensitive' };
     } else {
-      whereClauses.push(`name ILIKE $${paramCount}`);
-      params.push(`%${q}%`);
+      where.name = { contains: q, mode: 'insensitive' };
     }
-    paramCount++;
   }
-  if (colors) {
-    whereClauses.push(`colors::text ILIKE $${paramCount}`);
-    params.push(`%${colors}%`);
-    paramCount++;
-  }
-  if (type) {
-    whereClauses.push(`type_line ILIKE $${paramCount}`);
-    params.push(`%${type}%`);
-    paramCount++;
-  }
-  if (cmc_min !== null) {
-    whereClauses.push(`cmc >= $${paramCount}`);
-    params.push(cmc_min);
-    paramCount++;
-  }
-  if (cmc_max !== null) {
-    whereClauses.push(`cmc <= $${paramCount}`);
-    params.push(cmc_max);
-    paramCount++;
-  }
-  if (rarity) {
-    whereClauses.push(`rarity = $${paramCount}`);
-    params.push(rarity);
-    paramCount++;
-  }
-
-  const whereString = whereClauses.length > 0 ? `WHERE ${whereClauses.join(' AND ')}` : '';
-
+  
   try {
-    const countQuery = `SELECT count(*) FROM cards ${whereString}`;
-    const countResult = await pool.query(countQuery, params);
-    const total = parseInt(countResult.rows[0].count, 10);
+    let cards = [];
+    let total = 0;
 
-    const dataQuery = `SELECT * FROM cards ${whereString} ORDER BY name ASC LIMIT $${paramCount} OFFSET $${paramCount + 1}`;
-    const dataParams = [...params, limit, offset];
-    const cardsResult = await pool.query(dataQuery, dataParams);
+    if (!q && userId) {
+      // Show user's collection when there's no search query
+      const instances = await db.cardInstance.findMany({
+        where: { 
+          ownerId: userId, 
+          cardReference: { game: 'MAGIC' } 
+        },
+        select: { cardReference: true },
+        distinct: ['cardReferenceId'],
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+      cards = instances.map(i => i.cardReference);
+      
+      // We'll just estimate total as the number of cards found if it's less than limit
+      total = cards.length < limit ? (page - 1) * limit + cards.length : (page * limit) + 1; 
 
-    const totalPages = Math.ceil(total / limit);
+      // If user has no cards, fallback to generic list so it's not totally empty
+      if (cards.length === 0 && page === 1) {
+        total = await db.cardReference.count({ where: { game: 'MAGIC' } });
+        cards = await db.cardReference.findMany({
+          where: { game: 'MAGIC' },
+          orderBy: { name: 'asc' },
+          skip: (page - 1) * limit,
+          take: limit,
+        });
+      }
+    } else {
+      // Show search results or fallback if no user
+      total = await db.cardReference.count({ where });
+      cards = await db.cardReference.findMany({
+        where,
+        orderBy: { name: 'asc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+    }
+    
+    const mappedCards = cards.map(c => {
+      const p = c.apiPayload || {};
+      return {
+        scryfall_id: c.apiId,
+        id: c.apiId,
+        name: c.name,
+        image_uri: c.imageUrl || p.image_uris?.normal || '',
+        type_line: p.type_line || '',
+        cmc: p.cmc || 0,
+        colors: p.colors || [],
+        mana_cost: p.mana_cost || '',
+        rarity: c.rarity || p.rarity || 'common',
+        oracle_text: p.oracle_text || '',
+        power: p.power || '',
+        toughness: p.toughness || ''
+      };
+    });
 
     return Response.json({
-      cards: cardsResult.rows,
+      cards: mappedCards,
       total,
       page,
-      totalPages
+      totalPages: Math.ceil(total / limit)
     });
   } catch (error) {
     console.error(error);

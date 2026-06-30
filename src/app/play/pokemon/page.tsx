@@ -88,7 +88,7 @@ export default function PokemonEngineLobby() {
 
         {/* Action Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-amber-500/30 transition-all group cursor-pointer" onClick={() => router.push('/play/pokemon/game?mode=goldfish')}>
+          <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-amber-500/30 transition-all group cursor-pointer" onClick={() => router.push(`/play/pokemon/goldfish-${Math.random().toString(36).substring(2, 9)}`)}>
             <div className="w-16 h-16 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-500 mb-6 group-hover:scale-110 transition-transform">
               <Users size={32} />
             </div>
@@ -104,7 +104,7 @@ export default function PokemonEngineLobby() {
             <p className="text-slate-400 text-sm leading-relaxed">Construct your ultimate 60-card deck using cards from your digital binder.</p>
           </div>
 
-          <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-fuchsia-500/30 transition-all group cursor-pointer">
+          <div className="bg-slate-900 border border-white/5 rounded-3xl p-8 hover:border-fuchsia-500/30 transition-all group cursor-pointer" onClick={() => router.push('/leaderboard?game=POKEMON')}>
             <div className="w-16 h-16 rounded-2xl bg-fuchsia-500/20 flex items-center justify-center text-fuchsia-500 mb-6 group-hover:scale-110 transition-transform">
               <Trophy size={32} />
             </div>

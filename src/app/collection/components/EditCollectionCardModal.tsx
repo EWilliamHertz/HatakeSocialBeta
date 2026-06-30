@@ -128,11 +128,18 @@ export default function EditCollectionCardModal({ instance, onClose, onComplete 
         <div className="w-full md:w-1/2 flex flex-col">
           <h2 className="text-3xl font-black text-white mb-2">{instance.cardReference.name}</h2>
           <p className="text-emerald-400 font-black text-xl mb-6">
-            {instance.cardReference.game === 'NARUTO' || (instance.cardReference.game === 'POKEMON' && (instance.cardReference.price === 0 || instance.cardReference.price === 0.3)) ? (
-              <span className="text-slate-500">No Market Data</span>
-            ) : (
-              `€${(instance.cardReference.price || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
-            )}
+            {(() => {
+              const cr = instance.cardReference;
+              if (cr.game === 'NARUTO' || (cr.game === 'POKEMON' && (cr.price === 0 || cr.price === 0.3))) {
+                return <span className="text-slate-500">No Market Data</span>;
+              }
+              let currentPrice = cr.price || 0;
+              if (isFoil || instance.isHolo) currentPrice = cr.foilPrice || currentPrice;
+              if (instance.isReverseHolo) currentPrice = cr.reverseHoloPrice || cr.foilPrice || currentPrice;
+              // User mentioned signed adds value? Just to be safe, don't invent numbers if not in DB, 
+              // but TCGPlayer doesn't price signed cards explicitly, so we just use foil logic.
+              return `€${currentPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            })()}
           </p>
 
           <div className="space-y-4 flex-1">
