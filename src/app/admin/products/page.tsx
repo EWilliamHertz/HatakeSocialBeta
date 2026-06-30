@@ -24,6 +24,9 @@ export default function AdminProductsDashboard() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
+  const [isUploadingMain, setIsUploadingMain] = useState(false);
+  const [isUploadingGallery, setIsUploadingGallery] = useState(false);
+
   // Form state
   const [form, setForm] = useState({
     name: '',
@@ -49,6 +52,39 @@ export default function AdminProductsDashboard() {
       console.error(err);
     }
     setLoading(false);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'main' | 'gallery') => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    
+    const setUploading = type === 'main' ? setIsUploadingMain : setIsUploadingGallery;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY || 'b2492f987920d3e2a7903861b72ae3a4';
+      const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        if (type === 'main') {
+          setForm(prev => ({ ...prev, imageUrl: data.data.url }));
+        } else {
+          setForm(prev => ({ ...prev, images: [...(prev as any).images || [], data.data.url] }));
+        }
+      } else {
+        alert('Image upload failed.');
+      }
+    } catch (err) {
+      console.error('ImgBB upload failed', err);
+      alert('Upload failed. Check your network or API key.');
+    }
+    setUploading(false);
   };
 
   useEffect(() => {
@@ -264,12 +300,43 @@ export default function AdminProductsDashboard() {
                       <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})} rows={3} className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500 transition-colors resize-none" placeholder="Product details..." />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Main Image URL</label>
-                      <input type="text" value={form.imageUrl} onChange={e => setForm({...form, imageUrl: e.target.value})} className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500 transition-colors" placeholder="https://..." />
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Main Image</label>
+                      <div className="flex items-center gap-4">
+                        {form.imageUrl && (
+                          <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-950 shrink-0">
+                            <img src={form.imageUrl} className="w-full h-full object-cover" alt="Main preview" />
+                          </div>
+                        )}
+                        <label className={`flex-1 flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-slate-700 bg-slate-950 hover:bg-slate-900 transition-colors cursor-pointer ${isUploadingMain ? 'opacity-50' : ''}`}>
+                          <span className="text-sm font-bold text-slate-400">{isUploadingMain ? 'Uploading...' : 'Click to Upload Main Image'}</span>
+                          <input type="file" accept="image/*" className="hidden" onChange={e => handleImageUpload(e, 'main')} disabled={isUploadingMain} />
+                        </label>
+                      </div>
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Additional Images (Gallery URLs, one per line)</label>
-                      <textarea value={(form as any).images?.join('\n') || ''} onChange={e => setForm({...form, images: e.target.value.split('\n').filter(Boolean)})} rows={3} className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500 transition-colors resize-none" placeholder="https://image1.jpg&#10;https://image2.jpg" />
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Additional Images (Gallery)</label>
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        {((form as any).images || []).map((img: string, idx: number) => (
+                          <div key={idx} className="w-16 h-16 rounded-lg overflow-hidden bg-slate-950 relative group">
+                            <img src={img} className="w-full h-full object-cover" alt={`Gallery preview ${idx}`} />
+                            <button 
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const newImages = [...(form as any).images];
+                                newImages.splice(idx, 1);
+                                setForm({ ...form, images: newImages });
+                              }} 
+                              className="absolute inset-0 bg-red-500/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <label className={`w-full flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-slate-700 bg-slate-950 hover:bg-slate-900 transition-colors cursor-pointer ${isUploadingGallery ? 'opacity-50' : ''}`}>
+                        <span className="text-sm font-bold text-slate-400">{isUploadingGallery ? 'Uploading...' : '+ Upload Additional Image'}</span>
+                        <input type="file" accept="image/*" className="hidden" onChange={e => handleImageUpload(e, 'gallery')} disabled={isUploadingGallery} />
+                      </label>
                     </div>
                     <div className="flex items-center gap-3 bg-slate-950 p-4 rounded-xl border border-white/5">
                       <input type="checkbox" checked={form.isActive} onChange={e => setForm({...form, isActive: e.target.checked})} className="w-5 h-5 accent-cyan-500 rounded bg-slate-900 border-white/20" />
