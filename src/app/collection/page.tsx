@@ -65,7 +65,24 @@ export default function CollectionPage() {
     fetchMyCollection();
   }, []);
 
-  const cardValue = myInstances.reduce((sum, inst) => sum + (inst.cardReference.price || 0), 0);
+  const getPrice = (inst: any) => {
+    let p = inst.cardReference.price || 0;
+    if (inst.isFoil || inst.isHolo) p = inst.cardReference.foilPrice || p;
+    if (inst.isReverseHolo) p = inst.cardReference.reverseHoloPrice || inst.cardReference.foilPrice || p;
+    
+    let conditionMultiplier = 1.0;
+    if (inst.condition === 'MINT') conditionMultiplier = 1.2;
+    if (inst.condition === 'LIGHTLY_PLAYED') conditionMultiplier = 0.8;
+    if (inst.condition === 'MODERATELY_PLAYED') conditionMultiplier = 0.65;
+    if (inst.condition === 'HEAVILY_PLAYED') conditionMultiplier = 0.45;
+    if (inst.condition === 'DAMAGED') conditionMultiplier = 0.25;
+
+    let calculated = p * conditionMultiplier;
+    if (inst.isSigned) calculated += 8.00;
+    return calculated;
+  };
+
+  const cardValue = myInstances.reduce((sum, inst) => sum + getPrice(inst), 0);
   const sealedValue = mySealedInstances.reduce((sum, inst) => sum + (inst.sealedReference?.price || 0), 0);
   const totalValue = cardValue + sealedValue;
   

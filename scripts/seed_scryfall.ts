@@ -43,11 +43,16 @@ async function download(url: string, dest: string) {
 
 async function upsertCard(card: any) {
   if (!card?.id || !card?.name) return false;
-  const imageUrl =
-    card.image_uris?.normal ||
-    card.image_uris?.large ||
-    card.card_faces?.[0]?.image_uris?.normal ||
-    'https://i.imgur.com/B06rBhI.png';
+  let imageUrl = 'https://i.imgur.com/B06rBhI.png';
+  if (card.tcgplayer_id) {
+    imageUrl = `https://tcgplayer-cdn.tcgplayer.com/product/${card.tcgplayer_id}_200w.jpg`;
+  } else {
+    imageUrl =
+      card.image_uris?.normal ||
+      card.image_uris?.large ||
+      card.card_faces?.[0]?.image_uris?.normal ||
+      'https://i.imgur.com/B06rBhI.png';
+  }
   const price = parseFloat(card.prices?.usd || card.prices?.usd_foil || '0') || 0;
   const foilPrice = parseFloat(card.prices?.usd_foil || '0') || null;
   await prisma.cardReference.upsert({
@@ -59,7 +64,11 @@ async function upsertCard(card: any) {
       rarity: card.rarity || null,
       price,
       foilPrice,
-      apiPayload: card,
+      apiPayload: {
+        tcgplayer_id: card.tcgplayer_id,
+        cmc: card.cmc,
+        collector_number: card.collector_number
+      },
     },
     create: {
       apiId: card.id,
@@ -70,7 +79,11 @@ async function upsertCard(card: any) {
       rarity: card.rarity || null,
       price,
       foilPrice,
-      apiPayload: card,
+      apiPayload: {
+        tcgplayer_id: card.tcgplayer_id,
+        cmc: card.cmc,
+        collector_number: card.collector_number
+      },
     },
   });
   return true;

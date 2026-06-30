@@ -95,6 +95,8 @@ export default function AllCardsTab() {
           game: c.game,
           imageUrl: c.imageUrl,
           price: c.price || 0,
+          foilPrice: c.foilPrice || 0,
+          reverseHoloPrice: c.reverseHoloPrice || 0,
           setCode: c.setCode,
           collectorNumber: c.collectorNumber,
           prices: c.apiPayload?.prices || null  

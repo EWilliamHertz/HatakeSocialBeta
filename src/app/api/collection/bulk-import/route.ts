@@ -10,55 +10,44 @@ export async function POST(request: Request) {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let cards: any[] = [];
+    
+    // We'll search the DB for each card name.
+    // To minimize DB roundtrips, we can fetch all potential matches.
+    const names = lines.map((l: any) => l.name);
+    
+    // For simplicity, find the first match for each name in the requested game.
+    // Since names might have slight variations, we'll use a direct case-insensitive match.
+    // If the list is large, doing 75 queries in parallel is perfectly fine for Prisma locally.
+    
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
 
-    if (game === 'MAGIC') {
-      // Scryfall allows up to 75 cards per request. We'll slice it to 75 for safety.
-      const identifiers = lines.slice(0, 75).map(l => ({ name: l.name }));
-      
-      const res = await fetch('https://api.scryfall.com/cards/collection', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifiers })
+    const promises = lines.slice(0, 100).map(async (l: any) => {
+      const c = await prisma.cardReference.findFirst({
+        where: {
+          game: game,
+          name: { equals: l.name, mode: 'insensitive' }
+        },
+        orderBy: { price: 'desc' } // prioritize a printing with a price
       });
-      
-      if (res.ok) {
-        const scryData = await res.json();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        cards = (scryData.data || []).map((c: any) => ({
-          apiId: c.id,
+
+      if (c) {
+        return {
+          apiId: c.apiId,
           name: c.name,
-          game: 'MAGIC',
-          imageUrl: c.image_uris?.normal || c.image_uris?.large || c.card_faces?.[0]?.image_uris?.normal || '',
-          price: parseFloat(c.prices?.usd || c.prices?.eur || '0'),
-          cmc: c.cmc || 0,
-          apiPayload: c
-        }));
+          game: game,
+          imageUrl: c.imageUrl,
+          price: c.price || 0,
+          cmc: c.apiPayload?.cmc || 0,
+          apiPayload: c.apiPayload
+        };
       }
-    } else if (game === 'POKEMON') {
-      // Pokemon TCG has no bulk name endpoint, loop promises
-      const promises = lines.slice(0, 20).map(async l => {
-        const res = await fetch(`https://api.pokemontcg.io/v2/cards?q=name:"${encodeURIComponent(l.name)}"`, {
-          headers: { 'Accept': 'application/json' }
-        });
-        if (!res.ok) return null;
-        const data = await res.json();
-        if (data.data && data.data.length > 0) {
-          const c = data.data[0];
-          return {
-            apiId: c.id,
-            name: c.name,
-            game: 'POKEMON',
-            imageUrl: c.images?.large || c.images?.small || '',
-            price: parseFloat(c.cardmarket?.prices?.averageSellPrice || c.tcgplayer?.prices?.normal?.market || '0'),
-            cmc: 0,
-            apiPayload: c
-          };
-        }
-        return null;
-      });
-      const results = await Promise.all(promises);
-      cards = results.filter(Boolean);
-    }
+      return null;
+    });
+
+    const results = await Promise.all(promises);
+    cards = results.filter(Boolean);
+    await prisma.$disconnect();
 
     return NextResponse.json({ cards });
   } catch (err) {

@@ -73,7 +73,7 @@ export async function GET(request: Request) {
         foilPrice: c.foilPrice || 0,
         reverseHoloPrice: c.reverseHoloPrice || 0,
         setCode: c.setCode || '',
-        collectorNumber: c.apiId || '',
+        collectorNumber: (c.apiPayload as any)?.collector_number || (c.apiPayload as any)?.collectorNumber || '',
         apiPayload: c.apiPayload
       }));
     }

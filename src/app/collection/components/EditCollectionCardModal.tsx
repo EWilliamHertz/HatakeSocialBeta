@@ -136,9 +136,18 @@ export default function EditCollectionCardModal({ instance, onClose, onComplete 
               let currentPrice = cr.price || 0;
               if (isFoil || instance.isHolo) currentPrice = cr.foilPrice || currentPrice;
               if (instance.isReverseHolo) currentPrice = cr.reverseHoloPrice || cr.foilPrice || currentPrice;
-              // User mentioned signed adds value? Just to be safe, don't invent numbers if not in DB, 
-              // but TCGPlayer doesn't price signed cards explicitly, so we just use foil logic.
-              return `€${currentPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+              
+              let conditionMultiplier = 1.0;
+              if (condition === 'MINT') conditionMultiplier = 1.2;
+              if (condition === 'LIGHTLY_PLAYED') conditionMultiplier = 0.8;
+              if (condition === 'MODERATELY_PLAYED') conditionMultiplier = 0.65;
+              if (condition === 'HEAVILY_PLAYED') conditionMultiplier = 0.45;
+              if (condition === 'DAMAGED') conditionMultiplier = 0.25;
+
+              let calculated = currentPrice * conditionMultiplier;
+              if (isSigned) calculated += 8.00;
+
+              return `€${calculated.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             })()}
           </p>
 

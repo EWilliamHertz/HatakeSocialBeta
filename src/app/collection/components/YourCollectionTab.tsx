@@ -96,7 +96,18 @@ export default function YourCollectionTab({ instances, sealedInstances = [] }: {
     let p = inst.cardReference.price || 0;
     if (inst.isFoil || inst.isHolo) p = inst.cardReference.foilPrice || p;
     if (inst.isReverseHolo) p = inst.cardReference.reverseHoloPrice || inst.cardReference.foilPrice || p;
-    return p;
+    
+    let conditionMultiplier = 1.0;
+    if (inst.condition === 'MINT') conditionMultiplier = 1.2;
+    if (inst.condition === 'LIGHTLY_PLAYED') conditionMultiplier = 0.8;
+    if (inst.condition === 'MODERATELY_PLAYED') conditionMultiplier = 0.65;
+    if (inst.condition === 'HEAVILY_PLAYED') conditionMultiplier = 0.45;
+    if (inst.condition === 'DAMAGED') conditionMultiplier = 0.25;
+
+    let calculated = p * conditionMultiplier;
+    if (inst.isSigned) calculated += 8.00;
+    
+    return calculated;
   };
 
   // Sort instances
@@ -352,12 +363,11 @@ export default function YourCollectionTab({ instances, sealedInstances = [] }: {
               <div className="flex justify-between items-start gap-2 mt-1">
                 <h3 className="font-bold text-white truncate text-sm flex-1">{inst.cardReference.name}</h3>
                 {(() => {
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  const payload: any = inst.cardReference.apiPayload;
-                  if (!payload) return null;
-                  
-                  const setCode = payload.setCode;
-                  const collectorNumber = payload.collectorNumber;
+                  const setCode = inst.cardReference.setCode;
+                  // Scryfall payload has collector_number, TCGCSV has collectorNumber (but usually we don't have it for TCGCSV)
+                  // For MTG, it's in the payload. But actually, we don't have collectorNumber on the root schema.
+                  const payload: any = inst.cardReference.apiPayload || {};
+                  const collectorNumber = payload.collector_number || payload.collectorNumber;
                   
                   if (setCode || collectorNumber) {
                     return (
