@@ -67,6 +67,7 @@ export default function AdminProductsDashboard() {
         shippingPrice: product.shippingPrice || 0,
         notificationEmails: product.notificationEmails || '',
         imageUrl: product.imageUrl || '',
+        images: (product as any).images || [],
         isActive: product.isActive,
       });
     } else {
@@ -79,6 +80,7 @@ export default function AdminProductsDashboard() {
         shippingPrice: 0,
         notificationEmails: '',
         imageUrl: '',
+        images: [],
         isActive: true,
       });
     }
@@ -262,8 +264,12 @@ export default function AdminProductsDashboard() {
                       <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})} rows={3} className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500 transition-colors resize-none" placeholder="Product details..." />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Image URL</label>
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Main Image URL</label>
                       <input type="text" value={form.imageUrl} onChange={e => setForm({...form, imageUrl: e.target.value})} className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500 transition-colors" placeholder="https://..." />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Additional Images (Gallery URLs, one per line)</label>
+                      <textarea value={(form as any).images?.join('\n') || ''} onChange={e => setForm({...form, images: e.target.value.split('\n').filter(Boolean)})} rows={3} className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-cyan-500 transition-colors resize-none" placeholder="https://image1.jpg&#10;https://image2.jpg" />
                     </div>
                     <div className="flex items-center gap-3 bg-slate-950 p-4 rounded-xl border border-white/5">
                       <input type="checkbox" checked={form.isActive} onChange={e => setForm({...form, isActive: e.target.checked})} className="w-5 h-5 accent-cyan-500 rounded bg-slate-900 border-white/20" />

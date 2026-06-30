@@ -11,6 +11,7 @@ export default function ShopPage() {
 
   // Checkout Modal State
   const [checkoutProduct, setCheckoutProduct] = useState<any | null>(null);
+  const [viewProduct, setViewProduct] = useState<any | null>(null);
   const [buyerName, setBuyerName] = useState('');
   const [buyerEmail, setBuyerEmail] = useState('');
   const [shippingAddress, setShippingAddress] = useState('');
@@ -110,9 +111,12 @@ export default function ShopPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {filteredProducts.map(product => (
               <div key={product.id} className="bg-slate-900 border border-white/10 rounded-3xl overflow-hidden flex flex-col group hover:shadow-[0_0_30px_rgba(217,70,239,0.15)] hover:border-fuchsia-500/30 transition-all relative">
-                <div className="aspect-square bg-slate-950 relative overflow-hidden">
+                <div 
+                  className="aspect-square bg-slate-950 relative overflow-hidden cursor-pointer"
+                  onClick={() => setViewProduct(product)}
+                >
                   <img 
-                    src={product.imageUrl || 'https://i.imgur.com/B06rBhI.png'} 
+                    src={(product.images && product.images.length > 0) ? product.images[0] : (product.imageUrl || 'https://i.imgur.com/B06rBhI.png')} 
                     alt={product.name}
                     className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
                   />
@@ -275,6 +279,61 @@ export default function ShopPage() {
                   </button>
                 </div>
               )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+      {/* Image Gallery Modal */}
+      <AnimatePresence>
+        {viewProduct && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-hidden">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-4xl max-h-screen flex flex-col items-center justify-center"
+            >
+              <button 
+                onClick={() => setViewProduct(null)} 
+                className="absolute top-4 right-4 text-white hover:text-cyan-400 bg-slate-900/50 rounded-full p-3 z-10 transition-colors"
+              >
+                <X size={24} />
+              </button>
+              
+              <div className="w-full h-[80vh] flex items-center justify-center bg-slate-950/50 rounded-3xl overflow-hidden relative group">
+                <img 
+                  src={(viewProduct.images && viewProduct.images.length > 0) ? viewProduct.images[0] : (viewProduct.imageUrl || 'https://i.imgur.com/B06rBhI.png')} 
+                  alt={viewProduct.name}
+                  className="max-w-full max-h-full object-contain"
+                />
+                
+                {viewProduct.images && viewProduct.images.length > 1 && (
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 overflow-x-auto p-2 bg-black/50 backdrop-blur-md rounded-2xl max-w-[90%]">
+                    {viewProduct.images.map((img: string, idx: number) => (
+                      <button 
+                        key={idx}
+                        onClick={(e) => {
+                          // Very simple swap - we just set the main image to be the clicked one for now
+                          // In a full implementation, we'd have a currentImageIndex state
+                          const newProduct = { ...viewProduct };
+                          // swap index 0 and clicked index
+                          const temp = newProduct.images[0];
+                          newProduct.images[0] = img;
+                          newProduct.images[idx] = temp;
+                          setViewProduct(newProduct);
+                        }}
+                        className={`w-16 h-16 shrink-0 rounded-xl overflow-hidden border-2 transition-all ${viewProduct.images[0] === img ? 'border-cyan-500 scale-110' : 'border-transparent opacity-50 hover:opacity-100'}`}
+                      >
+                        <img src={img} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 text-center">
+                <h3 className="text-2xl font-black text-white">{viewProduct.name}</h3>
+                <p className="text-slate-400 mt-2 max-w-2xl mx-auto">{viewProduct.description}</p>
+              </div>
             </motion.div>
           </div>
         )}

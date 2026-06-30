@@ -25,7 +25,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { id, name, price, stock, stripeProductId, stripePriceId, isActive, weight, shippingPrice, notificationEmails } = body;
+    const { id, name, description, imageUrl, images, price, stock, stripeProductId, stripePriceId, isActive, weight, shippingPrice, notificationEmails } = body;
     
     if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 });
 
@@ -33,6 +33,9 @@ export async function PUT(request: Request) {
       where: { id },
       data: {
         name,
+        description,
+        imageUrl,
+        images: images || [],
         price,
         stock,
         stripeProductId,

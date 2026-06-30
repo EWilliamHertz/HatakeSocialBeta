@@ -23,7 +23,7 @@ async function run() {
       update: {
         name: product.name,
         imageUrl: product.imageUrl,
-        images: [product.imageUrl], // Initializing gallery with the main image
+        images: product.images?.length > 0 ? product.images : [product.imageUrl],
         price: euroPrice,
         stock: product.stock || 10
       },
@@ -32,7 +32,7 @@ async function run() {
         name: product.name,
         description: product.description || `Imported from Hatake.eu`,
         imageUrl: product.imageUrl,
-        images: [product.imageUrl], // Initializing gallery
+        images: product.images?.length > 0 ? product.images : [product.imageUrl],
         price: euroPrice,
         stock: product.stock || 10,
         isActive: true

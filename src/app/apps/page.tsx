@@ -17,49 +17,46 @@ export default function AppsDashboard() {
           </p>
         </div>
 
-        {/* Euryx Arena flagship card */}
-        <a
-          href={EURYX_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="group block relative rounded-3xl p-10 overflow-hidden border border-cyan-500/40 hover:border-cyan-400 transition-all"
+        {/* Hatake Arena flagship card */}
+        <Link
+          href="/play"
+          className="group block relative rounded-3xl p-10 overflow-hidden border border-fuchsia-500/40 hover:border-fuchsia-400 transition-all"
           style={{
             background:
-              'radial-gradient(circle at 20% 20%, rgba(6,182,212,0.25), transparent 50%), radial-gradient(circle at 80% 80%, rgba(217,70,239,0.25), transparent 50%), linear-gradient(135deg, #0f172a, #020617)',
-            boxShadow: '0 0 50px rgba(6,182,212,0.25), 0 0 80px rgba(217,70,239,0.15)',
+              'radial-gradient(circle at 20% 20%, rgba(217,70,239,0.25), transparent 50%), radial-gradient(circle at 80% 80%, rgba(6,182,212,0.25), transparent 50%), linear-gradient(135deg, #0f172a, #020617)',
+            boxShadow: '0 0 50px rgba(217,70,239,0.25), 0 0 80px rgba(6,182,212,0.15)',
           }}
         >
-          <div className="absolute -inset-2 bg-gradient-to-br from-cyan-500/30 to-fuchsia-500/30 opacity-0 group-hover:opacity-100 blur-3xl transition-all duration-500 -z-10" />
+          <div className="absolute -inset-2 bg-gradient-to-br from-fuchsia-500/30 to-cyan-500/30 opacity-0 group-hover:opacity-100 blur-3xl transition-all duration-500 -z-10" />
           <div className="absolute top-4 right-4">
-            <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold tracking-[0.2em] uppercase bg-cyan-500/15 text-cyan-300 border border-cyan-500/40 animate-pulse">
-              NEW · LIVE
+            <span className="px-3 py-1 rounded-full text-[10px] font-mono font-bold tracking-[0.2em] uppercase bg-fuchsia-500/15 text-fuchsia-300 border border-fuchsia-500/40 animate-pulse">
+              MULTI-CLIENT · LIVE
             </span>
           </div>
           <div className="flex items-start gap-8">
             <div
               className="w-20 h-20 rounded-2xl flex items-center justify-center text-white flex-shrink-0 group-hover:scale-110 transition-transform"
               style={{
-                background: 'linear-gradient(135deg, #06b6d4, #d946ef)',
-                boxShadow: '0 0 30px rgba(6,182,212,0.6)',
+                background: 'linear-gradient(135deg, #d946ef, #06b6d4)',
+                boxShadow: '0 0 30px rgba(217,70,239,0.6)',
               }}
             >
               <Swords size={40} />
             </div>
             <div className="flex-1">
               <h2 className="text-4xl font-black text-white mb-2 tracking-tight">
-                Euryx <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-400">Arena</span>
+                Hatake <span className="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-cyan-400">Arena</span>
               </h2>
               <p className="text-slate-300 leading-relaxed max-w-2xl">
-                Our purely digital Pokémon TCG client. Build 60-card decks from the Hatake catalog,
-                queue live ranked matches, and battle on a hyper-modern game board.
-                One Hatake account — chat &amp; decks sync across both apps.
+                The ultimate combat portal. Access Ouyrie (MTG) and Euryx (Pokémon) from a unified digital arena. 
+                Build 60-card decks directly from your Hatake collection, queue for live matchmaking, and dominate the seasonal ladder.
               </p>
-              <div className="mt-4 flex items-center gap-2 text-cyan-400 text-sm font-bold uppercase tracking-widest">
-                Enter Arena →
+              <div className="mt-4 flex items-center gap-2 text-fuchsia-400 text-sm font-bold uppercase tracking-widest">
+                Enter The Portal →
               </div>
             </div>
           </div>
-        </a>
+        </Link>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <Link href="/tools/booster" className="group block bg-slate-900 border border-white/5 rounded-3xl p-8 shadow-2xl relative overflow-hidden transition-all hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(6,182,212,0.3)] hover:border-cyan-500/50">
