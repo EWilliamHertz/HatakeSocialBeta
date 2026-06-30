@@ -1,4 +1,4 @@
-import prisma from '../../../../lib/db.js';
+import prisma from '@/lib/db';
 
 export async function GET(request, { params }) {
   const { id } = params;

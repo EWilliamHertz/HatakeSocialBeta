@@ -1,4 +1,4 @@
-import { lobbies } from '../../../lib/socketHandler.js';
+import { lobbies } from '@/lib/socketHandler.js';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function GET() {
