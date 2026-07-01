@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Swords, Plus, Play, Sparkles, TrendingUp, Layers, Filter, Globe, Loader2 } from 'lucide-react';
+import { Swords, Plus, Play, Sparkles, TrendingUp, Layers, Filter, Globe, Loader2, Heart, MessageCircle, Edit2, Trash2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HatakeDeckBuilder } from '@/components/HatakeDeckBuilder';
 import { DeckViewer } from '@/components/DeckViewer';
+import { GAME_FORMATS } from '@/lib/formats';
 
 type GameType = 'MAGIC' | 'POKEMON' | 'ONE_PIECE' | 'NARUTO' | 'LORCANA' | 'RIFTBOUND';
 type TabType = 'META' | 'COMMUNITY' | 'YOURS';
@@ -20,6 +22,53 @@ export default function DeckHubPage() {
   const [editingDeck, setEditingDeck] = useState<any>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [viewingDeck, setViewingDeck] = useState<any>(null);
+
+  const router = useRouter();
+
+  const handlePlay = (game: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (game === 'MAGIC') router.push('/play/mtg');
+    else if (game === 'POKEMON') router.push('/play/pokemon');
+    else router.push(`/play/${game.toLowerCase().replace('_', '-')}`);
+  };
+
+  const handleDeleteDeck = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm('Are you sure you want to delete this deck?')) return;
+    try {
+      const res = await fetch(`/api/decks?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setMyDecks(myDecks.filter(d => d.id !== id));
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handlePlayMeta = async (deck: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const res = await fetch('/api/decks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: deck.name + ' (Imported)',
+          game: deck.game,
+          format: deck.format,
+          isPublic: false,
+          cards: deck.cards,
+          sideboard: deck.sideboard || []
+        })
+      });
+      if (res.ok) {
+        handlePlay(deck.game, e);
+      } else {
+        alert('Failed to import deck');
+      }
+    } catch (err) {
+      alert('Network error');
+    }
+  };
 
   // Data state
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -58,6 +107,8 @@ export default function DeckHubPage() {
 
   // Fetch Meta Decks
   const [metaDecks, setMetaDecks] = useState<any[]>([]);
+  const [metaFormatFilter, setMetaFormatFilter] = useState<string>('All Formats');
+  
   useEffect(() => {
     if (activeTab === 'META') {
       setLoading(true);
@@ -165,13 +216,12 @@ export default function DeckHubPage() {
                   </button>
                 </div>
                 
-                {/* Filters */}
                 <div className="bg-slate-900 border border-white/5 p-4 rounded-xl mb-6 flex gap-4">
                   <select className="bg-slate-950 border border-white/10 rounded-lg px-4 py-2 text-sm text-white outline-none">
                     <option>All Formats</option>
-                    <option>Standard</option>
-                    <option>Modern</option>
-                    <option>Commander</option>
+                    {GAME_FORMATS[selectedGame]?.map(fmt => (
+                      <option key={fmt} value={fmt}>{fmt}</option>
+                    ))}
                   </select>
                   <button className="px-4 py-2 bg-slate-950 border border-white/10 rounded-lg text-sm text-white hover:bg-white/5 flex items-center gap-2">
                     <Filter size={14} /> More Filters
@@ -194,17 +244,25 @@ export default function DeckHubPage() {
                       const totalCards = Array.isArray(deck.cards) ? deck.cards.reduce((acc: number, c: any) => acc + (c.count || 0), 0) : 0;
                       
                       return (
-                      <div key={deck.id} onClick={() => { setEditingDeck(deck); setIsBuilding(true); }} className="bg-slate-900 border border-white/5 p-6 rounded-3xl hover:border-cyan-500/50 cursor-pointer group transition-all">
+                      <div key={deck.id} className="bg-slate-900 border border-white/5 p-6 rounded-3xl hover:border-cyan-500/50 group transition-all flex flex-col">
                         <div className="flex justify-between items-start mb-4">
                           <div>
                             <h4 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">{deck.name}</h4>
                             <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 bg-slate-950 px-2 py-1 rounded-md border border-white/5">{deck.format || 'Casual'}</span>
                           </div>
-                          <div className="w-10 h-10 bg-slate-950 rounded-full flex items-center justify-center border border-white/5 group-hover:bg-cyan-500/20 group-hover:border-cyan-500/50 transition-all">
-                            <Play size={16} className="text-cyan-400 ml-1" />
+                          <div className="flex gap-2">
+                            <button onClick={(e) => { e.stopPropagation(); setEditingDeck(deck); setIsBuilding(true); }} className="w-10 h-10 bg-slate-950 rounded-full flex items-center justify-center border border-white/5 hover:bg-slate-800 transition-all text-slate-400 hover:text-white">
+                              <Edit2 size={16} />
+                            </button>
+                            <button onClick={(e) => handlePlay(deck.game, e)} className="w-10 h-10 bg-slate-950 rounded-full flex items-center justify-center border border-white/5 hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all text-cyan-400">
+                              <Play size={16} className="ml-1" />
+                            </button>
+                            <button onClick={(e) => handleDeleteDeck(deck.id, e)} className="w-10 h-10 bg-slate-950 rounded-full flex items-center justify-center border border-white/5 hover:bg-red-500/20 hover:border-red-500/50 transition-all text-red-400">
+                              <Trash2 size={16} />
+                            </button>
                           </div>
                         </div>
-                        <div className="flex justify-between items-end">
+                        <div className="flex justify-between items-end mt-auto">
                           <div>
                             <p className="text-xs text-slate-500 uppercase font-bold mb-1">Cards</p>
                             <p className="text-white font-bold">{totalCards}</p>
@@ -230,6 +288,27 @@ export default function DeckHubPage() {
                   </div>
                 </div>
 
+                <div className="bg-fuchsia-500/10 border border-fuchsia-500/30 rounded-xl p-4 mb-6 flex items-start gap-3">
+                  <Play className="text-fuchsia-400 mt-0.5 shrink-0" size={18} />
+                  <div>
+                    <p className="text-white font-bold">Pro-tip!</p>
+                    <p className="text-sm text-slate-300">You can playtest these meta decks instantly in our game client. Just click the Play button on any deck to add it to your library and launch the client.</p>
+                  </div>
+                </div>
+
+                <div className="bg-slate-900 border border-white/5 p-4 rounded-xl mb-6 flex gap-4">
+                  <select 
+                    value={metaFormatFilter} 
+                    onChange={(e) => setMetaFormatFilter(e.target.value)} 
+                    className="bg-slate-950 border border-white/10 rounded-lg px-4 py-2 text-sm text-white outline-none"
+                  >
+                    <option>All Formats</option>
+                    {GAME_FORMATS[selectedGame]?.map(fmt => (
+                      <option key={fmt} value={fmt}>{fmt}</option>
+                    ))}
+                  </select>
+                </div>
+
                 {loading ? (
                   <div className="flex justify-center py-20 text-fuchsia-500"><Loader2 className="animate-spin" size={32} /></div>
                 ) : metaDecks.length === 0 ? (
@@ -240,7 +319,7 @@ export default function DeckHubPage() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {metaDecks.map(deck => {
+                    {(metaFormatFilter === 'All Formats' ? metaDecks : metaDecks.filter(d => d.format.toLowerCase() === metaFormatFilter.toLowerCase())).map(deck => {
                       const deckPrice = Array.isArray(deck.cards) ? deck.cards.reduce((acc: number, c: any) => acc + (c.price || 0) * (c.count || 1), 0) : 0;
                       
                       return (
@@ -263,9 +342,14 @@ export default function DeckHubPage() {
                               <p className="text-emerald-400 font-black">€{deckPrice.toFixed(2)}</p>
                             </div>
                           </div>
-                          <button className="w-full mt-4 py-2 bg-slate-950 hover:bg-slate-800 border border-white/10 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all">
-                            <Layers size={14} /> View Deck
-                          </button>
+                          <div className="flex gap-2 mt-4">
+                            <button className="flex-1 py-2 bg-slate-950 hover:bg-slate-800 border border-white/10 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all">
+                              <Layers size={14} /> View Deck
+                            </button>
+                            <button onClick={(e) => handlePlayMeta(deck, e)} className="w-10 h-10 shrink-0 bg-fuchsia-600 hover:bg-fuchsia-500 text-white rounded-xl flex items-center justify-center transition-all shadow-lg">
+                              <Play size={16} className="ml-0.5" />
+                            </button>
+                          </div>
                         </div>
                       </div>
                     )})}
@@ -320,6 +404,19 @@ export default function DeckHubPage() {
                               <p className="text-xs text-slate-500 uppercase font-bold mb-1">Author</p>
                               <p className="text-white font-black text-sm">@{deck.owner?.handle}</p>
                             </div>
+                          </div>
+                          <div className="flex justify-between items-center mt-4 pt-3 border-t border-white/5 text-slate-400">
+                            <div className="flex gap-4">
+                              <button className="flex items-center gap-1 hover:text-rose-400 transition-colors">
+                                <Heart size={14} /> <span className="text-xs font-bold">{Math.floor(Math.random() * 100) + 1}</span>
+                              </button>
+                              <button className="flex items-center gap-1 hover:text-indigo-400 transition-colors">
+                                <MessageCircle size={14} /> <span className="text-xs font-bold">{Math.floor(Math.random() * 30)}</span>
+                              </button>
+                            </div>
+                            <button onClick={(e) => handlePlay(deck.game, e)} className="w-8 h-8 bg-indigo-500/10 rounded-full flex items-center justify-center border border-indigo-500/30 hover:bg-indigo-500 hover:text-white transition-all text-indigo-400">
+                              <Play size={12} className="ml-0.5" />
+                            </button>
                           </div>
                         </div>
                       </div>

@@ -93,7 +93,7 @@ export default function AppsDashboard() {
               </div>
               <div>
                 <h2 className="text-2xl font-black text-white mb-2 group-hover:text-fuchsia-400 transition-colors">Developer Portal &amp; API</h2>
-                <p className="text-slate-400 leading-relaxed">Access our comprehensive European TCG database via API. Free tier included for developers.</p>
+                <p className="text-slate-400 leading-relaxed">Access our comprehensive TCG database via API. Free tier included for developers.</p>
               </div>
             </div>
           </Link>

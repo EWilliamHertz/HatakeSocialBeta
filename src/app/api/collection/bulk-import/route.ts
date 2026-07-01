@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     let cards: any[] = [];
     
     // Search local database using a single IN query to avoid connection pool exhaustion
-    const names = lines.slice(0, 100).map((l: any) => l.name);
+    const names = lines.slice(0, 200).map((l: any) => l.name);
     
     const dbCards = await db.cardReference.findMany({
       where: {
@@ -23,8 +23,9 @@ export async function POST(request: Request) {
       orderBy: { price: 'desc' }
     });
 
-    cards = lines.slice(0, 100).map((l: any) => {
-      const c = dbCards.find((dc: any) => dc.name.toLowerCase() === l.name.toLowerCase());
+    cards = lines.slice(0, 200).map((l: any) => {
+      const versions = dbCards.filter((dc: any) => dc.name.toLowerCase() === l.name.toLowerCase());
+      const c = versions.find(v => v.imageUrl) || versions[0];
 
       if (c) {
         return {

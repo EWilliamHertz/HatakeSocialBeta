@@ -79,3 +79,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  const token = cookies().get('hatake_session')?.value;
+  if (!token) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  try {
+    const user = await decrypt(token);
+    if (!user || !user.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) return NextResponse.json({ error: 'Missing deck ID' }, { status: 400 });
+
+    const existing = await db.deck.findUnique({ where: { id } });
+    if (!existing || existing.ownerId !== user.id) {
+      return NextResponse.json({ error: 'Not authorized or deck not found' }, { status: 403 });
+    }
+
+    await db.deck.delete({ where: { id } });
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('Delete Deck Error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

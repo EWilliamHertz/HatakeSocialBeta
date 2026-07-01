@@ -16,7 +16,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Hatake Social (Beta)",
-  description: "Uniting the European TCG Scene",
+  description: "Uniting the TCG Scene",
   manifest: "/manifest.json",
 };
 

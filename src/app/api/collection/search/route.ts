@@ -32,8 +32,6 @@ export async function GET(request: Request) {
       game === 'LORCANA' ||
       game === 'RIFTBOUND'
     ) {
-      const element = searchParams.get('element');
-      const cost = searchParams.get('cost');
       const language = searchParams.get('language');
 
       let searchName = query || '';
@@ -68,11 +66,13 @@ export async function GET(request: Request) {
         orderBy: sort === 'PRICE_DESC' ? { price: 'desc' } :
                  sort === 'PRICE_ASC' ? { price: 'asc' } :
                  sort === 'NAME_ASC' ? { name: 'asc' } : undefined,
-        skip: (page - 1) * pageSize,
-        take: pageSize
+        skip: (page - 1) * 200,
+        take: 200
       });
 
-      externalCards = cards.map(c => ({
+      externalCards = cards
+        .slice(0, pageSize)
+        .map(c => ({
         apiId: c.apiId,
         name: c.name,
         game: game,

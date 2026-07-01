@@ -13,6 +13,12 @@ export function DeckViewer({ deck, onClose }: { deck: any, onClose: () => void }
   const sideCount = sideboard.reduce((a, c) => a + (c.count || 1), 0);
   const totalPrice = cards.reduce((a, c) => a + ((c.price || 0) * (c.count || 1)), 0);
 
+  const getCardImage = (c: any) => {
+    let url = c.imageUrl || c.apiPayload?.image_uris?.normal || c.apiPayload?.card_faces?.[0]?.image_uris?.normal;
+    if (url) return `/api/proxy?url=${encodeURIComponent(url)}`;
+    return 'https://i.imgur.com/B06rBhI.png';
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 pb-32 pt-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Header */}
@@ -56,7 +62,7 @@ export function DeckViewer({ deck, onClose }: { deck: any, onClose: () => void }
               {mainboard.map((c, i) => (
                 <div key={i} className="relative group bg-slate-950 border border-white/5 rounded-2xl overflow-hidden p-2 flex flex-col">
                   <div className="relative aspect-[2.5/3.5] rounded-xl overflow-hidden mb-2">
-                    <img src={c.imageUrl ? `/api/proxy?url=${encodeURIComponent(c.imageUrl)}` : 'https://i.imgur.com/B06rBhI.png'} alt={c.name} className="w-full h-full object-cover" />
+                    <img src={getCardImage(c)} alt={c.name} className="w-full h-full object-cover" />
                     <div className="absolute top-2 right-2 backdrop-blur-md px-2 py-1 rounded text-xs font-black text-white border z-10 bg-black/80 border-white/20">
                       {c.count}x
                     </div>
@@ -79,7 +85,7 @@ export function DeckViewer({ deck, onClose }: { deck: any, onClose: () => void }
               {sideboard.map((c, i) => (
                 <div key={i} className="relative group bg-slate-950 border border-white/5 rounded-2xl overflow-hidden p-2 flex flex-col">
                   <div className="relative aspect-[2.5/3.5] rounded-xl overflow-hidden mb-2">
-                    <img src={c.imageUrl ? `/api/proxy?url=${encodeURIComponent(c.imageUrl)}` : 'https://i.imgur.com/B06rBhI.png'} alt={c.name} className="w-full h-full object-cover" />
+                    <img src={getCardImage(c)} alt={c.name} className="w-full h-full object-cover" />
                     <div className="absolute top-2 right-2 backdrop-blur-md px-1 py-0.5 rounded text-[10px] font-black text-white border z-10 bg-black/80 border-white/20">
                       {c.count}x
                     </div>

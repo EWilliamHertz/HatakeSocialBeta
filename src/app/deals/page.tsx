@@ -3,12 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { Handshake, ArrowUpRight, ArrowDownLeft, History, Bell, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { DealProposalModal } from './components/DealProposalModal';
 
 export default function DealsPage() {
   const [deals, setDecks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'ALL' | 'PENDING' | 'COMPLETED'>('ALL');
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [showProposalModal, setShowProposalModal] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -71,18 +73,23 @@ export default function DealsPage() {
             </h1>
             <p className="text-slate-400 text-lg">Manage your active, incoming, and outgoing offers from the market.</p>
           </div>
-          {incomingOffers.length > 0 && (
-            <div className="bg-slate-900 border border-emerald-500/30 rounded-2xl p-4 flex items-center gap-4 shadow-xl">
-              <div className="bg-emerald-500/20 p-3 rounded-full relative">
-                <Bell size={24} className="text-emerald-400 animate-pulse" />
-                <span className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-slate-900"></span>
+          <div className="flex items-center gap-4">
+            <button onClick={() => setShowProposalModal(true)} className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-400 hover:to-cyan-400 text-white font-black rounded-xl shadow-lg transition-all flex items-center gap-2">
+              Deal With Someone
+            </button>
+            {incomingOffers.length > 0 && (
+              <div className="bg-slate-900 border border-emerald-500/30 rounded-2xl p-4 flex items-center gap-4 shadow-xl">
+                <div className="bg-emerald-500/20 p-3 rounded-full relative">
+                  <Bell size={24} className="text-emerald-400 animate-pulse" />
+                  <span className="absolute top-1 right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-slate-900"></span>
+                </div>
+                <div>
+                  <p className="text-white font-bold">New Offer!</p>
+                  <p className="text-xs text-slate-500">You have {incomingOffers.length} pending offer(s).</p>
+                </div>
               </div>
-              <div>
-                <p className="text-white font-bold">New Offer!</p>
-                <p className="text-xs text-slate-500">You have {incomingOffers.length} pending offer(s).</p>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Trade Dashboard Stats */}
@@ -216,6 +223,7 @@ export default function DealsPage() {
           </div>
         </div>
       </div>
+      {showProposalModal && <DealProposalModal onClose={() => setShowProposalModal(false)} />}
     </div>
   );
 }

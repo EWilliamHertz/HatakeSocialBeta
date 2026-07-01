@@ -39,7 +39,7 @@ export default function ApiDeveloperPortal() {
             Build the Future of TCG
           </h1>
           <p className="text-xl text-slate-400 max-w-3xl mx-auto leading-relaxed">
-            Access the most comprehensive European TCG database. Live market prices, sealed vaults, deck analytics, and trading mechanics across MTG, Pokémon, One Piece, and Naruto.
+            Access the most comprehensive TCG database. Live market prices, sealed vaults, deck analytics, and trading mechanics across MTG, Pokémon, One Piece, and Naruto.
           </p>
         </div>
       </div>
@@ -167,7 +167,7 @@ export default function ApiDeveloperPortal() {
               <div className="bg-emerald-500/10 p-3 rounded-lg h-fit"><DollarSign className="text-emerald-400" size={24} /></div>
               <div>
                 <h4 className="font-bold text-white mb-1">Live Market Pricing</h4>
-                <p className="text-sm text-slate-400">Access real-time aggregated market prices and active listings across the European market.</p>
+                <p className="text-sm text-slate-400">Access real-time aggregated market prices and active listings across the market.</p>
               </div>
             </div>
             <div className="bg-slate-950 border border-white/5 p-6 rounded-2xl flex gap-4 hover:border-white/20 transition-colors">

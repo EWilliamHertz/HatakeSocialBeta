@@ -108,7 +108,7 @@ export default async function ProfilePage() {
               <ReputationStars score={user.reputationScore} totalReviews={user.totalReviews} size={16} />
             </div>
             <p className="text-slate-400 flex items-center justify-center md:justify-start gap-2">
-              <MapPin size={16} /> European Server Region
+              <MapPin size={16} /> Server Region
             </p>
           </div>
 
