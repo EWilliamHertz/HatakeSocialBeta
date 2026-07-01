@@ -254,6 +254,7 @@ export function DeckBuilder({ initialDeck, onBack }: { initialDeck: any, onBack:
   }, 0);
 
   const displayedCards = Object.values(availableCards).filter(c => {
+    if (deckCounts[c.id] && deckCounts[c.id] > 0) return true;
     if (!searchQuery && !globalSearch) return c.maxAvailable > 0;
     if (!searchQuery && globalSearch) return true;
     return c.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -349,7 +350,7 @@ export function DeckBuilder({ initialDeck, onBack }: { initialDeck: any, onBack:
                     {selectedGames[0] === 'NARUTO' ? (
                       <span className="text-slate-500 font-bold text-sm">N/A</span>
                     ) : (
-                      `€${totalDeckPrice.toFixed(2)}`
+                      `$${totalDeckPrice.toFixed(2)}`
                     )}
                   </p>
                 </div>
@@ -367,9 +368,14 @@ export function DeckBuilder({ initialDeck, onBack }: { initialDeck: any, onBack:
                         <span className={isMissing ? 'text-red-400' : ''}>{card?.name}</span>
                         {isMissing && <span className="text-[9px] bg-red-500/20 text-red-400 px-1 rounded uppercase">Missing {count - (card?.maxAvailable||0)}</span>}
                       </span>
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity">
                         <button onClick={() => handleRemove(id)} className="w-6 h-6 bg-slate-800 rounded flex items-center justify-center text-slate-400 hover:text-white"><Minus size={12} /></button>
                         <button onClick={() => handleAdd(id)} className="w-6 h-6 bg-slate-800 rounded flex items-center justify-center text-slate-400 hover:text-white"><Plus size={12} /></button>
+                        <button onClick={() => {
+                          const updated = { ...deckCounts };
+                          delete updated[id];
+                          setDeckCounts(updated);
+                        }} className="w-6 h-6 bg-red-900/40 rounded flex items-center justify-center text-red-400 hover:text-white"><X size={12} /></button>
                       </div>
                     </div>
                   );

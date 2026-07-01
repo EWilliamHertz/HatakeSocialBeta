@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Trophy, ArrowLeft, Swords } from 'lucide-react';
 import Link from 'next/link';
 
-export default function LeaderboardPage() {
+function LeaderboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const gameQuery = searchParams?.get('game') || 'ALL';
