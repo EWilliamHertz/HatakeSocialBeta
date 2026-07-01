@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Swords, Plus, Play, Sparkles, TrendingUp, Layers, Filter, Globe, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HatakeDeckBuilder } from "./../components/HatakeDeckBuilder";
+import { HatakeDeckBuilder } from '@/components/HatakeDeckBuilder';
 import { DeckViewer } from '@/components/DeckViewer';
 
 type GameType = 'MAGIC' | 'POKEMON' | 'ONE_PIECE' | 'NARUTO' | 'LORCANA' | 'RIFTBOUND';
