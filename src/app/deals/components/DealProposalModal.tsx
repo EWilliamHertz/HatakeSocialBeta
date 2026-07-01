@@ -10,7 +10,9 @@ interface DealProposalModalProps {
 export function DealProposalModal({ onClose }: DealProposalModalProps) {
   const [step, setStep] = useState(1);
   const [searchUser, setSearchUser] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [isSearching, setIsSearching] = useState(false);
   
   const [myCards, setMyCards] = useState<any[]>([]);
   const [theirCards, setTheirCards] = useState<any[]>([]);
@@ -32,24 +34,34 @@ export function DealProposalModal({ onClose }: DealProposalModalProps) {
       .catch(console.error);
   }, []);
 
-  const handleSearchUser = async () => {
-    if (!searchUser) return;
+  const handleSearchUser = async (query: string) => {
+    setSearchUser(query);
+    if (!query || query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+    setIsSearching(true);
     try {
-      // In a real app, we would search /api/users, here we simulate finding a user by username
-      const res = await fetch(`/api/users/profile?username=${searchUser}`);
+      const res = await fetch(`/api/users/search?q=${encodeURIComponent(query)}`);
       if (res.ok) {
         const data = await res.json();
-        setSelectedUser(data.user);
-        // fetch their collection
-        const cRes = await fetch(`/api/collection/public?userId=${data.user.id}`);
-        if (cRes.ok) {
-          const cData = await cRes.json();
-          setTheirCards(cData.cards || []);
-        }
-        setStep(2);
-      } else {
-        alert("User not found");
+        setSearchResults(data.users || []);
       }
+    } catch (e) {
+      console.error(e);
+    }
+    setIsSearching(false);
+  };
+
+  const selectPartner = async (user: any) => {
+    setSelectedUser(user);
+    try {
+      const cRes = await fetch(`/api/collection/public?userId=${user.id}`);
+      if (cRes.ok) {
+        const cData = await cRes.json();
+        setTheirCards(cData.cards || []);
+      }
+      setStep(2);
     } catch (e) {
       console.error(e);
     }
@@ -115,19 +127,40 @@ export function DealProposalModal({ onClose }: DealProposalModalProps) {
         <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-6 custom-scrollbar">
           
           {step === 1 && (
-            <div className="flex flex-col items-center justify-center py-20">
-              <h3 className="text-xl font-bold text-white mb-4">Who do you want to trade with?</h3>
-              <div className="flex gap-2 w-full max-w-md">
+            <div className="flex flex-col items-center justify-center py-10 w-full max-w-lg mx-auto">
+              <h3 className="text-2xl font-bold text-white mb-6">Who do you want to trade with?</h3>
+              <div className="flex gap-2 w-full relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
                 <input 
                   type="text" 
                   value={searchUser}
-                  onChange={e => setSearchUser(e.target.value)}
-                  placeholder="Enter their username..."
-                  className="flex-1 bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-emerald-500"
+                  onChange={e => handleSearchUser(e.target.value)}
+                  placeholder="Search by username or name..."
+                  className="w-full bg-slate-950 border border-white/10 rounded-xl pl-12 pr-4 py-4 text-lg text-white outline-none focus:border-emerald-500 transition-colors"
                 />
-                <button onClick={handleSearchUser} className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold px-6 py-3 rounded-xl transition-colors">
-                  Find
-                </button>
+              </div>
+              
+              <div className="w-full mt-4 flex flex-col gap-2">
+                {isSearching && <p className="text-slate-400 text-center py-4">Searching...</p>}
+                {!isSearching && searchUser.length >= 2 && searchResults.length === 0 && (
+                  <p className="text-slate-400 text-center py-4">No users found.</p>
+                )}
+                {searchResults.map((user) => (
+                  <div 
+                    key={user.id} 
+                    onClick={() => selectPartner(user)}
+                    className="flex items-center justify-between bg-slate-800 hover:bg-slate-700 border border-white/5 rounded-xl p-4 cursor-pointer transition-colors"
+                  >
+                    <div>
+                      <p className="text-white font-bold text-lg">{user.username}</p>
+                      {user.shippingName && <p className="text-slate-400 text-sm">{user.shippingName}</p>}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-emerald-400 font-medium">Reputation: {user.reputationScore}</span>
+                      <Check className="text-slate-500" size={20} />
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
