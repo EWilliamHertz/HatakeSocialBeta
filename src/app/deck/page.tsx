@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Swords, Plus, Play, Sparkles, TrendingUp, Layers, Filter, Globe, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DeckBuilder } from '@/components/DeckBuilder';
+import { HatakeDeckBuilder } from "./../components/HatakeDeckBuilder";
 import { DeckViewer } from '@/components/DeckViewer';
 
 type GameType = 'MAGIC' | 'POKEMON' | 'ONE_PIECE' | 'NARUTO' | 'LORCANA' | 'RIFTBOUND';
@@ -78,8 +78,8 @@ export default function DeckHubPage() {
 
   if (isBuilding) {
     return (
-      <DeckBuilder 
-        initialDeck={editingDeck} 
+      <HatakeDeckBuilder 
+        initialDeck={editingDeck}
         onBack={() => {
           setIsBuilding(false);
           // Refresh list on return
