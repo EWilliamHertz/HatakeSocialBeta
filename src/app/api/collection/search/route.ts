@@ -40,22 +40,30 @@ export async function GET(request: Request) {
       // If filtering for Japanese, TCGCSV appends "Japanese" to the product name
       if (language === 'Japanese') {
         searchName = searchName ? `${searchName} Japanese` : 'Japanese';
-      } else if (language === 'English' && !searchName) {
-        // If English, we might exclude "Japanese" but Prisma doesn't support NOT contains easily in one field alongside contains without AND.
-        // We will just do a standard search.
       }
+
+      const searchTerms = searchName ? searchName.split(/\s+/).filter(Boolean) : [];
+      const andConditions: any[] = [];
+      
+      if (searchTerms.length > 0) {
+        searchTerms.forEach(term => {
+          andConditions.push({ name: { contains: term, mode: 'insensitive' } });
+        });
+      }
+      if (setCode) {
+        andConditions.push({ setCode: { equals: setCode, mode: 'insensitive' } });
+      }
+      if (language === 'English') {
+        andConditions.push({ NOT: { name: { contains: 'Japanese', mode: 'insensitive' } } });
+      }
+      if (sort === 'PRICE_DESC') {
+        andConditions.push({ price: { gt: 0 } });
+      }
+      andConditions.push({ game: game });
 
       const cards = await prisma.cardReference.findMany({
         where: {
-          game: game,
-          name: searchName ? { contains: searchName, mode: 'insensitive' } : undefined,
-          setCode: setCode ? { equals: setCode, mode: 'insensitive' } : undefined,
-          // Language exclusion for English
-          ...(language === 'English' ? {
-            NOT: { name: { contains: 'Japanese', mode: 'insensitive' } }
-          } : {}),
-          // Filter out 0 price cards if sorting by highest price to avoid showing unpriced cards
-          ...(sort === 'PRICE_DESC' ? { price: { gt: 0 } } : {})
+          AND: andConditions.length > 0 ? andConditions : undefined
         },
         orderBy: sort === 'PRICE_DESC' ? { price: 'desc' } :
                  sort === 'PRICE_ASC' ? { price: 'asc' } :

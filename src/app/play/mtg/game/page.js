@@ -19,7 +19,7 @@ import GameLog        from '@/components/GameLog';
 // ─── tiny helpers ──────────────────────────────────────────────
 const IMG = (uri) =>
   uri
-    ? `/api/image-proxy?url=${encodeURIComponent(uri)}`
+    ? `/api/proxy?url=${encodeURIComponent(uri)}`
     : 'https://upload.wikimedia.org/wikipedia/en/a/aa/Magic_the_gathering_card_back.jpg';
 
 // ─── Bottoming Interface ───────────────────────────────────────

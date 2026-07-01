@@ -6,11 +6,8 @@ import { decrypt } from '@/lib/auth';
 export async function GET() {
   try {
     const giveaways = await db.giveaway.findMany({
-      where: {
-        isActive: true,
-      },
       orderBy: {
-        expiresAt: 'asc'
+        expiresAt: 'desc'
       }
     });
     return NextResponse.json(giveaways);

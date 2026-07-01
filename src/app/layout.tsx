@@ -23,6 +23,7 @@ export const metadata: Metadata = {
 import HaloNav from "@/components/HaloNav";
 import Footer from "@/components/Footer";
 import GlobalNotifications from "@/components/GlobalNotifications";
+import VerifyBanner from "@/components/VerifyBanner";
 
 import { I18nProvider } from "@/lib/i18nContext";
 
@@ -38,6 +39,7 @@ export default function RootLayout({
       >
         <I18nProvider>
           <div className="min-h-screen flex flex-col">
+            <VerifyBanner />
             <main className="flex-grow">
               {children}
             </main>

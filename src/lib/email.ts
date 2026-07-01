@@ -29,6 +29,9 @@ export const sendVerificationEmail = async (email: string, username: string, ver
     <body>
       <div class="container">
         <div class="card">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <a href="https://hatake.social"><img src="https://i.imgur.com/B06rBhI.png" alt="Hatake Social" width="120" style="border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.1);" /></a>
+          </div>
           <h1>Welcome to Hatake Social!</h1>
           <p>Hi <strong>${username}</strong>,</p>
           <p>You're almost there! We just need to verify your email address to ensure you're a real human and to protect our marketplace auctions. Please click the button below to verify your account.</p>
@@ -36,6 +39,9 @@ export const sendVerificationEmail = async (email: string, username: string, ver
           <p style="margin-top: 30px; font-size: 14px;">If you did not create an account on Hatake Social, you can safely ignore this email.</p>
         </div>
         <div class="footer">
+          <div style="margin-bottom: 10px;">
+            <a href="https://hatake.social"><img src="https://i.imgur.com/B06rBhI.png" alt="Hatake Social" width="60" style="border-radius: 50%; opacity: 0.5;" /></a>
+          </div>
           &copy; ${new Date().getFullYear()} Hatake Social. All rights reserved.
         </div>
       </div>

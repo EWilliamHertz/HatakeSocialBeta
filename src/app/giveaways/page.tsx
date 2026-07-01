@@ -19,13 +19,20 @@ export default function GiveawaysPage() {
       });
   }, []);
 
-  // Mock progress state (would come from DB in production)
   const [progress, setProgress] = useState({
-    cardsAdded: 34, // Out of 50
-    friendsInvited: 1, // Out of 2
-    deckCreated: 1, // Out of 1
-    tradesCompleted: 0, // Out of 1
+    cardsAdded: 0,
+    friendsInvited: 0,
+    deckCreated: 0,
+    tradesCompleted: 0,
   });
+
+  useEffect(() => {
+    fetch('/api/giveaways/progress')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data && !data.error) setProgress(data);
+      });
+  }, []);
 
   const handleSendInvite = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +61,11 @@ export default function GiveawaysPage() {
     setIsSending(false);
   };
 
+  const [activeTab, setActiveTab] = useState<'ACTIVE' | 'WINNERS'>('ACTIVE');
+
+  const activeGiveaways = giveaways.filter(g => g.isActive);
+  const pastGiveaways = giveaways.filter(g => !g.isActive);
+
   return (
     <div className="min-h-screen bg-slate-950 font-sans text-slate-200 pb-32">
       <div className="bg-gradient-to-b from-slate-900 to-slate-950 border-b border-white/5 py-12 px-6">
@@ -62,11 +74,26 @@ export default function GiveawaysPage() {
             <Gift size={40} className="text-fuchsia-400" />
           </div>
           <h1 className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-cyan-500">
-            Active Giveaways
+            Hatake Giveaways
           </h1>
           <p className="text-lg text-slate-400 max-w-2xl mx-auto">
             Complete criteria to enter our weekly raffles. Winners are selected entirely at random among eligible entries!
           </p>
+
+          <div className="flex justify-center gap-4 mt-8">
+            <button 
+              onClick={() => setActiveTab('ACTIVE')}
+              className={`px-6 py-2 rounded-full font-bold transition-all ${activeTab === 'ACTIVE' ? 'bg-fuchsia-500 text-white shadow-[0_0_15px_rgba(217,70,239,0.4)]' : 'bg-slate-900 text-slate-400 hover:text-white border border-white/5'}`}
+            >
+              Active Raffles
+            </button>
+            <button 
+              onClick={() => setActiveTab('WINNERS')}
+              className={`px-6 py-2 rounded-full font-bold transition-all ${activeTab === 'WINNERS' ? 'bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-slate-900 text-slate-400 hover:text-white border border-white/5'}`}
+            >
+              Past Winners
+            </button>
+          </div>
         </div>
       </div>
 
@@ -74,10 +101,11 @@ export default function GiveawaysPage() {
         
         {loading ? (
           <div className="flex justify-center py-20 text-fuchsia-500"><Loader2 className="animate-spin" size={48} /></div>
-        ) : giveaways.length === 0 ? (
-          <div className="text-center py-20 text-slate-500">No active giveaways at this time. Check back later!</div>
-        ) : (
-          giveaways.map(giveaway => {
+        ) : activeTab === 'ACTIVE' ? (
+          activeGiveaways.length === 0 ? (
+            <div className="text-center py-20 text-slate-500">No active giveaways at this time. Check back later!</div>
+          ) : (
+            activeGiveaways.map(giveaway => {
             const isComplete = progress.cardsAdded >= giveaway.cardsRequired && 
                                progress.friendsInvited >= giveaway.invitesRequired && 
                                progress.deckCreated >= giveaway.decksRequired && 
@@ -173,6 +201,40 @@ export default function GiveawaysPage() {
               </div>
             );
           })
+          )
+        ) : (
+          pastGiveaways.length === 0 ? (
+            <div className="text-center py-20 text-slate-500">No past winners yet! The first raffle draw is coming soon.</div>
+          ) : (
+            pastGiveaways.map(giveaway => (
+              <div key={giveaway.id} className="bg-slate-900 border border-emerald-500/30 rounded-3xl p-8 relative overflow-hidden shadow-[0_0_30px_rgba(16,185,129,0.1)] transition-all flex flex-col md:flex-row gap-8 items-center">
+                <div className="w-full md:w-1/4 aspect-[4/3] bg-slate-950 rounded-2xl border border-white/5 p-4 flex flex-col items-center justify-center relative shadow-inner overflow-hidden">
+                  {giveaway.tag && <div className="absolute top-3 left-3 bg-amber-600 text-white text-[10px] font-black uppercase px-2 py-1 rounded shadow-lg z-10">{giveaway.tag}</div>}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {giveaway.imageUrl && <img src={giveaway.imageUrl} alt={giveaway.title} className="w-full h-full object-cover opacity-60 mix-blend-luminosity" />}
+                </div>
+                <div className="flex-1 space-y-4 text-center md:text-left">
+                  <h2 className="text-2xl font-black text-white">{giveaway.title}</h2>
+                  <p className="text-slate-400">{giveaway.description}</p>
+                  
+                  <div className="mt-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl inline-block w-full md:w-auto">
+                    <p className="text-sm font-bold text-emerald-500 uppercase mb-2">🏆 Official Winners</p>
+                    {giveaway.winners && giveaway.winners.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {giveaway.winners.map((winner: string, idx: number) => (
+                          <span key={idx} className="bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-black shadow-lg">
+                            @{winner}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-slate-300">Winners are being processed...</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))
+          )
         )}
 
         {/* Invite System */}
@@ -190,7 +252,7 @@ export default function GiveawaysPage() {
           <div className="flex-1 w-full bg-slate-950 p-6 rounded-2xl border border-white/5 shadow-inner">
             <form onSubmit={handleSendInvite} className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Friend's Email Address</label>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Friend&apos;s Email Address</label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

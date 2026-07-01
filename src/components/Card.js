@@ -111,7 +111,7 @@ export default function Card({
           {/* Card Image */}
           <img
             className={styles.cardImage}
-            src={card.image_uri ? `/api/image-proxy?url=${encodeURIComponent(card.image_uri)}` : ''}
+            src={card.image_uri ? `/api/proxy?url=${encodeURIComponent(card.image_uri)}` : ''}
             alt={card.name || 'MTG Card'}
             loading="lazy"
             draggable={false}

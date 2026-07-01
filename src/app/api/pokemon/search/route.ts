@@ -88,43 +88,39 @@ function filterFallback(search: string, limit: number) {
   }));
 }
 
+import { db } from '@/lib/db';
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const search = searchParams.get("search") || "";
   const limit = parseInt(searchParams.get("limit") || "30", 10);
 
-  if (!HATAKE_KEY) {
-    const cards = filterFallback(search, limit);
-    return NextResponse.json({ count: cards.length, cards, source: "fallback:no-key" });
-  }
-
-  const url = `${HATAKE_BASE}/pokemon/cards?search=${encodeURIComponent(search)}&limit=${encodeURIComponent(String(limit))}`;
   try {
-    const res = await fetch(url, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${HATAKE_KEY}`, Accept: "application/json" },
-      next: { revalidate: 30 },
-      signal: AbortSignal.timeout(8000),
+    const cards = await db.cardReference.findMany({
+      where: {
+        game: 'POKEMON',
+        name: { contains: search, mode: 'insensitive' }
+      },
+      take: limit,
     });
-    if (res.ok) {
-      const data = await res.json();
-      const cards = normalizeHatake(data);
-      return NextResponse.json({ count: data.count ?? cards.length, cards, source: "hatake" });
-    }
-    // Hatake unavailable -> graceful fallback
+
+    const mapped = cards.map((c: any) => ({
+      id: c.id,
+      apiId: c.apiId || c.id,
+      name: c.name,
+      imageUrl: c.imageUrl,
+      setCode: c.apiPayload?.setId || 'PRM',
+      rarity: c.apiPayload?.rarity || 'Common',
+      price: c.price || 1.0,
+      number: c.apiPayload?.collectorNumber || '',
+      cardType: c.apiPayload?.typeLine || 'Pokémon',
+      variants: buildVariants(c.id, c.price || 1.0)
+    }));
+
+    return NextResponse.json({ count: mapped.length, cards: mapped, source: 'database' });
+  } catch (error: any) {
+    // fallback if db error
     const cards = filterFallback(search, limit);
-    return NextResponse.json({
-      count: cards.length,
-      cards,
-      source: `fallback:hatake-${res.status}`,
-    });
-  } catch (e: any) {
-    const cards = filterFallback(search, limit);
-    return NextResponse.json({
-      count: cards.length,
-      cards,
-      source: "fallback:fetch-error",
-      detail: e?.message || String(e),
-    });
+    return NextResponse.json({ count: cards.length, cards, source: 'fallback', detail: error.message });
   }
 }

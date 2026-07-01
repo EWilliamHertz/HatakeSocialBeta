@@ -8,7 +8,7 @@ import crypto from 'crypto';
 
 export async function POST(request: Request) {
   try {
-    const { email, username, password } = await request.json();
+    const { email, username, password, ref } = await request.json();
 
     if (!email || !username || !password) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -27,13 +27,22 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 10);
     const verificationToken = crypto.randomBytes(32).toString('hex');
 
+    let referredById = null;
+    if (ref) {
+      const referrer = await db.user.findUnique({ where: { referralCode: ref } });
+      if (referrer) {
+        referredById = referrer.id;
+      }
+    }
+
     // Create user
     const user = await db.user.create({
       data: {
         email,
         username,
         password: hashedPassword,
-        verificationToken
+        verificationToken,
+        referredById
       }
     });
 

@@ -108,16 +108,16 @@ export default async function ProfilePage() {
               <ReputationStars score={user.reputationScore} totalReviews={user.totalReviews} size={16} />
             </div>
             <p className="text-slate-400 flex items-center justify-center md:justify-start gap-2">
-              <MapPin size={16} /> Europeisk Server Region
+              <MapPin size={16} /> European Server Region
             </p>
           </div>
 
           <div className="flex gap-4">
             <button className="px-6 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl font-bold transition-colors">
-              Lägg till vän
+              Add Friend
             </button>
             <Link href="/collection" className="px-6 py-2 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white rounded-xl font-bold transition-all shadow-lg flex items-center gap-2">
-              <Search size={18} /> Visa Samling
+              <Search size={18} /> View Collection
             </Link>
             <Link href="/settings" className="p-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors flex items-center justify-center">
               <Settings size={20} className="text-slate-300" />
@@ -137,14 +137,14 @@ export default async function ProfilePage() {
               <Shield size={32} />
             </div>
             <div className="w-full overflow-hidden">
-              <p className="text-slate-400 text-sm font-semibold mb-2">Samlare / Spelare av:</p>
+              <p className="text-slate-400 text-sm font-semibold mb-2">Collector / Player of:</p>
               <div className="flex gap-2 flex-wrap">
                 {magicCards > 0 && <span className="px-2 py-1 bg-white/5 rounded text-xs font-bold text-white border border-white/10">MTG</span>}
                 {pokemonCards > 0 && <span className="px-2 py-1 bg-white/5 rounded text-xs font-bold text-white border border-white/10">Pokémon</span>}
                 {onePieceCards > 0 && <span className="px-2 py-1 bg-white/5 rounded text-xs font-bold text-white border border-white/10">One Piece</span>}
                 {narutoCards > 0 && <span className="px-2 py-1 bg-white/5 rounded text-xs font-bold text-white border border-white/10">Naruto</span>}
                 {magicCards === 0 && pokemonCards === 0 && onePieceCards === 0 && narutoCards === 0 && (
-                  <span className="text-slate-500 text-xs">Inga aktiva samlingar</span>
+                  <span className="text-slate-500 text-xs">No active collections</span>
                 )}
               </div>
             </div>
@@ -155,18 +155,18 @@ export default async function ProfilePage() {
               <Trophy size={32} />
             </div>
             <div>
-              <p className="text-slate-400 text-sm font-semibold">Marknadsrykte</p>
-              <h3 className="text-2xl font-bold text-white">100% Positivt</h3>
+              <p className="text-slate-400 text-sm font-semibold">Market Reputation</p>
+              <h3 className="text-2xl font-bold text-white">100% Positive</h3>
             </div>
           </div>
 
           <div className="bg-slate-900 border border-white/5 rounded-2xl p-6 shadow-xl flex flex-col justify-center">
-            <p className="text-slate-400 text-sm font-semibold mb-1">Samling</p>
+            <p className="text-slate-400 text-sm font-semibold mb-1">Collection</p>
             <p className="text-white">
-              <span className="font-bold text-xl">{user.inventory.length}</span> Kort Ägda
+              <span className="font-bold text-xl">{user.inventory.length}</span> Cards Owned
             </p>
             <p className="text-emerald-400 text-xs mt-1 font-bold">
-              + Verifierat Valv
+              + Verified Vault
             </p>
           </div>
         </div>
@@ -181,7 +181,7 @@ export default async function ProfilePage() {
               <span className="p-2 bg-white/5 rounded-lg border border-white/10 text-cyan-400">
                 <Trophy size={24} />
               </span>
-              Master Samlingsspårare
+              Master Collection Tracker
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -194,7 +194,7 @@ export default async function ProfilePage() {
                       {magicCards} <span className="text-slate-500 text-lg">/ ∞</span>
                     </p>
                   </div>
-                  <p className="text-cyan-400 font-bold text-lg">{magicCards > 0 ? 'Aktiv' : '0%'}</p>
+                  <p className="text-cyan-400 font-bold text-lg">{magicCards > 0 ? 'Active' : '0%'}</p>
                 </div>
                 <div className="h-3 w-full bg-slate-800 rounded-full overflow-hidden border border-white/5">
                   <div className="h-full bg-gradient-to-r from-cyan-600 to-cyan-400 rounded-full relative shadow-[0_0_10px_rgba(6,182,212,0.5)]" style={{ width: magicCards > 0 ? '5%' : '0%' }}></div>
@@ -210,7 +210,7 @@ export default async function ProfilePage() {
                       {pokemonCards} <span className="text-slate-500 text-lg">/ ∞</span>
                     </p>
                   </div>
-                  <p className="text-yellow-400 font-bold text-lg">{pokemonCards > 0 ? 'Aktiv' : '0%'}</p>
+                  <p className="text-yellow-400 font-bold text-lg">{pokemonCards > 0 ? 'Active' : '0%'}</p>
                 </div>
                 <div className="h-3 w-full bg-slate-800 rounded-full overflow-hidden border border-white/5">
                   <div className="h-full bg-gradient-to-r from-yellow-600 to-yellow-400 rounded-full relative shadow-[0_0_10px_rgba(250,204,21,0.5)]" style={{ width: pokemonCards > 0 ? '5%' : '0%' }}></div>

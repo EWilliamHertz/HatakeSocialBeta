@@ -9,7 +9,7 @@ export default function MTGEngineLobby() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch('/api/auth/me').then(r => r.json()).then(data => {
+    fetch('/api/auth/me', { cache: 'no-store' }).then(r => r.json()).then(data => {
       if (data.user) {
         setCurrentUser(data.user);
       } else {

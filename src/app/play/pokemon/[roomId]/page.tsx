@@ -129,7 +129,7 @@ export default function PlayRoomPage() {
 
   // ----------------------- Boot -----------------------
   useEffect(() => {
-    fetch("/api/auth/me", { credentials: "include" })
+    fetch("/api/auth/me", { credentials: "include", cache: "no-store" })
       .then((r) => r.json())
       .then((d) => setUser(d.user || { id: "guest-" + uid("u"), username: "Guest" }));
   }, []);

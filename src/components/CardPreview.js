@@ -60,7 +60,7 @@ export default function CardPreview({ card, position }) {
     return { left, top };
   }, [position]);
 
-  const imageUri = card.image_uri ? `/api/image-proxy?url=${encodeURIComponent(card.image_uri)}` : '';
+  const imageUri = card.image_uri ? `/api/proxy?url=${encodeURIComponent(card.image_uri)}` : '';
   const name = card.name || '';
   const typeLine = card.type_line || '';
   const oracleText = formatOracleText(card.oracle_text);

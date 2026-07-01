@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { db } from '@/lib/db';
 
 export async function POST(request: Request) {
   try {
@@ -11,24 +12,14 @@ export async function POST(request: Request) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let cards: any[] = [];
     
-    // We'll search the DB for each card name.
-    // To minimize DB roundtrips, we can fetch all potential matches.
-    const names = lines.map((l: any) => l.name);
-    
-    // For simplicity, find the first match for each name in the requested game.
-    // Since names might have slight variations, we'll use a direct case-insensitive match.
-    // If the list is large, doing 75 queries in parallel is perfectly fine for Prisma locally.
-    
-    const { PrismaClient } = require('@prisma/client');
-    const prisma = new PrismaClient();
-
+    // Search local database for all games
     const promises = lines.slice(0, 100).map(async (l: any) => {
-      const c = await prisma.cardReference.findFirst({
+      const c = await db.cardReference.findFirst({
         where: {
           game: game,
           name: { equals: l.name, mode: 'insensitive' }
         },
-        orderBy: { price: 'desc' } // prioritize a printing with a price
+        orderBy: { price: 'desc' }
       });
 
       if (c) {
@@ -47,7 +38,6 @@ export async function POST(request: Request) {
 
     const results = await Promise.all(promises);
     cards = results.filter(Boolean);
-    await prisma.$disconnect();
 
     return NextResponse.json({ cards });
   } catch (err) {

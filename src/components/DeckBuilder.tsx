@@ -385,7 +385,7 @@ export function DeckBuilder({ initialDeck, onBack }: { initialDeck: any, onBack:
                 
                 {/* Multi-Game Select */}
                 <div className="flex flex-wrap gap-2">
-                  {['MAGIC', 'POKEMON', 'ONE_PIECE'].map(game => (
+                  {['MAGIC', 'POKEMON', 'ONE_PIECE', 'LORCANA', 'RIFTBOUND', 'NARUTO'].map(game => (
                     <button 
                       key={game}
                       onClick={() => toggleGame(game)}

@@ -17,6 +17,12 @@ model User {
   emailVerified DateTime?
   verificationToken String?
   
+  // Referral System
+  referralCode  String?   @unique @default(cuid())
+  referredById  String?
+  referredBy    User?     @relation("Referrals", fields: [referredById], references: [id])
+  referredUsers User[]    @relation("Referrals")
+  
   // Address & Payment
   shippingName  String?
   addressLine1  String?
@@ -504,6 +510,9 @@ model Giveaway {
   decksRequired   Int @default(0)
   tradesRequired  Int @default(0)
   invitesRequired Int @default(0)
+  
+  // Multiple winners are possible
+  winners         String[] // Stores array of winning User IDs or Usernames
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

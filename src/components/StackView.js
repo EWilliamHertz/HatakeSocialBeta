@@ -17,7 +17,7 @@ export default function StackView({ stack = [] }) {
         <div key={item.id} className={styles.stackItem}>
           {item.card?.image_uri ? (
             <img
-              src={`/api/image-proxy?url=${encodeURIComponent(item.card.image_uri)}`}
+              src={`/api/proxy?url=${encodeURIComponent(item.card.image_uri)}`}
               alt={item.card.name}
               className={styles.stackThumbnail}
             />

@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { DeckBuilder } from '@/components/DeckBuilder';
 import { DeckViewer } from '@/components/DeckViewer';
 
-type GameType = 'MAGIC' | 'POKEMON' | 'ONE_PIECE' | 'NARUTO';
+type GameType = 'MAGIC' | 'POKEMON' | 'ONE_PIECE' | 'NARUTO' | 'LORCANA' | 'RIFTBOUND';
 type TabType = 'META' | 'COMMUNITY' | 'YOURS';
 
 export default function DeckHubPage() {
@@ -104,28 +104,10 @@ export default function DeckHubPage() {
     <div className="min-h-screen bg-slate-950 pb-32">
       <div className="pt-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         
-        {/* Banner */}
-        <div className="mb-8 p-6 rounded-3xl bg-gradient-to-br from-indigo-900/40 via-purple-900/20 to-fuchsia-900/40 border border-indigo-500/20 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none transform translate-x-10 -translate-y-10"><Swords size={200} /></div>
-          <div className="flex items-start gap-4 relative z-10">
-            <div className="bg-gradient-to-tr from-indigo-600 to-fuchsia-600 p-4 rounded-full text-white shadow-lg">
-              <Swords size={32} />
-            </div>
-            <div>
-              <h2 className="text-2xl font-black text-white mb-2 flex items-center gap-2">Upcoming: HatakeSocial Battle Arena</h2>
-              <p className="text-slate-300 text-sm md:text-base mb-4 max-w-3xl leading-relaxed">
-                We are officially cooperating with the newly established <strong>Ouyrie</strong> to bring you a fully integrated online game client directly connected to HatakeSocial. Soon, you'll be able to playtest your custom-built decks live in the browser against players worldwide! Prepare your arsenal.
-              </p>
-              <button className="px-6 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full text-sm font-bold transition-all flex items-center gap-2 backdrop-blur-md">
-                <Play size={14} fill="currentColor" /> Read the Announcement
-              </button>
-            </div>
-          </div>
-        </div>
 
         {/* Game Filters */}
         <div className="flex flex-wrap gap-3 mb-8 items-center bg-slate-900/50 p-2 rounded-2xl border border-white/5 w-fit">
-          {(['MAGIC', 'POKEMON', 'ONE_PIECE', 'NARUTO'] as GameType[]).map(game => (
+          {(['MAGIC', 'POKEMON', 'ONE_PIECE', 'LORCANA', 'RIFTBOUND', 'NARUTO'] as GameType[]).map(game => (
             <button
               key={game}
               onClick={() => setSelectedGame(game)}

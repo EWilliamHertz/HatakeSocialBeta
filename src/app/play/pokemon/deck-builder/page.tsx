@@ -104,8 +104,11 @@ export default function DeckBuilderPage() {
       <div className="min-h-screen pt-28 px-6 pb-16 max-w-[1500px] mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <div className="text-[11px] font-mono uppercase tracking-[0.35em] text-slate-500">
-              Vault · Deck Forge
+            <div className="text-[11px] font-mono uppercase tracking-[0.35em] text-slate-500 mb-2">
+              <button onClick={() => window.location.href = '/play/pokemon'} className="hover:text-white transition-colors mr-2">
+                ← BACK TO LOBBIES
+              </button>
+              · Vault · Deck Forge
             </div>
             <h1 className="font-heading text-4xl font-black tracking-tight text-white mt-1" data-testid="deck-builder-title">
               Deck Builder

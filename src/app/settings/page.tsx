@@ -82,6 +82,23 @@ export default function SettingsPage() {
         <h1 className="text-4xl font-black text-white mb-8">{t('settings.title')}</h1>
         
         <form onSubmit={handleSave} className="space-y-12">
+          {/* Security & Verification */}
+          <section className="bg-slate-900 border border-white/5 rounded-3xl p-8 shadow-xl">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h2 className="text-2xl font-bold text-emerald-400 mb-2">Security & Verification</h2>
+                <p className="text-slate-400 text-sm">Manage your account security, email verification, and 2FA.</p>
+              </div>
+              <button 
+                type="button"
+                onClick={() => router.push('/settings/verification')}
+                className="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl shadow-lg transition-colors"
+              >
+                Verification Status
+              </button>
+            </div>
+          </section>
+
           {/* Shipping Info */}
           <section className="bg-slate-900 border border-white/5 rounded-3xl p-8 shadow-xl">
             <h2 className="text-2xl font-bold text-cyan-400 mb-6 border-b border-white/10 pb-4">{t('settings.shipping.title')}</h2>

@@ -23,11 +23,6 @@ export default function HaloNav() {
   const [username, setUsername] = useState<string | null>(null);
   const { t } = useI18n();
 
-  // Hide HaloNav completely on gameplay clients
-  if (pathname.startsWith('/play')) {
-    return null;
-  }
-
   useEffect(() => {
     fetch('/api/auth/me')
       .then((r) => (r.ok ? r.json() : { user: null }))
@@ -39,6 +34,14 @@ export default function HaloNav() {
       })
       .catch(() => {});
   }, [pathname]);
+
+  const isGameRoute = 
+    pathname.startsWith('/play/mtg/game') || 
+    (pathname.startsWith('/play/pokemon/') && !pathname.includes('deck-builder') && !pathname.includes('queue') && !pathname.includes('lobby'));
+
+  if (isGameRoute) {
+    return null;
+  }
 
   // 4 left + 4 right around a central login/profile button.
   // The Euryx Arena link sits in the right cluster.

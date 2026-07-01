@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     });
 
     // Redirect to a success page or dashboard
-    return NextResponse.redirect(new URL('/login?verified=true', request.url));
+    return NextResponse.redirect(new URL('/settings/verification', request.url));
   } catch (error) {
     console.error('Verification error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

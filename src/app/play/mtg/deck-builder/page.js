@@ -311,7 +311,7 @@ export default function DeckBuilder() {
       <div className={styles.searchPanel}>
         <div className={styles.filters}>
           <div style={{ marginBottom: '15px' }}>
-            <button onClick={() => window.location.href = '/'} className={`${styles.btn} ${styles.btnSecondary}`}>
+            <button onClick={() => window.location.href = '/play/mtg'} className={`${styles.btn} ${styles.btnSecondary}`}>
               ← Back to Lobbies
             </button>
           </div>
@@ -510,7 +510,7 @@ export default function DeckBuilder() {
 
       {hoveredCard && (
         <div className={styles.hoverPreview}>
-          <img src={hoveredCard.image_uri ? `/api/image-proxy?url=${encodeURIComponent(hoveredCard.image_uri)}` : 'https://upload.wikimedia.org/wikipedia/en/a/aa/Magic_the_gathering_card_back.jpg'} alt={hoveredCard.name || 'Card'} />
+          <img src={hoveredCard.image_uri ? `/api/proxy?url=${encodeURIComponent(hoveredCard.image_uri)}` : 'https://upload.wikimedia.org/wikipedia/en/a/aa/Magic_the_gathering_card_back.jpg'} alt={hoveredCard.name || 'Card'} />
         </div>
       )}
     </div>

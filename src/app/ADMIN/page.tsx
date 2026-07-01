@@ -184,6 +184,20 @@ export default function AdminDashboard() {
     else alert('Error deleting product');
   };
 
+  const handleDeleteGiveaway = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this giveaway?')) return;
+    try {
+      const res = await fetch(`/api/giveaways/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setGiveaways(giveaways.filter(g => g.id !== id));
+      } else {
+        alert('Failed to delete giveaway');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleUpdateGiveaway = async () => {
     if (!editingGiveaway) return;
     setSaving(true);
@@ -543,6 +557,7 @@ export default function AdminDashboard() {
                         <td className="py-4">{g.isActive ? <span className="text-emerald-400">Active</span> : <span className="text-slate-500">Inactive</span>}</td>
                         <td className="py-4 flex justify-end gap-2">
                           <button onClick={() => setEditingGiveaway({...g})} className="p-2 bg-slate-800 hover:bg-slate-700 hover:text-white rounded text-slate-400 transition-colors"><Edit size={16} /></button>
+                          <button onClick={() => handleDeleteGiveaway(g.id)} className="p-2 bg-red-900/30 hover:bg-red-900 hover:text-white rounded text-red-400 transition-colors"><Trash2 size={16} /></button>
                         </td>
                       </tr>
                     ))}
@@ -574,8 +589,38 @@ export default function AdminDashboard() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs text-slate-500 font-bold uppercase mb-1 block">Image URL</label>
-                      <input className="w-full bg-slate-950 border border-white/10 text-white rounded-lg p-3 outline-none focus:border-amber-500" value={editingGiveaway.imageUrl || ''} onChange={e=>setEditingGiveaway({...editingGiveaway, imageUrl: e.target.value})} />
+                      <label className="text-xs text-slate-500 font-bold uppercase mb-1 block">Upload Image</label>
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        className="w-full text-slate-400 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-cyan-500/20 file:text-cyan-400 hover:file:bg-cyan-500/30 cursor-pointer" 
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          
+                          const formData = new FormData();
+                          formData.append('image', file);
+                          
+                          try {
+                            const res = await fetch(`https://api.imgbb.com/1/upload?key=b2492f987920d3e2a7903861b72ae3a4`, {
+                              method: 'POST',
+                              body: formData
+                            });
+                            const data = await res.json();
+                            if (data.data?.url) {
+                              setEditingGiveaway({...editingGiveaway, imageUrl: data.data.url});
+                            }
+                          } catch (err) {
+                            console.error('Upload failed', err);
+                          }
+                        }} 
+                      />
+                      {editingGiveaway.imageUrl && (
+                        <div className="mt-2">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={editingGiveaway.imageUrl} alt="Preview" className="h-20 rounded border border-white/10" />
+                        </div>
+                      )}
                     </div>
                     <div>
                       <label className="text-xs text-slate-500 font-bold uppercase mb-1 block">Tag (e.g. Premium Drop)</label>

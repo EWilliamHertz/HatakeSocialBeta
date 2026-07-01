@@ -54,7 +54,7 @@ export default function ManaCost({ cost, size = 16 }) {
         return (
           <img
             key={`${symbol}-${index}`}
-            src={`/api/image-proxy?url=${encodeURIComponent(`https://svgs.scryfall.io/card-symbols/${formatted}.svg`)}`}
+            src={`/api/proxy?url=${encodeURIComponent(`https://svgs.scryfall.io/card-symbols/${formatted}.svg`)}`}
             alt={symbol}
             width={size}
             height={size}

@@ -27,7 +27,9 @@ export async function GET() {
         postalCode: true,
         country: true,
         paypalEmail: true,
-        bankIban: true
+        bankIban: true,
+        emailVerified: true,
+        referralCode: true
       }
     });
     return NextResponse.json({ user });
