@@ -78,23 +78,17 @@ async function syncCategory(name: string) {
       ).catch(() => ({ results: [] })),
     ]);
 
-    const priceMap = new Map<number, { price: number; foilPrice: number; reverseHoloPrice: number; allPrices: Record<string, number> }>();
+    const productMap = new Map<number, any>();
+    for (const p of pData.results || []) {
+      productMap.set(p.productId, p);
+    }
+
+    // Group prices by productId
+    const pricesByProduct = new Map<number, any[]>();
     for (const pr of prData.results || []) {
-      const amt = pr.marketPrice || pr.midPrice || pr.lowPrice || 0;
-      const st = (pr.subTypeName || '').toLowerCase();
-      const p = priceMap.get(pr.productId) || { price: 0, foilPrice: 0, reverseHoloPrice: 0, allPrices: {} };
-      
-      p.allPrices[st || 'normal'] = amt;
-      
-      if (st.includes('reverse')) {
-        p.reverseHoloPrice = amt;
-      } else if (st.includes('foil')) {
-        p.foilPrice = amt;
-      } else {
-        p.price = amt;
-      }
-      
-      priceMap.set(pr.productId, p);
+      const list = pricesByProduct.get(pr.productId) || [];
+      list.push(pr);
+      pricesByProduct.set(pr.productId, list);
     }
 
     const batchCards: any[] = [];
@@ -102,37 +96,68 @@ async function syncCategory(name: string) {
 
     for (const product of pData.results || []) {
       const imageUrl = product.imageUrl || 'https://i.imgur.com/B06rBhI.png';
-      const p = priceMap.get(product.productId) || { price: 0, foilPrice: 0, reverseHoloPrice: 0, allPrices: {} };
-      // Fallback base price if only foil exists
-      if (!p.price && p.foilPrice) p.price = p.foilPrice;
       
-      const isSealed = SEALED_RE.test(product.name || '');
-      const apiId = String(product.productId);
+      const isCard = product.extendedData?.some((e: any) => 
+        e.name === 'Rarity' || e.name === 'Number' || e.name === 'Card Type' || e.name === 'SubType'
+      );
+      const isSealed = !isCard;
+
+      const prices = pricesByProduct.get(product.productId) || [];
 
       if (isSealed) {
+        // Sealed products don't usually have foil variants, just take the first price or 0
+        const pr = prices[0] || {};
+        const pPrice = pr.marketPrice || pr.midPrice || pr.lowPrice || 0;
         batchSealed.push({
-          id: apiId,
+          id: String(product.productId),
           game,
           name: product.name,
           type: 'SEALED_PRODUCT',
           setCode,
           imageUrl,
-          price: p.price,
-          apiPayload: { ...product, prices: p.allPrices },
+          price: pPrice,
+          apiPayload: { ...product, prices: pr },
         });
       } else {
-        batchCards.push({
-          apiId,
-          game,
-          name: product.name,
-          imageUrl,
-          setCode,
-          rarity: product.extendedData?.find((e: any) => e.name === 'Rarity')?.value || null,
-          price: p.price,
-          foilPrice: p.foilPrice || null,
-          reverseHoloPrice: p.reverseHoloPrice || null,
-          apiPayload: { ...product, prices: p.allPrices },
-        });
+        // For cards, split by subTypeName (Normal, Foil, etc)
+        if (prices.length === 0) {
+          // No prices, just add the base card
+          batchCards.push({
+            apiId: `${product.productId}-normal`,
+            game,
+            name: product.name,
+            imageUrl,
+            setCode,
+            rarity: product.extendedData?.find((e: any) => e.name === 'Rarity')?.value || null,
+            price: 0,
+            foilPrice: null,
+            reverseHoloPrice: null,
+            apiPayload: { ...product, subTypeName: 'Normal' },
+          });
+        } else {
+          // Add a variant for every subType
+          for (const pr of prices) {
+            const st = pr.subTypeName || 'Normal';
+            const suffix = st.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const pPrice = pr.marketPrice || pr.midPrice || pr.lowPrice || 0;
+            
+            // Append the subTypeName to the card name if it's not normal
+            const displayName = st.toLowerCase() === 'normal' ? product.name : `${product.name} (${st})`;
+
+            batchCards.push({
+              apiId: `${product.productId}-${suffix}`,
+              game,
+              name: displayName,
+              imageUrl,
+              setCode,
+              rarity: product.extendedData?.find((e: any) => e.name === 'Rarity')?.value || null,
+              price: pPrice,
+              foilPrice: st.toLowerCase().includes('foil') ? pPrice : null,
+              reverseHoloPrice: st.toLowerCase().includes('reverse') ? pPrice : null,
+              apiPayload: { ...product, prices: pr, subTypeName: st },
+            });
+          }
+        }
       }
     }
 
