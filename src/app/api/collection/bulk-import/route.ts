@@ -33,7 +33,17 @@ export async function POST(request: Request) {
           apiPayload: c.apiPayload
         };
       }
-      return null;
+      
+      // Fallback: return a phantom card so the user can still build hypothetical decks
+      return {
+        apiId: 'phantom-' + Buffer.from(l.name).toString('base64'),
+        name: l.name,
+        game: game,
+        imageUrl: 'https://i.imgur.com/B06rBhI.png',
+        price: 0,
+        cmc: 0,
+        apiPayload: {}
+      };
     });
 
     const results = await Promise.all(promises);

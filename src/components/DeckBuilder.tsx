@@ -175,7 +175,7 @@ export function DeckBuilder({ initialDeck, onBack }: { initialDeck: any, onBack:
     if (!pasteText) return;
     setImporting(true);
     
-    const lines = pasteText.split('\n').filter(l => l.trim().length > 0);
+    const lines = pasteText.split('\n').filter(l => l.trim().length > 0 && l.trim().toLowerCase() !== 'sideboard' && l.trim().toLowerCase() !== 'deck');
     const parsed = lines.map(line => {
       const match = line.trim().match(/^(\d+)x?\s+(.+)$/i);
       if (match) return { count: parseInt(match[1]), name: match[2].trim() };
@@ -198,9 +198,14 @@ export function DeckBuilder({ initialDeck, onBack }: { initialDeck: any, onBack:
         
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data.cards.forEach((c: any) => {
-          if (!newCards[c.apiId]) {
-            newCards[c.apiId] = {
-              id: c.apiId,
+          // Look for an owned version of this card name in availableCards
+          const ownedVariant = Object.values(availableCards).find(ac => ac.name.toLowerCase() === c.name.toLowerCase() && ac.maxAvailable > 0);
+          
+          const targetApiId = ownedVariant ? ownedVariant.id : c.apiId;
+
+          if (!newCards[targetApiId]) {
+            newCards[targetApiId] = {
+              id: targetApiId,
               name: c.name,
               imageUrl: c.imageUrl,
               price: c.price,
@@ -211,7 +216,7 @@ export function DeckBuilder({ initialDeck, onBack }: { initialDeck: any, onBack:
           
           const requested = parsed.find(p => p.name.toLowerCase() === c.name.toLowerCase());
           if (requested) {
-             newDeckCounts[c.apiId] = (newDeckCounts[c.apiId] || 0) + requested.count;
+             newDeckCounts[targetApiId] = (newDeckCounts[targetApiId] || 0) + requested.count;
           }
         });
         
@@ -488,7 +493,10 @@ export function DeckBuilder({ initialDeck, onBack }: { initialDeck: any, onBack:
                           <button onClick={() => handleAdd(data.id)} className="w-10 h-10 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white flex items-center justify-center shadow-xl"><Plus size={20} /></button>
                         </div>
                       </div>
-                      <p className="text-xs font-bold text-white truncate px-1">{data.name}</p>
+                      <div className="flex justify-between items-center px-1">
+                        <p className="text-xs font-bold text-white truncate max-w-[70%]" title={data.name}>{data.name}</p>
+                        <p className="text-[10px] text-emerald-400 font-mono">${(data.price || 0).toFixed(2)}</p>
+                      </div>
                     </div>
                   );
                 })}
