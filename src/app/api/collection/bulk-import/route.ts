@@ -12,15 +12,19 @@ export async function POST(request: Request) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let cards: any[] = [];
     
-    // Search local database for all games
-    const promises = lines.slice(0, 100).map(async (l: any) => {
-      const c = await db.cardReference.findFirst({
-        where: {
-          game: game,
-          name: { equals: l.name, mode: 'insensitive' }
-        },
-        orderBy: { price: 'desc' }
-      });
+    // Search local database using a single IN query to avoid connection pool exhaustion
+    const names = lines.slice(0, 100).map((l: any) => l.name);
+    
+    const dbCards = await db.cardReference.findMany({
+      where: {
+        game: game,
+        name: { in: names, mode: 'insensitive' }
+      },
+      orderBy: { price: 'desc' }
+    });
+
+    cards = lines.slice(0, 100).map((l: any) => {
+      const c = dbCards.find((dc: any) => dc.name.toLowerCase() === l.name.toLowerCase());
 
       if (c) {
         return {
@@ -45,9 +49,6 @@ export async function POST(request: Request) {
         apiPayload: {}
       };
     });
-
-    const results = await Promise.all(promises);
-    cards = results.filter(Boolean);
 
     return NextResponse.json({ cards });
   } catch (err) {
