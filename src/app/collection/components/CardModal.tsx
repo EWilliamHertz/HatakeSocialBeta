@@ -30,6 +30,9 @@ export default function CardModal({ card, onClose }: { card: CardData, onClose: 
   const [signedByElse, setSignedByElse] = useState(false);
   const [isAltered, setIsAltered] = useState(false);
   
+  const [notes, setNotes] = useState('');
+  const [pileTogether, setPileTogether] = useState(true);
+  
   const [customImageUrl, setCustomImageUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [adding, setAdding] = useState(false);
@@ -121,7 +124,9 @@ export default function CardModal({ card, onClose }: { card: CardData, onClose: 
           isAltered,
           setCode: card.setCode,
           collectorNumber: card.collectorNumber,
-          price: estimatedPrice 
+          price: estimatedPrice,
+          notes,
+          pileTogether
         })
       });
       if (res.ok) {
@@ -191,12 +196,22 @@ export default function CardModal({ card, onClose }: { card: CardData, onClose: 
                 <p className="text-white text-sm">€{(card.price || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
               </div>
               <div className="text-right">
-                <p className="text-cyan-500 text-xs font-bold uppercase tracking-wider mb-1">Estimated Attributed Value</p>
+                <p className="text-cyan-500 text-xs font-bold uppercase tracking-wider mb-1">Price Per Unit (PPU)</p>
                 <p className="text-cyan-400 font-black text-2xl">
                   {card.game === 'NARUTO' || (card.game === 'POKEMON' && (card.price === 0 || card.price === 0.3)) ? (
                     <span className="text-slate-500 text-lg">N/A</span>
                   ) : (
                     `€${estimatedPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
+                  )}
+                </p>
+              </div>
+              <div className="text-right ml-4 border-l border-white/10 pl-4">
+                <p className="text-fuchsia-500 text-xs font-bold uppercase tracking-wider mb-1">Total Value</p>
+                <p className="text-fuchsia-400 font-black text-2xl">
+                  {card.game === 'NARUTO' || (card.game === 'POKEMON' && (card.price === 0 || card.price === 0.3)) ? (
+                    <span className="text-slate-500 text-lg">N/A</span>
+                  ) : (
+                    `€${(estimatedPrice * quantity).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
                   )}
                 </p>
               </div>
@@ -231,8 +246,8 @@ export default function CardModal({ card, onClose }: { card: CardData, onClose: 
             </div>
 
             <div className="bg-slate-800/30 border border-white/5 rounded-xl p-4 mb-8">
-              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Card Attributes (Affects Value)</label>
-              <div className="flex flex-wrap gap-4">
+              <h3 className="text-white font-black mb-4 uppercase tracking-wider text-sm border-b border-white/10 pb-2">Customizations</h3>
+              <div className="flex flex-wrap gap-4 mb-4">
                 
                 {card.game === 'POKEMON' ? (
                   <>
@@ -263,10 +278,20 @@ export default function CardModal({ card, onClose }: { card: CardData, onClose: 
                 </label>
               </div>
 
+              <div className="mb-4">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Notes / Markings</label>
+                  <textarea 
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="e.g. 'Signed in black marker' or 'Has a slight crease on top left'"
+                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-cyan-500 resize-none h-20"
+                  />
+              </div>
+
               <AnimatePresence>
                 {isSigned && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                    <div className="flex gap-4 mt-3 pt-3 border-t border-white/10">
+                    <div className="flex gap-4 mb-4 pt-3 border-t border-white/10">
                       <label className="flex items-center gap-2 cursor-pointer text-slate-400 hover:text-white text-xs font-bold">
                         <input type="checkbox" checked={signedByArtist} onChange={e => setSignedByArtist(e.target.checked)} className="w-3 h-3 rounded bg-slate-950 accent-fuchsia-500" />
                         By Artist
@@ -282,9 +307,27 @@ export default function CardModal({ card, onClose }: { card: CardData, onClose: 
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button disabled={adding} onClick={handleAddToHave} className="flex-1 py-4 bg-cyan-600 hover:bg-cyan-500 disabled:opacity-50 text-white font-black rounded-xl transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] flex justify-center items-center gap-2">
-              {adding ? <Loader2 className="animate-spin" size={20} /> : <Check size={20} />} Add to Have List
+          <div className="mt-8 flex gap-4 pt-6 border-t border-white/10 flex-col md:flex-row">
+            {quantity > 1 && (
+              <div className="flex-1 bg-slate-950 border border-white/10 rounded-xl p-4 flex items-center justify-between cursor-pointer" onClick={() => setPileTogether(!pileTogether)}>
+                <div>
+                  <p className="text-white font-bold text-sm">Group as Single Pile</p>
+                  <p className="text-slate-500 text-xs">Keep these {quantity} items together in one stack.</p>
+                </div>
+                <div className={`w-12 h-6 rounded-full transition-colors relative ${pileTogether ? 'bg-cyan-500' : 'bg-slate-700'}`}>
+                  <div className={`absolute top-1 left-1 bg-white w-4 h-4 rounded-full transition-transform ${pileTogether ? 'translate-x-6' : 'translate-x-0'}`} />
+                </div>
+              </div>
+            )}
+            
+            <button 
+              onClick={handleAddToHave}
+              disabled={adding || isUploading}
+              className={`flex-1 py-4 px-6 rounded-xl font-black text-lg transition-all flex items-center justify-center gap-2 
+                ${(adding || isUploading) ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-gradient-to-r from-cyan-600 to-fuchsia-600 hover:from-cyan-500 hover:to-fuchsia-500 text-white shadow-lg hover:shadow-[0_0_20px_rgba(6,182,212,0.4)]'}`}
+            >
+              {adding ? <Loader2 className="animate-spin" /> : <Plus />}
+              Add {quantity} to Collection
             </button>
             <button className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-xl transition-all border border-white/10 flex justify-center items-center gap-2">
               <Plus size={20} /> Add to Want List

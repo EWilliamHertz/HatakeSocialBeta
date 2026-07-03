@@ -64,7 +64,7 @@ export default function ResourcesPage() {
                 <Download size={48} className="text-cyan-500 mb-4 group-hover:scale-110 transition-transform" />
                 <h3 className="font-bold text-white mb-2">Full Press Kit (.ZIP)</h3>
                 <p className="text-sm text-slate-500 mb-4">Logos, banners, and brand guidelines.</p>
-                <button className="px-6 py-2 bg-slate-800 hover:bg-cyan-600 rounded-lg text-sm font-bold text-white transition-colors">Download (24MB)</button>
+                <a href="/marketing/press_kit.zip" download className="px-6 py-2 bg-slate-800 hover:bg-cyan-600 rounded-lg text-sm font-bold text-white transition-colors">Download (24MB)</a>
               </div>
               <div className="bg-slate-950 border border-white/5 p-6 rounded-2xl flex flex-col items-center text-center group cursor-pointer hover:border-fuchsia-500/50 transition-colors">
                 <Download size={48} className="text-fuchsia-500 mb-4 group-hover:scale-110 transition-transform" />

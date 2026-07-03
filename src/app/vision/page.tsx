@@ -1,5 +1,11 @@
 import React from 'react';
 import { ShieldCheck, Globe, Handshake, Shield } from 'lucide-react';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Vår vision – Hatake Social',
+  description: 'Our vision is to break down the borders that divide us. A secure, transparent, and international safe haven to trade and share passion for TCGs.',
+};
 
 export default function VisionPage() {
   return (

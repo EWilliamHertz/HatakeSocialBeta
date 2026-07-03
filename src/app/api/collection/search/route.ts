@@ -71,22 +71,103 @@ export async function GET(request: Request) {
       if (language === 'English') {
         andConditions.push({ NOT: { name: { contains: 'Japanese', mode: 'insensitive' } } });
       }
-      if (sort === 'PRICE_DESC') {
+      if (sort === 'PRICE_DESC' || sort === 'PRICE_ASC') {
         andConditions.push({ price: { gt: 0 } });
       }
       if (game !== 'ALL') {
         andConditions.push({ game: game });
       }
 
-      const cards = await prisma.cardReference.findMany({
+      let orderBy: any = undefined;
+      switch (sort) {
+        case 'PRICE_DESC': orderBy = { price: 'desc' }; break;
+        case 'PRICE_ASC': orderBy = { price: 'asc' }; break;
+        case 'NAME_ASC': orderBy = { name: 'asc' }; break;
+        case 'NAME_DESC': orderBy = { name: 'desc' }; break;
+        case 'NEWEST': orderBy = { createdAt: 'desc' }; break;
+        case 'OLDEST': orderBy = { createdAt: 'asc' }; break;
+      }
+
+      let skip = (page - 1) * pageSize;
+      let take = pageSize;
+      let shouldShuffle = false;
+
+      // If no search terms and no explicit sort, do a pseudo-random fetch
+      if (!sort && andConditions.length <= (game !== 'ALL' ? 1 : 0)) {
+        const seedStr = searchParams.get('seed');
+        const seed = seedStr ? parseInt(seedStr) : Math.floor(Math.random() * 100000);
+        
+        // Custom seeded random generator
+        const pseudoRandom = (max: number, offset: number) => {
+          const val = Math.sin(seed + offset) * 10000;
+          return Math.floor((val - Math.floor(val)) * max);
+        };
+
+        let cards: any[] = [];
+        
+        if (game === 'ALL') {
+          // Fetch an even mix from all games
+          const games = ['MAGIC', 'POKEMON', 'ONE_PIECE', 'NARUTO', 'LORCANA', 'RIFTBOUND'];
+          const perGame = Math.ceil(take / games.length);
+          
+          const results = [];
+          for (let i = 0; i < games.length; i++) {
+            const g = games[i];
+            const count = await prisma.cardReference.count({ where: { game: g as any } });
+            if (count > 0) {
+              const maxSkip = Math.max(0, count - perGame);
+              const gameSkip = pseudoRandom(maxSkip, page + i);
+              const gCards = await prisma.cardReference.findMany({
+                where: { game: g as any },
+                skip: gameSkip,
+                take: perGame
+              });
+              results.push(gCards);
+            }
+          }
+          
+          cards = results.flat();
+          // Shuffle the combined results using the seed so the mix is stable but interleaved
+          cards.sort((a, b) => pseudoRandom(100, a.id.charCodeAt(0)) - 50);
+        } else {
+          const count = await prisma.cardReference.count({
+             where: { AND: andConditions.length > 0 ? andConditions : undefined }
+          });
+          const maxSkip = Math.max(0, count - take);
+          const singleSkip = pseudoRandom(maxSkip, page);
+          
+          cards = await prisma.cardReference.findMany({
+            where: { AND: andConditions.length > 0 ? andConditions : undefined },
+            skip: singleSkip,
+            take
+          });
+        }
+        
+        externalCards = cards
+          .slice(0, pageSize)
+          .map(c => ({
+          apiId: c.apiId,
+          name: c.name,
+          game: c.game,
+          imageUrl: c.imageUrl,
+          price: c.price || 0,
+          foilPrice: c.foilPrice || 0,
+          reverseHoloPrice: c.reverseHoloPrice || 0,
+          setCode: c.setCode || '',
+          collectorNumber: (c.apiPayload as any)?.collector_number || (c.apiPayload as any)?.collectorNumber || '',
+          apiPayload: c.apiPayload
+        }));
+        
+        return NextResponse.json({ cards: externalCards });
+      }
+
+      let cards = await prisma.cardReference.findMany({
         where: {
           AND: andConditions.length > 0 ? andConditions : undefined
         },
-        orderBy: sort === 'PRICE_DESC' ? { price: 'desc' } :
-                 sort === 'PRICE_ASC' ? { price: 'asc' } :
-                 sort === 'NAME_ASC' ? { name: 'asc' } : undefined,
-        skip: (page - 1) * 200,
-        take: 200
+        orderBy,
+        skip,
+        take
       });
 
       externalCards = cards

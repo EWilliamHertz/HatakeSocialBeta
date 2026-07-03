@@ -44,6 +44,9 @@ export default function AllCardsTab() {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   
+  const [sort, setSort] = useState('');
+  const [randomSeed] = useState(() => Math.floor(Math.random() * 100000));
+  
   const [availableSets, setAvailableSets] = useState<{setCode: string, count: number}[]>([]);
 
   useEffect(() => {
@@ -69,6 +72,8 @@ export default function AllCardsTab() {
       if (collectorNumber) params.append('collectorNumber', collectorNumber);
       if (minPrice) params.append('minPrice', minPrice);
       if (maxPrice) params.append('maxPrice', maxPrice);
+      if (sort) params.append('sort', sort);
+      if (!sort) params.append('seed', randomSeed.toString());
       if (narutoChakra) params.append('chakra', narutoChakra);
       if (opcgColor) params.append('color', opcgColor);
 
@@ -131,15 +136,15 @@ export default function AllCardsTab() {
   useEffect(() => {
     setPage(1);
     setHasMore(true);
-    fetchCards(false);
+    fetchCards(false, 1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game]); // Fetch automatically when game changes
+  }, [game, sort]); // Fetch automatically when game or sort changes
 
   const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       setPage(1);
       setHasMore(true);
-      fetchCards(false);
+      fetchCards(false, 1);
     }
   };
 
@@ -198,6 +203,20 @@ export default function AllCardsTab() {
               onKeyDown={handleSearch}
               className="w-32 bg-slate-950 border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-cyan-500 font-bold placeholder:text-slate-600 placeholder:font-normal" 
             />
+            
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="bg-slate-950 border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-cyan-500 font-bold"
+            >
+              <option value="">Randomized (Default)</option>
+              <option value="NEWEST">Newest First</option>
+              <option value="OLDEST">Oldest First</option>
+              <option value="PRICE_DESC">Most Expensive</option>
+              <option value="PRICE_ASC">Cheapest First</option>
+              <option value="NAME_ASC">Name (A-Z)</option>
+              <option value="NAME_DESC">Name (Z-A)</option>
+            </select>
           </>
         )}
 

@@ -82,14 +82,14 @@ export default function CollectionPage() {
     return calculated;
   };
 
-  const cardValue = myInstances.reduce((sum, inst) => sum + getPrice(inst), 0);
+  const cardValue = myInstances.reduce((sum, inst) => sum + (getPrice(inst) * (inst.quantity || 1)), 0);
   const sealedValue = mySealedInstances.reduce((sum, inst) => sum + (inst.sealedReference?.price || 0), 0);
   const totalValue = cardValue + sealedValue;
   
-  const cardsOwnedCount = myInstances.length;
+  const cardsOwnedCount = myInstances.reduce((sum, inst) => sum + (inst.quantity || 1), 0);
   const activeListingsCount = myInstances.filter(inst => 
     inst.marketListing && (inst.marketListing.status === 'ACTIVE' || inst.marketListing.status === 'IN_DEAL')
-  ).length;
+  ).reduce((sum, inst) => sum + (inst.quantity || 1), 0);
 
   return (
     <div className="min-h-screen bg-slate-950 font-sans text-slate-200 pb-32">

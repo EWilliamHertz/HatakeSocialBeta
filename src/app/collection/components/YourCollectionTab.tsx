@@ -112,8 +112,8 @@ export default function YourCollectionTab({ instances, sealedInstances = [] }: {
 
   // Sort instances
   processedInstances.sort((a, b) => {
-    const priceA = getPrice(a);
-    const priceB = getPrice(b);
+    const priceA = getPrice(a) * (a.quantity || 1);
+    const priceB = getPrice(b) * (b.quantity || 1);
     
     if (sortBy === 'PRICE_DESC') return priceB - priceA;
     if (sortBy === 'PRICE_ASC') return priceA - priceB;
@@ -122,7 +122,7 @@ export default function YourCollectionTab({ instances, sealedInstances = [] }: {
   });
 
   const totalDeltaDollar = processedInstances.reduce((acc, inst) => {
-    const price = getPrice(inst);
+    const price = getPrice(inst) * (inst.quantity || 1);
     const pct = getDailyDelta(inst.cardReference.id);
     return acc + (price * (pct / 100));
   }, 0);
@@ -344,8 +344,13 @@ export default function YourCollectionTab({ instances, sealedInstances = [] }: {
                     {inst.condition.replace('_', ' ')}
                   </span>
                   {inst.isFoil && (
-                    <span className="bg-gradient-to-r from-amber-200 to-amber-500 px-2 py-1 rounded border border-amber-200/50 text-[10px] font-black uppercase text-black tracking-wider shadow-[0_0_10px_rgba(251,191,36,0.5)]">
+                    <span className="bg-gradient-to-r from-amber-200 to-yellow-500 px-2 py-1 rounded text-[10px] font-black uppercase text-black tracking-wider shadow-lg">
                       FOIL
+                    </span>
+                  )}
+                  {(inst.quantity || 1) > 1 && (
+                    <span className="bg-cyan-600 px-2 py-1 rounded text-[10px] font-black uppercase text-white tracking-wider shadow-lg">
+                      x{inst.quantity || 1}
                     </span>
                   )}
                   {inst.isSigned && (
@@ -379,8 +384,14 @@ export default function YourCollectionTab({ instances, sealedInstances = [] }: {
                   return null;
                 })()}
               </div>
+
+              {inst.notes && (
+                <div className="mt-1 text-[10px] text-slate-400 italic line-clamp-1 border-l-2 border-cyan-500/50 pl-2">
+                  {inst.notes}
+                </div>
+              )}
               
-              <div className="flex justify-between items-center mt-1">
+              <div className="flex justify-between items-center mt-2">
                 <div className="flex flex-col">
                   <p className="text-emerald-400 font-black text-sm">
                     {inst.cardReference.game === 'NARUTO' ? (
@@ -404,6 +415,11 @@ export default function YourCollectionTab({ instances, sealedInstances = [] }: {
                       </p>
                     );
                   })()}
+                  {(inst.quantity || 1) > 1 && (
+                    <p className="text-[9px] text-slate-500 font-bold tracking-wider mt-1">
+                      TOTAL: €{(getPrice(inst) * (inst.quantity || 1)).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    </p>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   <button 

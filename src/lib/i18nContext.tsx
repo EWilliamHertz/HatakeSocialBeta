@@ -271,10 +271,6 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     return dictionary[lang][key] || dictionary['en'][key] || key;
   };
 
-  if (!mounted) {
-    return <>{children}</>;
-  }
-
   return (
     <I18nContext.Provider value={{ lang, setLang, t }}>
       {children}

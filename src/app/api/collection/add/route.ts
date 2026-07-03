@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     const user = await decrypt(token);
     if (!user || !user.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { cardId, game, name, imageUrl, condition, quantity, isFoil, isSigned, signedByArtist, signedByElse, isAltered, setCode, collectorNumber, price } = await request.json();
+    const { cardId, game, name, imageUrl, condition, quantity, isFoil, isSigned, signedByArtist, signedByElse, isAltered, setCode, collectorNumber, price, notes, pileTogether, customImageUrl } = await request.json();
 
     if (!cardId || !quantity) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
 
     const enumCondition = conditionMap[condition] || 'NEAR_MINT';
 
-    for (let i = 0; i < quantity; i++) {
+    if (pileTogether) {
       instancesToCreate.push({
         ownerId: user.id as string,
         cardReferenceId: reference.id,
@@ -59,7 +59,26 @@ export async function POST(request: Request) {
         signedByArtist: signedByArtist || false,
         signedByElse: signedByElse || false,
         isAltered: isAltered || false,
+        notes: notes || null,
+        customImageUrl: customImageUrl || null,
+        quantity: parseInt(quantity)
       });
+    } else {
+      for (let i = 0; i < quantity; i++) {
+        instancesToCreate.push({
+          ownerId: user.id as string,
+          cardReferenceId: reference.id,
+          condition: enumCondition as "MINT" | "NEAR_MINT" | "LIGHTLY_PLAYED" | "MODERATELY_PLAYED" | "HEAVILY_PLAYED" | "DAMAGED",
+          isFoil: isFoil,
+          isSigned: isSigned || false,
+          signedByArtist: signedByArtist || false,
+          signedByElse: signedByElse || false,
+          isAltered: isAltered || false,
+          notes: notes || null,
+          customImageUrl: customImageUrl || null,
+          quantity: 1
+        });
+      }
     }
 
     await db.cardInstance.createMany({

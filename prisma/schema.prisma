@@ -181,6 +181,8 @@ model CardReference {
   
   instances     CardInstance[]
   priceHistory  PriceHistory[]
+  
+  createdAt     DateTime  @default(now())
 }
 
 enum GameType {
@@ -242,6 +244,7 @@ model CardInstance {
   
   customImageUrl  String?
   notes           String?        @db.Text
+  quantity        Int            @default(1)
   
   deckId          String?
   deck            Deck?          @relation(fields: [deckId], references: [id])
