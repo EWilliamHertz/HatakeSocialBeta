@@ -20,9 +20,10 @@ type CardData = {
 };
 
 import CardModal from './CardModal';
+import { getGameColor } from './SealedTab';
 
 export default function AllCardsTab() {
-  const [game, setGame] = useState<Game>(() => {
+  const [game, setGame] = useState<Game | 'ALL'>(() => {
     if (typeof window !== 'undefined') {
       return (localStorage.getItem('collection_search_game') as Game) || 'MAGIC';
     }
@@ -89,18 +90,25 @@ export default function AllCardsTab() {
           return !isSealed; // Block anything that matches sealed keywords
         });
         
-        const newCards = filteredCards.map((c: any) => ({
-          id: c.apiId,
-          name: c.name,
-          game: c.game,
-          imageUrl: c.imageUrl,
-          price: c.price || 0,
-          foilPrice: c.foilPrice || 0,
-          reverseHoloPrice: c.reverseHoloPrice || 0,
-          setCode: c.setCode,
-          collectorNumber: c.collectorNumber,
-          prices: c.apiPayload?.prices || null  
-      }));
+        const newCards = filteredCards.map((c: any) => {
+          const cNum = c.collectorNumber || 
+                       c.apiPayload?.Number || 
+                       (c.apiPayload?.extendedData && Array.isArray(c.apiPayload.extendedData) 
+                         ? c.apiPayload.extendedData.find((e: any) => e.name === 'Number')?.value 
+                         : null);
+          return {
+            id: c.apiId,
+            name: c.name,
+            game: c.game,
+            imageUrl: c.imageUrl,
+            price: c.price || 0,
+            foilPrice: c.foilPrice || 0,
+            reverseHoloPrice: c.reverseHoloPrice || 0,
+            setCode: c.setCode,
+            collectorNumber: cNum,
+            prices: c.apiPayload?.prices || null  
+          };
+        });
 
         setCards(prev => (append ? [...prev, ...newCards] : newCards));
         setPage(currentPage);
@@ -134,23 +142,23 @@ export default function AllCardsTab() {
   return (
     <div>
       {/* Game Selector */}
-      <div className="flex flex-wrap gap-2 mb-6 items-center">
-        {['MAGIC', 'POKEMON', 'ONE_PIECE', 'LORCANA', 'RIFTBOUND', 'NARUTO'].map((g) => (
-          <button 
-            key={g}
-            onClick={() => {
-              setGame(g as Game);
-              localStorage.setItem('collection_search_game', g);
-            }}
-            className={`px-4 py-2 rounded-lg text-xs font-bold tracking-wider uppercase border transition-all ${
-              game === g 
-                ? 'bg-white/10 border-cyan-400 text-cyan-400' 
-                : 'bg-transparent border-white/10 text-slate-500 hover:border-white/30'
-            }`}
-          >
-            {g.replace('_', ' ')}
-          </button>
-        ))}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {['ALL', 'POKEMON', 'MAGIC', 'ONE_PIECE', 'LORCANA', 'RIFTBOUND', 'NARUTO'].map(g => {
+          const isActive = game === g;
+          const baseColor = isActive ? (g === 'ALL' ? 'bg-cyan-600 text-white shadow-[0_0_10px_rgba(6,182,212,0.3)]' : `${getGameColor(g)} shadow-lg scale-105`) : 'bg-slate-950 border border-white/10 text-slate-400 hover:border-white/30';
+          return (
+            <button 
+              key={g}
+              onClick={() => {
+                setGame(g as Game | 'ALL');
+                if (typeof window !== 'undefined') localStorage.setItem('collection_search_game', g);
+              }}
+              className={`px-4 py-2 rounded-lg text-xs font-bold uppercase transition-all ${baseColor}`}
+            >
+              {g.replace('_', ' ')}
+            </button>
+          );
+        })}
       </div>
 
       {/* Dynamic Filters */}
@@ -167,7 +175,7 @@ export default function AllCardsTab() {
           />
         </div>
 
-        {(game === 'MAGIC' || game === 'POKEMON' || game === 'ONE_PIECE' || game === 'LORCANA' || game === 'RIFTBOUND') && (
+        {(game === 'ALL' || game === 'MAGIC' || game === 'POKEMON' || game === 'ONE_PIECE' || game === 'LORCANA' || game === 'RIFTBOUND') && (
           <>
             <input 
               type="text" 
@@ -257,6 +265,18 @@ export default function AllCardsTab() {
               <div className="rounded-xl overflow-hidden border border-white/10 shadow-lg relative bg-slate-900 aspect-[2.5/3.5] mb-3 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={card.imageUrl ? `/api/proxy?url=${encodeURIComponent(card.imageUrl)}` : 'https://i.imgur.com/B06rBhI.png'} alt={card.name} className="w-full h-full object-cover" />
+                <div className="absolute top-2 left-2 flex flex-col gap-1">
+                  {(game === 'ALL' || card.game) && (
+                    <span className={`${getGameColor(card.game)} text-[9px] font-black uppercase px-2 py-1 rounded shadow-lg backdrop-blur-sm inline-block w-fit`}>
+                      {card.game.replace('_', ' ')}
+                    </span>
+                  )}
+                  {card.collectorNumber && (
+                    <span className="bg-slate-900/90 text-slate-200 border border-white/20 text-[9px] font-black uppercase px-2 py-1 rounded shadow-lg backdrop-blur-sm inline-block w-fit">
+                      #{card.collectorNumber}
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="flex justify-between items-start gap-2">
                 <h3 className="font-bold text-white truncate text-sm flex-1">{card.name}</h3>

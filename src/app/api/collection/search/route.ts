@@ -25,6 +25,7 @@ export async function GET(request: Request) {
 
     // Pokemon, Naruto, One Piece, Lorcana, Riftbound, Magic (Local Database)
     if (
+      game === 'ALL' ||
       game === 'MAGIC' ||
       game === 'POKEMON' ||
       game === 'NARUTO' ||
@@ -51,13 +52,23 @@ export async function GET(request: Request) {
       if (setCode) {
         andConditions.push({ setCode: { equals: setCode, mode: 'insensitive' } });
       }
+      if (collectorNumber) {
+        andConditions.push({
+          apiPayload: {
+            path: ['extendedData'],
+            array_contains: [{ name: 'Number', value: collectorNumber }]
+          }
+        });
+      }
       if (language === 'English') {
         andConditions.push({ NOT: { name: { contains: 'Japanese', mode: 'insensitive' } } });
       }
       if (sort === 'PRICE_DESC') {
         andConditions.push({ price: { gt: 0 } });
       }
-      andConditions.push({ game: game });
+      if (game !== 'ALL') {
+        andConditions.push({ game: game });
+      }
 
       const cards = await prisma.cardReference.findMany({
         where: {
