@@ -11,6 +11,8 @@ export async function GET(request: Request) {
   const collectorNumber = searchParams.get('collectorNumber');
   const pageStr = searchParams.get('page') || '1';
   const sort = searchParams.get('sort');
+  const minPrice = searchParams.get('minPrice');
+  const maxPrice = searchParams.get('maxPrice');
   let page = parseInt(pageStr);
   if (isNaN(page) || page < 1) page = 1;
   const pageSize = 50;
@@ -60,6 +62,12 @@ export async function GET(request: Request) {
           }
         });
       }
+      if (minPrice) {
+        andConditions.push({ price: { gte: parseFloat(minPrice) } });
+      }
+      if (maxPrice) {
+        andConditions.push({ price: { lte: parseFloat(maxPrice) } });
+      }
       if (language === 'English') {
         andConditions.push({ NOT: { name: { contains: 'Japanese', mode: 'insensitive' } } });
       }
@@ -86,7 +94,7 @@ export async function GET(request: Request) {
         .map(c => ({
         apiId: c.apiId,
         name: c.name,
-        game: game,
+        game: c.game,
         imageUrl: c.imageUrl,
         price: c.price || 0,
         foilPrice: c.foilPrice || 0,

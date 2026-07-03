@@ -50,6 +50,8 @@ export default function SealedTab() {
   const [loadingGlobal, setLoadingGlobal] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
 
   // New Reference State
   const [showNewRef, setShowNewRef] = useState(false);
@@ -76,7 +78,14 @@ export default function SealedTab() {
       const currentPage = overridePage ?? (append ? page + 1 : 1);
       const gameParam = game;
       
-      const res = await fetch(`/api/sealed/search?game=${gameParam}&q=${encodeURIComponent(searchQuery)}&page=${currentPage}`);
+      const params = new URLSearchParams();
+      params.append('game', gameParam);
+      if (searchQuery) params.append('q', searchQuery);
+      params.append('page', currentPage.toString());
+      if (minPrice) params.append('minPrice', minPrice);
+      if (maxPrice) params.append('maxPrice', maxPrice);
+
+      const res = await fetch(`/api/sealed/search?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
         const newProducts = data.products || [];
@@ -214,14 +223,37 @@ export default function SealedTab() {
             </div>
             
             <div className="flex-1 w-full md:min-w-[300px] flex gap-2">
-              <input 
-                type="text" 
-                value={searchQuery} 
-                onChange={e => setSearchQuery(e.target.value)} 
-                onKeyDown={handleSearch} 
-                placeholder={game === 'ALL' ? "Search across all games..." : `Search ${game.replace('_', ' ')} products or set codes...`} 
-                className="w-full bg-slate-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white outline-none focus:border-fuchsia-500 transition-colors" 
-              />
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                <input 
+                  type="text" 
+                  placeholder="Search sealed products..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleSearch}
+                  className="w-full bg-slate-950 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-sm text-white outline-none focus:border-cyan-500 transition-all placeholder:text-slate-600"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-slate-500 text-sm">$</span>
+                <input 
+                  type="number" 
+                  placeholder="Min" 
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  onKeyDown={handleSearch}
+                  className="w-20 bg-slate-950 border border-white/10 rounded-xl px-3 py-3 text-sm text-white outline-none focus:border-fuchsia-500 placeholder:text-slate-600" 
+                />
+                <span className="text-slate-500 text-sm">-</span>
+                <input 
+                  type="number" 
+                  placeholder="Max" 
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  onKeyDown={handleSearch}
+                  className="w-20 bg-slate-950 border border-white/10 rounded-xl px-3 py-3 text-sm text-white outline-none focus:border-fuchsia-500 placeholder:text-slate-600" 
+                />
+              </div>
               <button onClick={() => { setPage(1); fetchGlobalSealed(false, 1); }} className="px-6 py-3 bg-fuchsia-600/20 hover:bg-fuchsia-600 text-fuchsia-400 hover:text-white font-black rounded-xl transition-all border border-fuchsia-500/30 shrink-0">
                 Search
               </button>

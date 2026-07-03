@@ -41,6 +41,8 @@ export default function AllCardsTab() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [showFoil, setShowFoil] = useState(false);
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
   
   const [availableSets, setAvailableSets] = useState<{setCode: string, count: number}[]>([]);
 
@@ -65,6 +67,8 @@ export default function AllCardsTab() {
       if (searchQuery) params.append('q', searchQuery);
       if (setCode) params.append('setCode', setCode);
       if (collectorNumber) params.append('collectorNumber', collectorNumber);
+      if (minPrice) params.append('minPrice', minPrice);
+      if (maxPrice) params.append('maxPrice', maxPrice);
       if (narutoChakra) params.append('chakra', narutoChakra);
       if (opcgColor) params.append('color', opcgColor);
 
@@ -192,10 +196,31 @@ export default function AllCardsTab() {
               value={collectorNumber}
               onChange={(e) => setCollectorNumber(e.target.value)}
               onKeyDown={handleSearch}
-              className="w-36 bg-slate-950 border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-cyan-500 font-bold placeholder:text-slate-600 placeholder:font-normal" 
+              className="w-32 bg-slate-950 border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none focus:border-cyan-500 font-bold placeholder:text-slate-600 placeholder:font-normal" 
             />
           </>
         )}
+
+        <div className="flex items-center gap-2">
+          <span className="text-slate-500 text-sm">$</span>
+          <input 
+            type="number" 
+            placeholder="Min" 
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+            onKeyDown={handleSearch}
+            className="w-20 bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-cyan-500 placeholder:text-slate-600" 
+          />
+          <span className="text-slate-500 text-sm">-</span>
+          <input 
+            type="number" 
+            placeholder="Max" 
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+            onKeyDown={handleSearch}
+            className="w-20 bg-slate-950 border border-white/10 rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-cyan-500 placeholder:text-slate-600" 
+          />
+        </div>
 
         {game === 'NARUTO' && (
           <select 

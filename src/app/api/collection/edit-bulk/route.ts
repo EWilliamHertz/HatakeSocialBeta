@@ -12,7 +12,7 @@ export async function PATCH(req: Request) {
     if (!user || !user.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const body = await req.json();
-    const { ids, condition, isFoil, isSigned } = body;
+    const { ids, condition, isFoil, isSigned, customImageUrl } = body;
 
     if (!ids || !Array.isArray(ids)) {
       return NextResponse.json({ error: 'Invalid ID array payload' }, { status: 400 });
@@ -24,6 +24,7 @@ export async function PATCH(req: Request) {
     if (condition) updatePayload.condition = condition;
     if (isFoil !== undefined) updatePayload.isFoil = isFoil;
     if (isSigned !== undefined) updatePayload.isSigned = isSigned;
+    if (customImageUrl !== undefined) updatePayload.customImageUrl = customImageUrl;
 
     const batch = await db.cardInstance.updateMany({
       where: {

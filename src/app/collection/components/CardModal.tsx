@@ -164,7 +164,7 @@ export default function CardModal({ card, onClose }: { card: CardData, onClose: 
                 </span>
               </div>
             </div>
-            <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleImageUpload} disabled={isUploading} />
+            <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploading} />
           </label>
           
           {customImageUrl && (
