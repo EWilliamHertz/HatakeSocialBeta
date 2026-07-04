@@ -191,7 +191,24 @@ export default function ListForSaleModal({ instances, onClose, onList }: { insta
                     <img src={item.cardReference.imageUrl || 'https://i.imgur.com/B06rBhI.png'} className="w-16 h-24 object-cover rounded-lg shadow-md" alt="" />
                     
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-white truncate">{item.cardReference.name}</h4>
+                      <h4 className="font-bold text-white truncate">
+                        {item.cardReference.name}
+                        {(() => {
+                          const setCode = item.cardReference.setCode;
+                          const payload: any = item.cardReference.apiPayload || {};
+                          const collectorNumber = payload.collector_number || payload.collectorNumber || 
+                            (payload.extendedData && Array.isArray(payload.extendedData) ? payload.extendedData.find((d: any) => d.name === 'Number' || d.name === 'Collector Number')?.value : null);
+                          
+                          if (setCode || collectorNumber) {
+                            return (
+                              <span className="ml-2 text-[10px] font-black uppercase text-slate-400 bg-slate-900 px-1.5 py-0.5 rounded border border-white/10">
+                                {setCode}{setCode && collectorNumber ? ' · ' : ''}{collectorNumber ? `#${collectorNumber}` : ''}
+                              </span>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </h4>
                       <p className="text-xs text-slate-500 mb-3">Marknadssnitt: €{(item.cardReference.price || 0).toLocaleString()} • {game}</p>
                       
                       <div className="flex flex-wrap gap-2">

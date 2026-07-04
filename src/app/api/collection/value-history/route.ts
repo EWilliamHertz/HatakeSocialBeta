@@ -28,19 +28,61 @@ export async function GET(req: Request) {
     select: { totalValue: true, cardCount: true, recordedAt: true },
   });
 
-  // Always include the live current value as the last point
+  // Calculate accurate live value
   const instances = await db.cardInstance.findMany({
     where: { ownerId: payload.id as string },
-    select: { cardReference: { select: { price: true } } },
+    select: {
+      quantity: true,
+      condition: true,
+      isFoil: true,
+      isHolo: true,
+      isReverseHolo: true,
+      isSigned: true,
+      cardReference: { select: { price: true, foilPrice: true, reverseHoloPrice: true } }
+    },
   });
-  const liveTotal = instances.reduce(
-    (s, i) => s + (i.cardReference.price ?? 0),
-    0,
+
+  const getPrice = (inst: any) => {
+    let p = inst.cardReference.price || 0;
+    if (inst.isFoil || inst.isHolo) p = inst.cardReference.foilPrice || p;
+    if (inst.isReverseHolo) p = inst.cardReference.reverseHoloPrice || inst.cardReference.foilPrice || p;
+    
+    let conditionMultiplier = 1.0;
+    if (inst.condition === 'MINT') conditionMultiplier = 1.2;
+    if (inst.condition === 'LIGHTLY_PLAYED') conditionMultiplier = 0.8;
+    if (inst.condition === 'MODERATELY_PLAYED') conditionMultiplier = 0.65;
+    if (inst.condition === 'HEAVILY_PLAYED') conditionMultiplier = 0.45;
+    if (inst.condition === 'DAMAGED') conditionMultiplier = 0.25;
+
+    let calculated = p * conditionMultiplier;
+    if (inst.isSigned) calculated += 8.00;
+    
+    return calculated;
+  };
+
+  let liveTotal = instances.reduce(
+    (s, i) => s + (getPrice(i) * (i.quantity || 1)),
+    0
   );
+
+  const sealedInstances = await db.sealedInstance.findMany({
+    where: { ownerId: payload.id as string },
+    select: { sealedReference: { select: { price: true } } }
+  });
+
+  const sealedTotal = sealedInstances.reduce(
+    (s, i) => s + (i.sealedReference.price || 0),
+    0
+  );
+
+  liveTotal += sealedTotal;
+
+  // Track the unique cards and sealed items total length
+  const cardCount = instances.reduce((s, i) => s + (i.quantity || 1), 0) + sealedInstances.length;
 
   return NextResponse.json({
     days,
     points: history,
-    live: { totalValue: liveTotal, cardCount: instances.length, asOf: new Date() },
+    live: { totalValue: liveTotal, cardCount, asOf: new Date() },
   });
 }

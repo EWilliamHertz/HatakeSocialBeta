@@ -369,15 +369,14 @@ export default function YourCollectionTab({ instances, sealedInstances = [] }: {
                 <h3 className="font-bold text-white truncate text-sm flex-1">{inst.cardReference.name}</h3>
                 {(() => {
                   const setCode = inst.cardReference.setCode;
-                  // Scryfall payload has collector_number, TCGCSV has collectorNumber (but usually we don't have it for TCGCSV)
-                  // For MTG, it's in the payload. But actually, we don't have collectorNumber on the root schema.
                   const payload: any = inst.cardReference.apiPayload || {};
-                  const collectorNumber = payload.collector_number || payload.collectorNumber;
+                  const collectorNumber = payload.collector_number || payload.collectorNumber || 
+                    (payload.extendedData && Array.isArray(payload.extendedData) ? payload.extendedData.find((d: any) => d.name === 'Number' || d.name === 'Collector Number')?.value : null);
                   
                   if (setCode || collectorNumber) {
                     return (
-                      <span className="text-[9px] font-black uppercase text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded border border-white/5 whitespace-nowrap">
-                        {setCode}{setCode && collectorNumber ? ' · ' : ''}{collectorNumber}
+                      <span className="text-[9px] font-black uppercase text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded border border-white/5 whitespace-nowrap mt-1 inline-block">
+                        {setCode}{setCode && collectorNumber ? ' · ' : ''}{collectorNumber ? `#${collectorNumber}` : ''}
                       </span>
                     );
                   }

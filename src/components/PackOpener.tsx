@@ -157,7 +157,14 @@ export default function PackOpener({ pulls, productName = "Booster Pack", onClos
                     </div>
                   )}
 
-                  <p className="text-white font-bold text-xs text-center line-clamp-2 w-full mb-1">{c.name}</p>
+                  <div className="flex flex-col items-center mb-1">
+                    <p className="text-white font-bold text-xs text-center line-clamp-2 w-full">{c.name}</p>
+                    {(c.setCode || c.collectorNumber) && (
+                      <span className="text-[9px] text-slate-500 font-black uppercase mt-0.5">
+                        [{c.setCode}{c.setCode && c.collectorNumber ? ' · ' : ''}{c.collectorNumber ? `#${c.collectorNumber}` : ''}]
+                      </span>
+                    )}
+                  </div>
                   <p className="text-emerald-400 font-black text-xs bg-emerald-400/10 px-2 py-1 rounded-lg">€{(c.price || 0).toFixed(2)}</p>
                 </motion.div>
               ))}

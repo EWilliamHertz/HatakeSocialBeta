@@ -131,34 +131,33 @@ export function registerSocketHandlers(io) {
                    parsedCards = deckRow.cards;
                 }
                 
-                if (Array.isArray(parsedCards)) {
-                  for (const entry of parsedCards) {
-                    const cardRef = await prisma.cardReference.findUnique({
-                      where: { apiId: entry.cardId }
-                    });
-                    if (cardRef) {
-                      const payload = cardRef.apiPayload;
-                      const cardData = {
-                        scryfall_id: payload.id,
-                        card_id: payload.id,
-                        name: payload.name,
-                        mana_cost: payload.mana_cost,
-                        cmc: payload.cmc,
-                        type_line: payload.type_line,
-                        oracle_text: payload.oracle_text,
-                        power: payload.power,
-                        toughness: payload.toughness,
-                        colors: payload.colors,
-                        color_identity: payload.color_identity,
-                        keywords: payload.keywords,
-                        rarity: payload.rarity,
-                        image_uri: payload.image_uris?.normal || payload.card_faces?.[0]?.image_uris?.normal,
-                        quantity: entry.quantity
-                      };
-                      for (let i = 0; i < entry.quantity; i++) {
-                        if (entry.is_sideboard) sideboard.push(cardData);
-                        else mainDeck.push(cardData);
-                      }
+                let cardArray = Array.isArray(parsedCards) ? parsedCards : Object.values(parsedCards);
+                for (const entry of cardArray) {
+                  const cardRef = await prisma.cardReference.findUnique({
+                    where: { apiId: entry.cardId }
+                  });
+                  if (cardRef) {
+                    const payload = cardRef.apiPayload;
+                    const cardData = {
+                      scryfall_id: payload.id,
+                      card_id: payload.id,
+                      name: payload.name,
+                      mana_cost: payload.mana_cost,
+                      cmc: payload.cmc,
+                      type_line: payload.type_line,
+                      oracle_text: payload.oracle_text,
+                      power: payload.power,
+                      toughness: payload.toughness,
+                      colors: payload.colors,
+                      color_identity: payload.color_identity,
+                      keywords: payload.keywords,
+                      rarity: payload.rarity,
+                      image_uri: payload.image_uris?.normal || payload.card_faces?.[0]?.image_uris?.normal,
+                      quantity: entry.quantity
+                    };
+                    for (let i = 0; i < entry.quantity; i++) {
+                      if (entry.is_sideboard) sideboard.push(cardData);
+                      else mainDeck.push(cardData);
                     }
                   }
                 }

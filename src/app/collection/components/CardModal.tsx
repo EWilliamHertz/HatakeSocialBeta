@@ -143,6 +143,33 @@ export default function CardModal({ card, onClose }: { card: CardData, onClose: 
     }
   };
 
+  const [addingWant, setAddingWant] = useState(false);
+  const handleAddToWantList = async () => {
+    setAddingWant(true);
+    try {
+      const res = await fetch('/api/collection/want', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cardId: card.id, // This is actually the apiId in the frontend CardData object
+          minCondition: condition,
+          maxPrice: estimatedPrice
+        })
+      });
+      if (res.ok) {
+        alert('Added to your Want List!');
+        onClose();
+      } else {
+        const data = await res.json();
+        alert(data.error || 'Please login first.');
+      }
+    } catch {
+      alert('Network error');
+    } finally {
+      setAddingWant(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
       <motion.div 
@@ -329,8 +356,14 @@ export default function CardModal({ card, onClose }: { card: CardData, onClose: 
               {adding ? <Loader2 className="animate-spin" /> : <Plus />}
               Add {quantity} to Collection
             </button>
-            <button className="flex-1 py-4 bg-slate-800 hover:bg-slate-700 text-white font-black rounded-xl transition-all border border-white/10 flex justify-center items-center gap-2">
-              <Plus size={20} /> Add to Want List
+            <button 
+              onClick={handleAddToWantList}
+              disabled={addingWant}
+              className={`flex-1 py-4 font-black rounded-xl transition-all border border-white/10 flex justify-center items-center gap-2
+                ${addingWant ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-slate-800 hover:bg-slate-700 text-white'}`}
+            >
+              {addingWant ? <Loader2 className="animate-spin" size={20} /> : <Plus size={20} />} 
+              Add to Want List
             </button>
           </div>
         </div>

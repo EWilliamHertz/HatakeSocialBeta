@@ -75,6 +75,10 @@ model User {
   // Collection value tracking over time
   collectionValueHistory CollectionValueHistory[]
 
+  // Gamification & Trades
+  achievements  UserAchievement[]
+  wantList      WantList[]
+
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -181,6 +185,7 @@ model CardReference {
   
   instances     CardInstance[]
   priceHistory  PriceHistory[]
+  wantedBy      WantList[]
   
   createdAt     DateTime  @default(now())
 }
@@ -586,4 +591,44 @@ model PlayerRating {
   losses      Int      @default(0)
   
   @@unique([userId, game])
+}
+
+// ─── 11. Gamification & Achievements ──────────────────────────────────────────
+model Achievement {
+  id          String   @id @default(cuid())
+  code        String   @unique // e.g., "FIRST_TRADE", "DECK_BUILDER"
+  name        String
+  description String
+  imageUrl    String?
+  points      Int      @default(10)
+
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  earnedAt      DateTime @default(now())
+
+  @@unique([userId, achievementId])
+}
+
+// ─── 12. Advanced Trade Matching (Want Lists) ──────────────────────────────
+model WantList {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  cardId       String
+  card         CardReference @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  
+  minCondition String? // e.g. "NM", "LP"
+  maxPrice     Float?  // max they are willing to pay/trade for
+  
+  createdAt    DateTime @default(now())
+  
+  @@unique([userId, cardId])
 }

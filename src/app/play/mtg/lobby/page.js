@@ -83,15 +83,16 @@ export default function PlayPage() {
   useEffect(() => {
     async function fetchDecks() {
       try {
-        const res = await fetch('/api/decks');
+        const res = await fetch('/api/decks/my?game=MAGIC');
         if (res.ok) {
           const data = await res.json();
-          setDecks(data);
-          if (data.length > 0) {
-            setSelectedDeckId(data[0].id);
-            setVersusSelectedDeckId(data[0].id);
-            setCreateDeckId(data[0].id);
-            setJoinDeckId(data[0].id);
+          const deckList = data.decks || [];
+          setDecks(deckList);
+          if (deckList.length > 0) {
+            setSelectedDeckId(deckList[0].id);
+            setVersusSelectedDeckId(deckList[0].id);
+            setCreateDeckId(deckList[0].id);
+            setJoinDeckId(deckList[0].id);
           }
         }
       } catch {

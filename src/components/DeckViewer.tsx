@@ -68,6 +68,16 @@ export function DeckViewer({ deck, onClose }: { deck: any, onClose: () => void }
                     </div>
                   </div>
                   <p className="text-xs font-bold text-white truncate px-1">{c.name}</p>
+                  {(() => {
+                    const setCode = c.setCode || c.apiPayload?.set;
+                    const payload: any = c.apiPayload || {};
+                    const collectorNumber = payload.collector_number || payload.collectorNumber || 
+                      (payload.extendedData && Array.isArray(payload.extendedData) ? payload.extendedData.find((d: any) => d.name === 'Number' || d.name === 'Collector Number')?.value : null);
+                    if (setCode || collectorNumber) {
+                      return <p className="text-[9px] font-black uppercase text-slate-500 px-1 mb-1 truncate">[{setCode}{setCode && collectorNumber ? ' · ' : ''}{collectorNumber ? `#${collectorNumber}` : ''}]</p>;
+                    }
+                    return null;
+                  })()}
                 </div>
               ))}
             </div>
@@ -91,6 +101,16 @@ export function DeckViewer({ deck, onClose }: { deck: any, onClose: () => void }
                     </div>
                   </div>
                   <p className="text-[10px] font-bold text-white truncate px-1">{c.name}</p>
+                  {(() => {
+                    const setCode = c.setCode || c.apiPayload?.set;
+                    const payload: any = c.apiPayload || {};
+                    const collectorNumber = payload.collector_number || payload.collectorNumber || 
+                      (payload.extendedData && Array.isArray(payload.extendedData) ? payload.extendedData.find((d: any) => d.name === 'Number' || d.name === 'Collector Number')?.value : null);
+                    if (setCode || collectorNumber) {
+                      return <p className="text-[8px] font-black uppercase text-slate-500 px-1 mb-1 truncate">[{setCode}{setCode && collectorNumber ? ' · ' : ''}{collectorNumber ? `#${collectorNumber}` : ''}]</p>;
+                    }
+                    return null;
+                  })()}
                 </div>
               ))}
             </div>

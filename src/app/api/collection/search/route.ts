@@ -154,7 +154,7 @@ export async function GET(request: Request) {
           foilPrice: c.foilPrice || 0,
           reverseHoloPrice: c.reverseHoloPrice || 0,
           setCode: c.setCode || '',
-          collectorNumber: (c.apiPayload as any)?.collector_number || (c.apiPayload as any)?.collectorNumber || '',
+          collectorNumber: (c.apiPayload as any)?.collector_number || (c.apiPayload as any)?.collectorNumber || ((c.apiPayload as any)?.extendedData?.find?.((d: any) => d.name === 'Number' || d.name === 'Collector Number')?.value) || '',
           apiPayload: c.apiPayload
         }));
         
@@ -181,7 +181,7 @@ export async function GET(request: Request) {
         foilPrice: c.foilPrice || 0,
         reverseHoloPrice: c.reverseHoloPrice || 0,
         setCode: c.setCode || '',
-        collectorNumber: (c.apiPayload as any)?.collector_number || (c.apiPayload as any)?.collectorNumber || '',
+        collectorNumber: (c.apiPayload as any)?.collector_number || (c.apiPayload as any)?.collectorNumber || ((c.apiPayload as any)?.extendedData?.find?.((d: any) => d.name === 'Number' || d.name === 'Collector Number')?.value) || '',
         apiPayload: c.apiPayload
       }));
     }

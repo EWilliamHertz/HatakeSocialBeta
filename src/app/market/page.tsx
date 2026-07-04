@@ -341,6 +341,16 @@ export default function MarketPage() {
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-bold text-white text-lg line-clamp-1">
                       {listing.isPackage ? listing.packageTitle : listing.cardInstance?.cardReference?.name}
+                      {!listing.isPackage && (() => {
+                        const setCode = listing.cardInstance?.cardReference?.setCode;
+                        const payload: any = listing.cardInstance?.cardReference?.apiPayload || {};
+                        const collectorNumber = payload.collector_number || payload.collectorNumber || 
+                          (payload.extendedData && Array.isArray(payload.extendedData) ? payload.extendedData.find((d: any) => d.name === 'Number' || d.name === 'Collector Number')?.value : null);
+                        if (setCode || collectorNumber) {
+                          return <span className="ml-2 text-[10px] text-slate-500 font-black uppercase">[{setCode}{setCode && collectorNumber ? ' · ' : ''}{collectorNumber ? `#${collectorNumber}` : ''}]</span>;
+                        }
+                        return null;
+                      })()}
                     </h3>
                     <span className="px-2 py-1 bg-cyan-500/20 text-cyan-400 text-[10px] font-bold rounded uppercase">
                       {listing.isPackage ? 'Mixed' : listing.cardInstance?.cardReference?.game}
@@ -397,6 +407,16 @@ export default function MarketPage() {
                 </div>
                 <h2 className="text-2xl font-black text-white mb-1">
                   {selectedAuction.isPackage ? selectedAuction.packageTitle : selectedAuction.cardInstance?.cardReference?.name}
+                  {!selectedAuction.isPackage && (() => {
+                    const setCode = selectedAuction.cardInstance?.cardReference?.setCode;
+                    const payload: any = selectedAuction.cardInstance?.cardReference?.apiPayload || {};
+                    const collectorNumber = payload.collector_number || payload.collectorNumber || 
+                      (payload.extendedData && Array.isArray(payload.extendedData) ? payload.extendedData.find((d: any) => d.name === 'Number' || d.name === 'Collector Number')?.value : null);
+                    if (setCode || collectorNumber) {
+                      return <span className="ml-2 text-[12px] text-slate-400 font-black uppercase">[{setCode}{setCode && collectorNumber ? ' · ' : ''}{collectorNumber ? `#${collectorNumber}` : ''}]</span>;
+                    }
+                    return null;
+                  })()}
                 </h2>
                 <p className="text-slate-400 text-sm mb-4">{t('market.seller')}: <span className="text-cyan-400 font-bold">@{selectedAuction.seller?.username}</span></p>
                 

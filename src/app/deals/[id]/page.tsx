@@ -80,7 +80,19 @@ export default function DealPage({ params }: { params: { id: string } }) {
               alt={card.name} 
               className="w-full rounded-xl shadow-lg border border-white/10 mb-4" 
             />
-            <h2 className="text-xl font-black text-white mb-1">{card.name}</h2>
+            <h2 className="text-xl font-black text-white mb-1">
+              {card.name}
+              {(() => {
+                const setCode = card.setCode;
+                const payload: any = card.apiPayload || {};
+                const collectorNumber = payload.collector_number || payload.collectorNumber || 
+                  (payload.extendedData && Array.isArray(payload.extendedData) ? payload.extendedData.find((d: any) => d.name === 'Number' || d.name === 'Collector Number')?.value : null);
+                if (setCode || collectorNumber) {
+                  return <span className="ml-2 text-[12px] text-slate-400 font-black uppercase">[{setCode}{setCode && collectorNumber ? ' · ' : ''}{collectorNumber ? `#${collectorNumber}` : ''}]</span>;
+                }
+                return null;
+              })()}
+            </h2>
             <p className="text-slate-400 text-sm mb-4">{deal.listing.cardInstance.condition.replace('_', ' ')}</p>
             <p className="text-3xl font-black text-fuchsia-400 mb-2">€{deal.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
             

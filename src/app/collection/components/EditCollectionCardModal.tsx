@@ -126,7 +126,24 @@ export default function EditCollectionCardModal({ instance, onClose, onComplete 
         </div>
 
         <div className="w-full md:w-1/2 flex flex-col">
-          <h2 className="text-3xl font-black text-white mb-2">{instance.cardReference.name}</h2>
+          <div className="flex justify-between items-start gap-4 mb-2">
+            <h2 className="text-3xl font-black text-white">{instance.cardReference.name}</h2>
+            {(() => {
+              const setCode = instance.cardReference.setCode;
+              const payload: any = instance.cardReference.apiPayload || {};
+              const collectorNumber = payload.collector_number || payload.collectorNumber || 
+                (payload.extendedData && Array.isArray(payload.extendedData) ? payload.extendedData.find((d: any) => d.name === 'Number' || d.name === 'Collector Number')?.value : null);
+              
+              if (setCode || collectorNumber) {
+                return (
+                  <span className="text-[10px] font-black uppercase text-slate-400 bg-slate-950 px-2 py-1 rounded-lg border border-white/10 whitespace-nowrap">
+                    {setCode}{setCode && collectorNumber ? ' · ' : ''}{collectorNumber ? `#${collectorNumber}` : ''}
+                  </span>
+                );
+              }
+              return null;
+            })()}
+          </div>
           <p className="text-emerald-400 font-black text-xl mb-6">
             {(() => {
               const cr = instance.cardReference;

@@ -108,10 +108,10 @@ export default function DeckBuilder() {
 
   const fetchSavedDecks = async () => {
     try {
-      const res = await fetch('/api/decks');
+      const res = await fetch('/api/decks/my?game=MAGIC');
       if (res.ok) {
         const data = await res.json();
-        setSavedDecks(Array.isArray(data) ? data : []);
+        setSavedDecks(data.decks || []);
       }
     } catch (e) {
       console.error(e);
@@ -373,7 +373,7 @@ export default function DeckBuilder() {
           <div className={styles.deckActions}>
             <button onClick={() => setShowSaveModal(true)} className={`${styles.btn} ${styles.btnPrimary}`}>Save</button>
             <button onClick={newDeck} className={`${styles.btn} ${styles.btnSecondary}`}>New</button>
-            <button onClick={() => setShowImportExport(true)} className={`${styles.btn} ${styles.btnSecondary}`}>Import/Export</button>
+            <button onClick={handleExport} className={`${styles.btn} ${styles.btnSecondary}`}>Import/Export</button>
             {selectedDeckId && <button onClick={deleteDeck} className={`${styles.btn} ${styles.btnDanger}`}>Delete</button>}
           </div>
         </div>

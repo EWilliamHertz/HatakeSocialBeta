@@ -187,7 +187,19 @@ export function DealProposalModal({ onClose }: DealProposalModalProps) {
                            <img src={c.cardReference?.imageUrl || 'https://i.imgur.com/B06rBhI.png'} className="w-full rounded-lg" />
                         ) : (
                            <>
-                             <p className="text-sm font-bold text-white">{c.cardReference?.name}</p>
+                             <p className="text-sm font-bold text-white">
+                               {c.cardReference?.name}
+                               {(() => {
+                                 const setCode = c.cardReference?.setCode;
+                                 const payload: any = c.cardReference?.apiPayload || {};
+                                 const collectorNumber = payload.collector_number || payload.collectorNumber || 
+                                   (payload.extendedData && Array.isArray(payload.extendedData) ? payload.extendedData.find((d: any) => d.name === 'Number' || d.name === 'Collector Number')?.value : null);
+                                 if (setCode || collectorNumber) {
+                                   return <span className="ml-2 text-[10px] text-slate-500 font-black uppercase">[{setCode}{setCode && collectorNumber ? ' · ' : ''}{collectorNumber ? `#${collectorNumber}` : ''}]</span>;
+                                 }
+                                 return null;
+                               })()}
+                             </p>
                              <p className="text-xs text-emerald-400">€{c.cardReference?.price}</p>
                            </>
                         )}
@@ -206,7 +218,19 @@ export function DealProposalModal({ onClose }: DealProposalModalProps) {
                            <img src={c.cardReference?.imageUrl || 'https://i.imgur.com/B06rBhI.png'} className="w-full rounded-lg" />
                         ) : (
                            <>
-                             <p className="text-sm font-bold text-white">{c.cardReference?.name}</p>
+                             <p className="text-sm font-bold text-white">
+                              {c.cardReference?.name}
+                              {(() => {
+                                const setCode = c.cardReference?.setCode;
+                                const payload: any = c.cardReference?.apiPayload || {};
+                                const collectorNumber = payload.collector_number || payload.collectorNumber || 
+                                  (payload.extendedData && Array.isArray(payload.extendedData) ? payload.extendedData.find((d: any) => d.name === 'Number' || d.name === 'Collector Number')?.value : null);
+                                if (setCode || collectorNumber) {
+                                  return <span className="ml-2 text-[10px] text-slate-500 font-black uppercase">[{setCode}{setCode && collectorNumber ? ' · ' : ''}{collectorNumber ? `#${collectorNumber}` : ''}]</span>;
+                                }
+                                return null;
+                              })()}
+                            </p>
                              <p className="text-xs text-emerald-400">€{c.cardReference?.price}</p>
                            </>
                         )}
