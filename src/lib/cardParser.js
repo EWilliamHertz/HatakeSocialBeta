@@ -221,9 +221,33 @@ function parseCardData(rawCard) {
         meta.validTargets = resolveTargetTypes('target ' + exileMatch[1]);
       }
 
+      // ---- Hand Disruption (Thoughtseize, Duress, etc) ----
+      const handDisruptMatch = oracle.match(/Target (player|opponent) reveals their hand/i);
+      if (handDisruptMatch) {
+        meta.spellEffects.push({ type: 'HAND_DISRUPTION' });
+        meta.requiresTarget = true;
+        meta.validTargets = ['player'];
+      }
+      
+      const loseLifeMatch = oracle.match(/[Yy]ou lose (\d+) life/);
+      if (loseLifeMatch) {
+        meta.spellEffects.push({ type: 'LOSE_LIFE', amount: parseInt(loseLifeMatch[1], 10) });
+      }
+
       // ---- Show and Tell – each player puts a permanent onto battlefield ----
       if (/each player may put an? (?:artifact, creature, enchantment,? or land|permanent) card from their hand onto the battlefield/i.test(oracle)) {
         meta.spellEffects.push({ type: 'SHOW_AND_TELL' });
+      }
+
+      // ---- Rituals (Add mana) ----
+      const ritualMatch = oracle.match(/Add ([WUBRGC]+)(?: to your mana pool)?\./i);
+      if (ritualMatch && !oracle.includes('Threshold')) {
+        const manaStr = ritualMatch[1].toUpperCase();
+        const color = manaStr[0]; // Assuming homogeneous colors like BBB or RRR
+        const amount = manaStr.length;
+        meta.spellEffects.push({ type: 'ADD_MANA', amount, color });
+      } else if (name === 'Cabal Ritual') {
+        meta.spellEffects.push({ type: 'CABAL_RITUAL' });
       }
     }
   }

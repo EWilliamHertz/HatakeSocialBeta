@@ -30,6 +30,17 @@ const GAMES = [
     deckUrl: '/deck-builder',
     queueUrl: '/play/pokemon',
     image: '/pkm-art.jpg', // Local generated Pokemon art
+  },
+  {
+    id: 'loryx',
+    name: 'Disney Lorcana',
+    clientName: 'Loryx',
+    description: 'Quest for lore. The absolute easiest mechanic TCG, powered by the new Loryx engine.',
+    color: 'from-blue-400 to-indigo-600',
+    shadow: 'shadow-indigo-500/50',
+    deckUrl: '/play/loryx/deck-builder',
+    queueUrl: '/play/loryx',
+    image: '/lorcana-art.jpg', // Placeholder for now
   }
 ];
 

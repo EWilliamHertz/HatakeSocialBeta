@@ -581,6 +581,21 @@ class GameEngine {
           }
           break;
 
+        case 'ADD_MANA': {
+          const color = effect.color === 'ANY' ? 'C' : effect.color;
+          player.manaPool[color] = (player.manaPool[color] || 0) + effect.amount;
+          this.addLog(`${player.name} adds ${effect.amount}${color} from ${sourceName}.`);
+          break;
+        }
+
+        case 'CABAL_RITUAL': {
+          const threshold = player.graveyard.length >= 7;
+          const amount = threshold ? 5 : 3;
+          player.manaPool['B'] = (player.manaPool['B'] || 0) + amount;
+          this.addLog(`${player.name} adds ${amount}B from ${sourceName}${threshold ? ' (Threshold)' : ''}.`);
+          break;
+        }
+
         // Phase 2 – Ponder
         case 'LOOK_AND_REARRANGE': {
           const amt = effect.amount || 3;
@@ -638,6 +653,13 @@ class GameEngine {
               this._exileTarget(targetRef, sourceName, playerIndex);
             });
           }
+          break;
+        }
+
+        case 'HAND_DISRUPTION': {
+          const targetPlayerIndex = targets[0] !== undefined ? targets[0] : playerIndex;
+          const targetPlayer = this.state.players[targetPlayerIndex];
+          this.addLog(`${targetPlayer.name} reveals their hand to ${player.name} (${sourceName}).`);
           break;
         }
 

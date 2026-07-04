@@ -6,8 +6,9 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSocket } from '@/hooks/useSocket';
 
+import { Suspense } from 'react';
 
-export default function PlayPage() {
+function PlayPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { socket, isConnected } = useSocket();
@@ -682,5 +683,13 @@ export default function PlayPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function PlayPage() {
+  return (
+    <Suspense fallback={<div style={{color: 'white', padding: '2rem'}}>Loading Lobby...</div>}>
+      <PlayPageContent />
+    </Suspense>
   );
 }

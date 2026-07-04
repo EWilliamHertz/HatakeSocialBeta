@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, Trophy, Medal, Star, Target, Shield, Zap } from 'lucide-react';
-import Navigation from '@/components/Navigation';
 
 type Achievement = {
   id: string;
@@ -55,7 +54,6 @@ export default function AchievementsProfile() {
   if (loading) {
     return (
       <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
-        <Navigation />
         <Loader2 className="animate-spin text-cyan-500 w-12 h-12" />
       </main>
     );
@@ -65,7 +63,6 @@ export default function AchievementsProfile() {
 
   return (
     <main className="min-h-screen bg-slate-950 text-white pb-20">
-      <Navigation />
       
       <div className="max-w-6xl mx-auto pt-24 px-4 sm:px-6 relative">
         <div className="absolute top-0 right-0 w-96 h-96 bg-fuchsia-500/10 blur-[120px] rounded-full pointer-events-none" />

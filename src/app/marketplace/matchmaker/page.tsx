@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { Loader2, ArrowRightLeft, ShieldAlert, Sparkles, TrendingUp } from 'lucide-react';
-import Navigation from '@/components/Navigation';
+import { motion } from 'framer-motion';
 
 type TradeMatch = {
   user: { id: string, username: string, reputationScore: number };
@@ -35,7 +34,6 @@ export default function TradeMatchmaker() {
 
   return (
     <main className="min-h-screen bg-slate-950 text-white pb-20">
-      <Navigation />
       
       <div className="max-w-5xl mx-auto pt-24 px-4 sm:px-6 relative">
         <div className="absolute top-20 left-1/2 -translate-x-1/2 w-3/4 h-64 bg-cyan-500/20 blur-[120px] rounded-full pointer-events-none" />

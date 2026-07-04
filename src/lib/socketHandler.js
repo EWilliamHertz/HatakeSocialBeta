@@ -1,4 +1,5 @@
 import { GameEngine } from './gameEngine.js';
+import { LoryxEngine } from './loryxEngine.js';
 import { db as pool } from './db.js';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -16,8 +17,8 @@ export function registerSocketHandlers(io) {
     // Send current lobbies to newly connected client
     socket.emit('lobby-list', Array.from(lobbies.values()).filter(l => l.status !== 'in-game'));
 
-    // create-lobby: { name, mode, playerName, deckId }
-    socket.on('create-lobby', ({ name, mode, playerName, deckId }) => {
+    // create-lobby: { name, mode, playerName, deckId, game }
+    socket.on('create-lobby', ({ name, mode, playerName, deckId, game = 'MAGIC' }) => {
       const lobbyId = uuidv4();
       const playerId = uuidv4();
       
@@ -25,6 +26,7 @@ export function registerSocketHandlers(io) {
         id: lobbyId,
         name,
         mode,
+        game,
         hostName: playerName,  // Track host name
         players: [{
           id: playerId,
@@ -184,8 +186,15 @@ export function registerSocketHandlers(io) {
               p.sideboard = sideboard;
             }
 
-            const engine = new GameEngine(lobby.mode, lobby.players, true); // true = isBO3
-            engine.initGame();
+            let engine;
+            if (lobby.game === 'LORYX') {
+              engine = new LoryxEngine(lobby.mode);
+              engine.setupGame(lobby.players[0]?.deck || [], lobby.players[1]?.deck || []);
+            } else {
+              engine = new GameEngine(lobby.mode, lobby.players, true); // true = isBO3
+              engine.initGame();
+            }
+
             const gameId = uuidv4();
             activeGames.set(gameId, engine);
             lobby.gameId = gameId;
@@ -195,7 +204,7 @@ export function registerSocketHandlers(io) {
               const pSocket = io.sockets.sockets.get(p.socketId);
               if (pSocket) {
                 pSocket.join(gameId);
-                const state = engine.getState(p.id);
+                const state = lobby.game === 'LORYX' ? engine.state : engine.getState(p.id);
                 pSocket.emit('game-start', { gameId, playerId: p.id, state });
                 pSocket.emit('game-update', state);
               }
@@ -223,7 +232,8 @@ export function registerSocketHandlers(io) {
           socket.join(gameId);
           console.log(`✓ Player ${playerId} joined game ${gameId} on socket ${socket.id.substring(0, 8)}`);
           // Send both the initial game-start and current game state
-          const state = engine.getState(playerId);
+          const isLoryx = engine instanceof LoryxEngine;
+          const state = isLoryx ? engine.state : engine.getState(playerId);
           socket.emit('game-start', { gameId, playerId, state });
           socket.emit('game-update', state);
         } else {
@@ -258,35 +268,42 @@ export function registerSocketHandlers(io) {
       }
 
       try {
-        const result = engine.handleAction(playerId, data);
-        
-        // Check if action was successful (result is { success: true/false, ... })
-        if (result && result.success === true) {
-          console.log(`✓ Action ${type} succeeded for player ${playerId}`);
-          for (const p of engine.state.players) {
-            const pSocket = io.sockets.sockets.get(p.socketId);
-            if (pSocket) {
-              pSocket.emit('game-update', engine.getState(p.id));
-            }
+        const isLoryx = engine instanceof LoryxEngine;
+        if (isLoryx) {
+          const actualIndex = engine.state.players.findIndex(p => p.id === playerId || p.socketId === socket.id);
+          if (actualIndex !== -1) {
+            engine.processAction(actualIndex, data);
+            io.to(gameId).emit('game-update', engine.state);
+          } else {
+            console.warn(`Player ${playerId} not found in Loryx game.`);
           }
-          if (engine.isGameOver()) {
-            io.to(gameId).emit('game-over');
-            activeGames.delete(gameId);
-            for (const [id, lobby] of lobbies.entries()) {
-              if (lobby.gameId === gameId) {
-                lobbies.delete(id);
-                break;
+        } else {
+          const result = engine.handleAction(playerId, data);
+          
+          if (result && result.success === true) {
+            console.log(`✓ Action ${type} succeeded for player ${playerId}`);
+            for (const p of engine.state.players) {
+              const pSocket = io.sockets.sockets.get(p.socketId);
+              if (pSocket) {
+                pSocket.emit('game-update', engine.getState(p.id));
               }
             }
+            if (engine.isGameOver()) {
+              io.to(gameId).emit('game-over');
+              activeGames.delete(gameId);
+              for (const [id, lobby] of lobbies.entries()) {
+                if (lobby.gameId === gameId) {
+                  lobbies.delete(id);
+                  break;
+                }
+              }
+            }
+          } else {
+            const errorMsg = result?.error || `Action ${type} failed`;
+            console.warn(`❌ Action failed: ${errorMsg}`);
+            socket.emit('error', errorMsg);
+            socket.emit('game-update', engine.getState(playerId));
           }
-        
-        } else {
-          // Action failed
-          const errorMsg = result?.error || `Action ${type} failed`;
-          console.warn(`❌ Action failed: ${errorMsg}`);
-          socket.emit('error', errorMsg);
-          // Force a state sync to revert any optimistic frontend updates
-          socket.emit('game-update', engine.getState(playerId));
         }
       } catch (error) {
         console.error(`💥 Error handling action ${type}:`, error.message);
