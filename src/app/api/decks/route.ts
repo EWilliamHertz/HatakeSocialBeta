@@ -16,7 +16,7 @@ export async function GET(request: Request) {
       },
       include: {
         owner: {
-          select: { name: true, handle: true, profilePictureUrl: true }
+          select: { username: true, handle: true, profilePictureUrl: true }
         }
       },
       orderBy: { createdAt: 'desc' },

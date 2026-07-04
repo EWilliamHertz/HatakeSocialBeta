@@ -44,8 +44,28 @@ function resolveTargetTypes(phrase) {
 function parseCardData(rawCard) {
   const card = { ...rawCard };
   const oracle = card.oracle_text || '';
-  const typeLine = card.type_line || '';
+  let typeLine = card.type_line || '';
   const name = card.name || '';
+
+  // TCGPlayer ABUR dual lands often lack their subtypes in the API payload
+  const vintageDuals = {
+    'Tundra': 'Island Plains',
+    'Underground Sea': 'Island Swamp',
+    'Badlands': 'Swamp Mountain',
+    'Taiga': 'Mountain Forest',
+    'Savannah': 'Plains Forest',
+    'Scrubland': 'Plains Swamp',
+    'Volcanic Island': 'Island Mountain',
+    'Bayou': 'Swamp Forest',
+    'Plateau': 'Mountain Plains',
+    'Tropical Island': 'Island Forest'
+  };
+  if (vintageDuals[name]) {
+    if (!typeLine.includes(vintageDuals[name].split(' ')[0])) {
+      typeLine += ` — ${vintageDuals[name]}`;
+      card.type_line = typeLine;
+    }
+  }
 
   card.engineMetadata = {
     // ---- basics ----
@@ -209,30 +229,30 @@ function parseCardData(rawCard) {
   }
 
   // ── 4. Mana Abilities ───────────────────────────────────────
-  const manaAbilityRegex = /\{T\}:\s*Add ((?:\{[WUBRG1-9C]\}(?:,\s*)?)+)/gi;
+  const manaAbilityRegex = /(?:\{T\}|T):\s*Add ((?:\{[WUBRG1-9C]\}|[WUBRG1-9C])(?:,\s*)?)+/gi;
   let manaMatch;
   while ((manaMatch = manaAbilityRegex.exec(oracle)) !== null) {
     const manaStr = manaMatch[1];
     for (const color of ['W', 'U', 'B', 'R', 'G', 'C']) {
-      if (manaStr.includes(`{${color}}`)) meta.manaAbilities.push(color);
+      if (manaStr.includes(`{${color}}`) || manaStr.includes(color)) meta.manaAbilities.push(color);
     }
   }
   // Dual lands that produce "one of two colors" via choice
-  if (/{T}: Add \{[WUBRG]\} or \{[WUBRG]\}/i.test(oracle)) {
-    const colorTokens = oracle.match(/\{T\}: Add \{([WUBRG])\} or \{([WUBRG])\}/i);
+  if (/(?:\{T\}|T): Add (?:\{[WUBRG]\}|[WUBRG]) or (?:\{[WUBRG]\}|[WUBRG])/i.test(oracle)) {
+    const colorTokens = oracle.match(/(?:\{T\}|T): Add (?:\{([WUBRG])\}|([WUBRG])) or (?:\{([WUBRG])\}|([WUBRG]))/i);
     if (colorTokens) {
-      meta.manaAbilities.push(colorTokens[1]);
-      meta.manaAbilities.push(colorTokens[2]);
+      meta.manaAbilities.push(colorTokens[1] || colorTokens[2]);
+      meta.manaAbilities.push(colorTokens[3] || colorTokens[4]);
     }
   }
   // Ancient Tomb / other colorless producers
-  if (/{T}: Add \{C\}\{C\}/i.test(oracle)) {
+  if (/(?:\{T\}|T): Add (?:\{C\}\{C\}|CC)/i.test(oracle)) {
     meta.manaAbilities.push('C');
     meta.manaProducedAmount = 2;
   }
 
-  // Basic Land Fallback
-  if (typeLine.includes('Basic Land') || typeLine.includes('Basic Snow Land')) {
+  // Land Mana Ability Fallback (Basic land types intrinsically produce mana)
+  if (typeLine.includes('Land')) {
     if (typeLine.includes('Plains'))   meta.manaAbilities.push('W');
     if (typeLine.includes('Island'))   meta.manaAbilities.push('U');
     if (typeLine.includes('Swamp'))    meta.manaAbilities.push('B');
@@ -377,7 +397,7 @@ function parseCardData(rawCard) {
   }
 
   // Lotus Petal
-  if (/\{T\},\s*Sacrifice.+?:\s*Add one mana of any color/i.test(oracle)) {
+  if (/(?:\{T\}|T),\s*Sacrifice.+?:\s*Add one mana of any color/i.test(oracle)) {
     meta.activatedAbilities.push({
       id: 'lotus_petal_mana',
       costType: 'TAP_AND_SACRIFICE',

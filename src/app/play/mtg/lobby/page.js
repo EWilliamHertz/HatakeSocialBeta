@@ -2,13 +2,14 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './page.module.css';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useSocket } from '@/hooks/useSocket';
 
 
 export default function PlayPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { socket, isConnected } = useSocket();
   const lobbyRef = useRef(null);
 
@@ -88,11 +89,18 @@ export default function PlayPage() {
           const data = await res.json();
           const deckList = data.decks || [];
           setDecks(deckList);
-          if (deckList.length > 0) {
-            setSelectedDeckId(deckList[0].id);
-            setVersusSelectedDeckId(deckList[0].id);
-            setCreateDeckId(deckList[0].id);
-            setJoinDeckId(deckList[0].id);
+          const paramDeckId = searchParams.get('deckId');
+          let defaultDeck = '';
+          if (paramDeckId && deckList.find(d => d.id === paramDeckId)) {
+            defaultDeck = paramDeckId;
+          } else if (deckList.length > 0) {
+            defaultDeck = deckList[0].id;
+          }
+          if (defaultDeck) {
+            setSelectedDeckId(defaultDeck);
+            setVersusSelectedDeckId(defaultDeck);
+            setCreateDeckId(defaultDeck);
+            setJoinDeckId(defaultDeck);
           }
         }
       } catch {
@@ -146,6 +154,30 @@ export default function PlayPage() {
       socket.off('error', handleError);
     };
   }, [socket, router, waitingLobby]);
+
+  // ─── Auto Start ───
+  const autoStartFired = useRef(false);
+  useEffect(() => {
+    const autoStart = searchParams.get('autoStart');
+    const queryDeckId = searchParams.get('deckId');
+
+    if (autoStart === 'goldfish' && queryDeckId && playerName && socket && !autoStartFired.current) {
+      autoStartFired.current = true;
+      setLoading(true);
+      socket.emit('create-lobby', {
+        name: `${playerName}'s Solo Game`,
+        mode: '1v0',
+        playerName,
+        deckId: queryDeckId
+      });
+      
+      const onLobbyCreated = ({ lobbyId }) => {
+        socket.off('lobby-created', onLobbyCreated);
+        socket.emit('ready', { lobbyId });
+      };
+      socket.on('lobby-created', onLobbyCreated);
+    }
+  }, [searchParams, playerName, socket]);
 
   // ─── Solo Goldfish start ───
   const handleStartSolo = useCallback(async () => {
@@ -407,7 +439,8 @@ export default function PlayPage() {
               value={selectedDeckId}
               onChange={(e) => setSelectedDeckId(e.target.value)}
             >
-              {decks.length === 0 && <option value="">No decks available</option>}
+              <option value="" disabled>Select a deck...</option>
+              {decks.length === 0 && <option value="" disabled>No decks available</option>}
               {decks.map((deck) => (
                 <option key={deck.id} value={deck.id}>
                   {deck.name}
@@ -535,8 +568,9 @@ export default function PlayPage() {
                               value={joinDeckId}
                               onChange={(e) => setJoinDeckId(e.target.value)}
                             >
+                              <option value="" disabled>Select a deck...</option>
                               {decks.length === 0 && (
-                                <option value="">No decks</option>
+                                <option value="" disabled>No decks</option>
                               )}
                               {decks.map((deck) => (
                                 <option key={deck.id} value={deck.id}>
@@ -620,7 +654,8 @@ export default function PlayPage() {
               value={createDeckId}
               onChange={(e) => setCreateDeckId(e.target.value)}
             >
-              {decks.length === 0 && <option value="">No decks available</option>}
+              <option value="" disabled>Select a deck...</option>
+              {decks.length === 0 && <option value="" disabled>No decks available</option>}
               {decks.map((deck) => (
                 <option key={deck.id} value={deck.id}>
                   {deck.name}

@@ -1144,7 +1144,7 @@ function GameContent() {
             <h1 className={styles.gameOverTitle}>
               {gameOver === 'victory' ? '🏆 Victory!' : '💀 Defeat'}
             </h1>
-            <button className={styles.primaryBtn} style={{ marginTop: 24 }} onClick={() => router.push('/')}>
+            <button className={styles.primaryBtn} style={{ marginTop: 24 }} onClick={() => router.push('/play/mtg/lobby')}>
               Back to Lobby
             </button>
           </div>

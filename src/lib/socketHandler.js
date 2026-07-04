@@ -133,29 +133,47 @@ export function registerSocketHandlers(io) {
                 
                 let cardArray = Array.isArray(parsedCards) ? parsedCards : Object.values(parsedCards);
                 for (const entry of cardArray) {
+                  const targetApiId = entry.cardId || entry.id || entry.apiId;
+                  const targetQuantity = entry.quantity || entry.count || 1;
+                  
+                  if (!targetApiId) continue;
+
                   const cardRef = await prisma.cardReference.findUnique({
-                    where: { apiId: entry.cardId }
+                    where: { apiId: targetApiId }
                   });
                   if (cardRef) {
                     const payload = cardRef.apiPayload;
+                    
+                    // Extract TCGPlayer extendedData if present
+                    let extractedTypeLine = payload.type_line;
+                    let extractedOracleText = payload.oracle_text;
+                    
+                    if (payload.extendedData && Array.isArray(payload.extendedData)) {
+                      const typeAttr = payload.extendedData.find(d => d.name === 'SubType');
+                      if (typeAttr && !extractedTypeLine) extractedTypeLine = typeAttr.value;
+                      
+                      const oracleAttr = payload.extendedData.find(d => d.name === 'OracleText');
+                      if (oracleAttr && !extractedOracleText) extractedOracleText = oracleAttr.value;
+                    }
+
                     const cardData = {
-                      scryfall_id: payload.id,
-                      card_id: payload.id,
-                      name: payload.name,
+                      scryfall_id: payload.id || cardRef.id,
+                      card_id: payload.id || cardRef.id,
+                      name: payload.name || payload.cleanName,
                       mana_cost: payload.mana_cost,
                       cmc: payload.cmc,
-                      type_line: payload.type_line,
-                      oracle_text: payload.oracle_text,
+                      type_line: extractedTypeLine,
+                      oracle_text: extractedOracleText,
                       power: payload.power,
                       toughness: payload.toughness,
                       colors: payload.colors,
                       color_identity: payload.color_identity,
                       keywords: payload.keywords,
-                      rarity: payload.rarity,
-                      image_uri: payload.image_uris?.normal || payload.card_faces?.[0]?.image_uris?.normal,
-                      quantity: entry.quantity
+                      rarity: payload.rarity || cardRef.rarity,
+                      image_uri: cardRef.imageUrl || payload.image_uris?.normal || payload.card_faces?.[0]?.image_uris?.normal,
+                      quantity: targetQuantity
                     };
-                    for (let i = 0; i < entry.quantity; i++) {
+                    for (let i = 0; i < targetQuantity; i++) {
                       if (entry.is_sideboard) sideboard.push(cardData);
                       else mainDeck.push(cardData);
                     }

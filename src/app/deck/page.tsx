@@ -7,13 +7,28 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HatakeDeckBuilder } from '@/components/HatakeDeckBuilder';
 import { DeckViewer } from '@/components/DeckViewer';
 import { GAME_FORMATS } from '@/lib/formats';
+import { useSocket } from '@/hooks/useSocket';
 
 type GameType = 'MAGIC' | 'POKEMON' | 'ONE_PIECE' | 'NARUTO' | 'LORCANA' | 'RIFTBOUND';
 type TabType = 'META' | 'COMMUNITY' | 'YOURS';
 
+const fetchWithRetry = async (url: string, retries = 3, delay = 1500) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) return await res.json();
+    } catch (err) {
+      console.warn(`Fetch failed (${i + 1}/${retries}):`, err);
+    }
+    if (i < retries - 1) await new Promise(r => setTimeout(r, delay));
+  }
+  return null;
+};
+
 export default function DeckHubPage() {
   const [selectedGame, setSelectedGame] = useState<GameType>('MAGIC');
   const [activeTab, setActiveTab] = useState<TabType>('YOURS');
+  const { socket } = useSocket();
   
   // State for deck builder
   const [isBuilding, setIsBuilding] = useState(false);
@@ -22,14 +37,48 @@ export default function DeckHubPage() {
   const [editingDeck, setEditingDeck] = useState<any>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [viewingDeck, setViewingDeck] = useState<any>(null);
+  const [playModalDeck, setPlayModalDeck] = useState<any>(null);
+  const [launching, setLaunching] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/api/auth/me').then(r => r.json()).then(d => {
+      if (d.user) setCurrentUser(d.user);
+    }).catch(() => {});
+  }, []);
 
   const router = useRouter();
 
-  const handlePlay = (game: string, e: React.MouseEvent) => {
+  const handlePlay = (deck: any, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (game === 'MAGIC') router.push('/play/mtg');
-    else if (game === 'POKEMON') router.push('/play/pokemon');
-    else router.push(`/play/${game.toLowerCase().replace('_', '-')}`);
+    setPlayModalDeck(deck);
+  };
+
+  const handleStartSolo = () => {
+    if (!playModalDeck || !socket) return;
+    setLaunching(true);
+
+    const playerName = currentUser?.username || 'Player';
+    
+    socket.emit('create-lobby', {
+      name: `${playerName}'s Solo Practice`,
+      mode: '1v0',
+      playerName,
+      deckId: playModalDeck.id
+    });
+    
+    const onLobbyCreated = ({ lobbyId }: { lobbyId: string }) => {
+      socket.off('lobby-created', onLobbyCreated);
+      socket.emit('ready', { lobbyId });
+    };
+    
+    const onGameStart = ({ gameId, playerId }: { gameId: string, playerId: string }) => {
+      socket.off('game-start', onGameStart);
+      router.push(`/play/mtg/game?gameId=${gameId}&playerId=${playerId}`);
+    };
+
+    socket.on('lobby-created', onLobbyCreated);
+    socket.on('game-start', onGameStart);
   };
 
   const handleDeleteDeck = async (id: string, e: React.MouseEvent) => {
@@ -61,7 +110,7 @@ export default function DeckHubPage() {
         })
       });
       if (res.ok) {
-        handlePlay(deck.game, e);
+        handlePlay(deck, e);
       } else {
         alert('Failed to import deck');
       }
@@ -81,13 +130,11 @@ export default function DeckHubPage() {
   useEffect(() => {
     if (activeTab === 'YOURS') {
       setLoading(true);
-      fetch(`/api/decks/my?game=${selectedGame}`)
-        .then(res => res.json())
+      fetchWithRetry(`/api/decks/my?game=${selectedGame}`)
         .then(data => {
-          if (data.decks) setMyDecks(data.decks);
+          if (data && data.decks) setMyDecks(data.decks);
           setLoading(false);
-        })
-        .catch(() => setLoading(false));
+        });
     }
   }, [activeTab, selectedGame]);
 
@@ -95,13 +142,11 @@ export default function DeckHubPage() {
   useEffect(() => {
     if (activeTab === 'COMMUNITY') {
       setLoading(true);
-      fetch(`/api/decks?game=${selectedGame}`)
-        .then(res => res.json())
+      fetchWithRetry(`/api/decks?game=${selectedGame}`)
         .then(data => {
-          if (data.decks) setCommunityDecks(data.decks);
+          if (data && data.decks) setCommunityDecks(data.decks);
           setLoading(false);
-        })
-        .catch(() => setLoading(false));
+        });
     }
   }, [activeTab, selectedGame]);
 
@@ -112,13 +157,11 @@ export default function DeckHubPage() {
   useEffect(() => {
     if (activeTab === 'META') {
       setLoading(true);
-      fetch(`/api/decks/meta?game=${selectedGame}`) // Wait, I need an endpoint for this. Let's create it. Or just use /api/decks?meta=true
-        .then(res => res.json())
+      fetchWithRetry(`/api/decks/meta?game=${selectedGame}`) // Wait, I need an endpoint for this. Let's create it. Or just use /api/decks?meta=true
         .then(data => {
-          if (data.decks) setMetaDecks(data.decks);
+          if (data && data.decks) setMetaDecks(data.decks);
           setLoading(false);
-        })
-        .catch(() => setLoading(false));
+        });
     }
   }, [activeTab, selectedGame]);
 
@@ -135,7 +178,9 @@ export default function DeckHubPage() {
           setIsBuilding(false);
           // Refresh list on return
           if (activeTab === 'YOURS') {
-             fetch(`/api/decks/my?game=${selectedGame}`).then(res=>res.json()).then(data=>setMyDecks(data.decks||[]));
+             fetchWithRetry(`/api/decks/my?game=${selectedGame}`).then(data=>{
+               if (data && data.decks) setMyDecks(data.decks);
+             });
           }
         }} 
       />
@@ -241,7 +286,9 @@ export default function DeckHubPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {myDecks.map(deck => {
                       // Calculate cards
-                      const totalCards = Array.isArray(deck.cards) ? deck.cards.reduce((acc: number, c: any) => acc + (c.count || 0), 0) : 0;
+                      const mainboardCount = Array.isArray(deck.cards) ? deck.cards.filter((c: any) => !c.isSideboard && !c.is_sideboard).reduce((acc: number, c: any) => acc + (c.count || c.quantity || 0), 0) : 0;
+                      const sideboardCount = Array.isArray(deck.cards) ? deck.cards.filter((c: any) => c.isSideboard || c.is_sideboard).reduce((acc: number, c: any) => acc + (c.count || c.quantity || 0), 0) : 0;
+                      const hasSb = sideboardCount > 0;
                       
                       return (
                       <div key={deck.id} className="bg-slate-900 border border-white/5 p-6 rounded-3xl hover:border-cyan-500/50 group transition-all flex flex-col">
@@ -254,7 +301,7 @@ export default function DeckHubPage() {
                             <button onClick={(e) => { e.stopPropagation(); setEditingDeck(deck); setIsBuilding(true); }} className="w-10 h-10 bg-slate-950 rounded-full flex items-center justify-center border border-white/5 hover:bg-slate-800 transition-all text-slate-400 hover:text-white">
                               <Edit2 size={16} />
                             </button>
-                            <button onClick={(e) => handlePlay(deck.game, e)} className="w-10 h-10 bg-slate-950 rounded-full flex items-center justify-center border border-white/5 hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all text-cyan-400">
+                            <button onClick={(e) => handlePlay(deck, e)} className="w-10 h-10 bg-slate-950 rounded-full flex items-center justify-center border border-white/5 hover:bg-cyan-500/20 hover:border-cyan-500/50 transition-all text-cyan-400">
                               <Play size={16} className="ml-1" />
                             </button>
                             <button onClick={(e) => handleDeleteDeck(deck.id, e)} className="w-10 h-10 bg-slate-950 rounded-full flex items-center justify-center border border-white/5 hover:bg-red-500/20 hover:border-red-500/50 transition-all text-red-400">
@@ -265,7 +312,7 @@ export default function DeckHubPage() {
                         <div className="flex justify-between items-end mt-auto">
                           <div>
                             <p className="text-xs text-slate-500 uppercase font-bold mb-1">Cards</p>
-                            <p className="text-white font-bold">{totalCards}</p>
+                            <p className="text-white font-bold">{mainboardCount} MB {hasSb && <span className="text-slate-500 ml-1">+ {sideboardCount} SB</span>}</p>
                           </div>
                           <div className="text-right">
                             <p className="text-xs text-slate-500 uppercase font-bold mb-1">Status</p>
@@ -378,7 +425,10 @@ export default function DeckHubPage() {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {communityDecks.map(deck => {
-                      const totalCards = Array.isArray(deck.cards) ? deck.cards.reduce((acc: number, c: any) => acc + (c.count || 0), 0) : 0;
+                      // Calculate cards
+                      const mainboardCount = Array.isArray(deck.cards) ? deck.cards.filter((c: any) => !c.isSideboard && !c.is_sideboard).reduce((acc: number, c: any) => acc + (c.count || c.quantity || 0), 0) : 0;
+                      const sideboardCount = Array.isArray(deck.cards) ? deck.cards.filter((c: any) => c.isSideboard || c.is_sideboard).reduce((acc: number, c: any) => acc + (c.count || c.quantity || 0), 0) : 0;
+                      const hasSb = sideboardCount > 0;
                       
                       return (
                       <div key={deck.id} onClick={() => { setViewingDeck(deck); setIsViewing(true); }} className="bg-slate-900 border border-white/5 p-6 rounded-3xl hover:border-indigo-500/50 cursor-pointer group transition-all relative overflow-hidden">
@@ -398,7 +448,7 @@ export default function DeckHubPage() {
                           <div className="flex justify-between items-end border-t border-white/5 pt-4">
                             <div>
                               <p className="text-xs text-slate-500 uppercase font-bold mb-1">Cards</p>
-                              <p className="text-indigo-400 font-black">{totalCards}</p>
+                              <p className="text-white font-bold">{mainboardCount} MB {hasSb && <span className="text-slate-500 ml-1">+ {sideboardCount} SB</span>}</p>
                             </div>
                             <div className="text-right">
                               <p className="text-xs text-slate-500 uppercase font-bold mb-1">Author</p>
@@ -414,7 +464,7 @@ export default function DeckHubPage() {
                                 <MessageCircle size={14} /> <span className="text-xs font-bold">{Math.floor(Math.random() * 30)}</span>
                               </button>
                             </div>
-                            <button onClick={(e) => handlePlay(deck.game, e)} className="w-8 h-8 bg-indigo-500/10 rounded-full flex items-center justify-center border border-indigo-500/30 hover:bg-indigo-500 hover:text-white transition-all text-indigo-400">
+                            <button onClick={(e) => { e.stopPropagation(); setPlayModalDeck(deck); }} className="w-8 h-8 bg-indigo-500/10 rounded-full flex items-center justify-center border border-indigo-500/30 hover:bg-indigo-500 hover:text-white transition-all text-indigo-400">
                               <Play size={12} className="ml-0.5" />
                             </button>
                           </div>
@@ -427,7 +477,35 @@ export default function DeckHubPage() {
             )}
           </motion.div>
         </AnimatePresence>
+
       </div>
+
+      {playModalDeck && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-slate-900 border border-white/10 p-8 rounded-3xl w-full max-w-lg shadow-2xl">
+            <h2 className="text-3xl font-black text-white mb-6 text-center">Select Game Mode</h2>
+            <div className="space-y-4">
+              <button disabled={launching} onClick={() => { alert('Ranked Queue coming soon!'); }} className="w-full p-4 bg-slate-800 hover:bg-fuchsia-600 border border-white/5 rounded-2xl font-bold text-white transition-all flex justify-between items-center group">
+                <span className="flex items-center gap-3"><Swords className="text-fuchsia-400 group-hover:text-white" /> Ranked Queue</span>
+                <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-fuchsia-200">Coming Soon</span>
+              </button>
+
+              <button disabled={launching} onClick={() => { 
+                if (playModalDeck.game === 'MAGIC') router.push(`/play/mtg/lobby?deckId=${playModalDeck.id}`); 
+              }} className="w-full p-4 bg-slate-800 hover:bg-cyan-600 border border-white/5 rounded-2xl font-bold text-white transition-all flex justify-between items-center group">
+                <span className="flex items-center gap-3"><Globe className="text-cyan-400 group-hover:text-white" /> Custom Lobby</span>
+                <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-cyan-200">Play with friends</span>
+              </button>
+
+              <button disabled={launching} onClick={handleStartSolo} className="w-full p-4 bg-slate-800 hover:bg-emerald-600 border border-white/5 rounded-2xl font-bold text-white transition-all flex justify-between items-center group">
+                <span className="flex items-center gap-3"><Layers className="text-emerald-400 group-hover:text-white" /> {launching ? 'Starting...' : 'Solo Goldfish'}</span>
+                <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-emerald-200">Test your deck</span>
+              </button>
+            </div>
+            <button disabled={launching} onClick={() => setPlayModalDeck(null)} className="w-full mt-6 py-3 bg-slate-950 border border-white/10 rounded-xl text-slate-400 hover:text-white font-bold transition-all">Cancel</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
