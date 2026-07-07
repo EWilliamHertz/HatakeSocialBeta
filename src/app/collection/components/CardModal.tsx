@@ -128,7 +128,9 @@ export default function CardModal({ card, onClose }: { card: CardData, onClose: 
           isAltered,
           setCode: card.setCode,
           collectorNumber: card.collectorNumber,
-          price: estimatedPrice,
+          price: card.price || 0,
+          foilPrice: card.foilPrice || 0,
+          reverseHoloPrice: card.reverseHoloPrice || 0,
           notes,
           pileTogether
         })

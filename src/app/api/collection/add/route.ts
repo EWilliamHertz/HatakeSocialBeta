@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     const user = await decrypt(token);
     if (!user || !user.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { cardId, game, name, imageUrl, condition, quantity, isFoil, isSigned, signedByArtist, signedByElse, isAltered, setCode, collectorNumber, price, notes, pileTogether, customImageUrl } = await request.json();
+    const { cardId, game, name, imageUrl, condition, quantity, isFoil, isSigned, signedByArtist, signedByElse, isAltered, setCode, collectorNumber, price, foilPrice, reverseHoloPrice, notes, pileTogether, customImageUrl } = await request.json();
 
     if (!cardId || !quantity) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -30,6 +30,8 @@ export async function POST(request: Request) {
         name: name,
         imageUrl: imageUrl,
         price: price ? parseFloat(price) : null,
+        foilPrice: foilPrice ? parseFloat(foilPrice) : null,
+        reverseHoloPrice: reverseHoloPrice ? parseFloat(reverseHoloPrice) : null,
         apiPayload: { setCode, collectorNumber }
       }
     });
