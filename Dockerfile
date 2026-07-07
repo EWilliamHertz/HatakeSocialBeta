@@ -38,10 +38,10 @@ RUN npm run build
 
 # Build Phase Frontend
 WORKDIR /app/phase-engine/client
-RUN pnpm install
+RUN npm install
 # Set WebSocket URL so Phase connects back to Hatake's proxy
 ENV VITE_WS_URL=wss://hatakesocialbeta.onrender.com/phase-ws
-RUN pnpm run build
+RUN npm run build
 # Move Phase Frontend to Hatake Public Folder so Next.js serves it
 RUN mv dist /app/public/phase
 

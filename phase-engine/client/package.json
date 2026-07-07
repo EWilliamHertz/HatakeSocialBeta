@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "pnpm run protocol:check && tsc -b && vite build",
+    "build": "npm run protocol:check && tsc -b && vite build",
     "lint": "eslint .",
     "protocol:check": "node ../scripts/check-protocol-version.mjs",
-    "type-check": "pnpm run protocol:check && tsc -b --noEmit",
+    "type-check": "npm run protocol:check && tsc -b --noEmit",
     "preview": "vite preview",
     "test": "vitest",
     "test:integration": "vitest run --config vitest.integration.config.ts",
