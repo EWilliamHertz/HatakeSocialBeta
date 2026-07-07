@@ -54,7 +54,7 @@ function GameRouteElement() {
 
 export function App() {
   return (
-    <BrowserRouter useTransitions={false}>
+    <BrowserRouter useTransitions={false} basename="/phase">
       <AppContent />
     </BrowserRouter>
   );

@@ -128,6 +128,7 @@ function dataFileDefines(mode: string): Record<string, string> {
 }
 
 export default defineConfig(({ mode }) => ({
+  base: "/phase/",
   resolve: {
     alias: {
       "@wasm/engine": path.resolve(__dirname, "src/wasm/engine_wasm"),
