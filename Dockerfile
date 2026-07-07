@@ -23,6 +23,17 @@ COPY . .
 # Build Hatake Next.js
 RUN npm install
 RUN npx prisma generate
+
+# Inject Environment Variables for Next.js Build
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+ARG JWT_SECRET
+ENV JWT_SECRET=$JWT_SECRET
+ARG NEXT_PUBLIC_IMGBB_API_KEY
+ENV NEXT_PUBLIC_IMGBB_API_KEY=$NEXT_PUBLIC_IMGBB_API_KEY
+ARG RESEND_API_KEY
+ENV RESEND_API_KEY=$RESEND_API_KEY
+
 RUN npm run build
 
 # Build Phase Frontend
