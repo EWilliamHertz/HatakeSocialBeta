@@ -10,9 +10,9 @@ RUN ./scripts/gen-card-data.sh
 
 # Install WASM tools
 RUN rustup target add wasm32-unknown-unknown
-RUN curl -L https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.114/wasm-bindgen-0.2.114-x86_64-unknown-linux-musl.tar.gz | tar xz \
-    && mv wasm-bindgen-0.2.114-x86_64-unknown-linux-musl/wasm-bindgen /usr/local/bin/ \
-    && rm -rf wasm-bindgen-0.2.114-x86_64-unknown-linux-musl
+RUN curl -L https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.121/wasm-bindgen-0.2.121-x86_64-unknown-linux-musl.tar.gz | tar xz \
+    && mv wasm-bindgen-0.2.121-x86_64-unknown-linux-musl/wasm-bindgen /usr/local/bin/ \
+    && rm -rf wasm-bindgen-0.2.121-x86_64-unknown-linux-musl
 
 # Build WASM output
 RUN ./scripts/build-wasm.sh release
