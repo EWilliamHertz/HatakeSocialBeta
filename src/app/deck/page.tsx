@@ -55,7 +55,21 @@ export default function DeckHubPage() {
   };
 
   const handleStartSolo = () => {
-    if (!playModalDeck || !socket) return;
+    if (!playModalDeck) return;
+
+    const gameType = playModalDeck.game?.toLowerCase();
+    
+    // For Loryx and Euryx, they run a completely client-side goldfish engine so we don't need a socket lobby.
+    if (gameType === 'lorcana') {
+       router.push(`/play/loryx/game?deckId=${playModalDeck.id}`);
+       return;
+    } else if (gameType === 'pokemon') {
+       alert('Pokemon engine is under construction!');
+       return;
+    }
+
+    // For MTG, we need the socket server to host the engine logic
+    if (!socket) return;
     setLaunching(true);
 
     const playerName = currentUser?.username || 'Player';
@@ -130,11 +144,13 @@ export default function DeckHubPage() {
   useEffect(() => {
     if (activeTab === 'YOURS') {
       setLoading(true);
+      setMyDecks([]); // Clear old data
       fetchWithRetry(`/api/decks/my?game=${selectedGame}`)
         .then(data => {
           if (data && data.decks) setMyDecks(data.decks);
           setLoading(false);
-        });
+        })
+        .catch(() => setLoading(false));
     }
   }, [activeTab, selectedGame]);
 
@@ -142,11 +158,13 @@ export default function DeckHubPage() {
   useEffect(() => {
     if (activeTab === 'COMMUNITY') {
       setLoading(true);
+      setCommunityDecks([]); // Clear old data
       fetchWithRetry(`/api/decks?game=${selectedGame}`)
         .then(data => {
           if (data && data.decks) setCommunityDecks(data.decks);
           setLoading(false);
-        });
+        })
+        .catch(() => setLoading(false));
     }
   }, [activeTab, selectedGame]);
 
@@ -157,11 +175,13 @@ export default function DeckHubPage() {
   useEffect(() => {
     if (activeTab === 'META') {
       setLoading(true);
-      fetchWithRetry(`/api/decks/meta?game=${selectedGame}`) // Wait, I need an endpoint for this. Let's create it. Or just use /api/decks?meta=true
+      setMetaDecks([]); // Clear old data
+      fetchWithRetry(`/api/decks/meta?game=${selectedGame}`)
         .then(data => {
           if (data && data.decks) setMetaDecks(data.decks);
           setLoading(false);
-        });
+        })
+        .catch(() => setLoading(false));
     }
   }, [activeTab, selectedGame]);
 
@@ -485,21 +505,37 @@ export default function DeckHubPage() {
           <div className="bg-slate-900 border border-white/10 p-8 rounded-3xl w-full max-w-lg shadow-2xl">
             <h2 className="text-3xl font-black text-white mb-6 text-center">Select Game Mode</h2>
             <div className="space-y-4">
-              <button disabled={launching} onClick={() => { alert('Ranked Queue coming soon!'); }} className="w-full p-4 bg-slate-800 hover:bg-fuchsia-600 border border-white/5 rounded-2xl font-bold text-white transition-all flex justify-between items-center group">
+              <button disabled={launching} onClick={() => { 
+                if (playModalDeck.game === 'MAGIC') {
+                  router.push(`/play/mtg/play/queue?deckId=${playModalDeck.id}`);
+                } else {
+                  alert('Ranked Queue coming soon!');
+                }
+              }} className="w-full p-4 bg-slate-800 hover:bg-fuchsia-600 border border-white/5 rounded-2xl font-bold text-white transition-all flex justify-between items-center group">
                 <span className="flex items-center gap-3"><Swords className="text-fuchsia-400 group-hover:text-white" /> Ranked Queue</span>
-                <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-fuchsia-200">Coming Soon</span>
+                <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-fuchsia-200">Phase Matchmaking</span>
               </button>
 
               <button disabled={launching} onClick={() => { 
-                if (playModalDeck.game === 'MAGIC') router.push(`/play/mtg/lobby?deckId=${playModalDeck.id}`); 
+                if (playModalDeck.game === 'MAGIC') {
+                  router.push(`/play/mtg/lobby?deckId=${playModalDeck.id}`);
+                } else {
+                  router.push(`/play/${playModalDeck.game.toLowerCase()}/lobby?deckId=${playModalDeck.id}`);
+                }
               }} className="w-full p-4 bg-slate-800 hover:bg-cyan-600 border border-white/5 rounded-2xl font-bold text-white transition-all flex justify-between items-center group">
                 <span className="flex items-center gap-3"><Globe className="text-cyan-400 group-hover:text-white" /> Custom Lobby</span>
-                <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-cyan-200">Play with friends</span>
+                <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-cyan-200">Phase Multiplayer</span>
               </button>
 
-              <button disabled={launching} onClick={handleStartSolo} className="w-full p-4 bg-slate-800 hover:bg-emerald-600 border border-white/5 rounded-2xl font-bold text-white transition-all flex justify-between items-center group">
+              <button disabled={launching} onClick={() => {
+                if (playModalDeck.game === 'MAGIC') {
+                  router.push(`/play/mtg/goldfish?deckId=${playModalDeck.id}`);
+                } else {
+                  handleStartSolo();
+                }
+              }} className="w-full p-4 bg-slate-800 hover:bg-emerald-600 border border-white/5 rounded-2xl font-bold text-white transition-all flex justify-between items-center group">
                 <span className="flex items-center gap-3"><Layers className="text-emerald-400 group-hover:text-white" /> {launching ? 'Starting...' : 'Solo Goldfish'}</span>
-                <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-emerald-200">Test your deck</span>
+                <span className="text-[10px] font-black uppercase text-slate-500 group-hover:text-emerald-200">Phase Sandbox</span>
               </button>
             </div>
             <button disabled={launching} onClick={() => setPlayModalDeck(null)} className="w-full mt-6 py-3 bg-slate-950 border border-white/10 rounded-xl text-slate-400 hover:text-white font-bold transition-all">Cancel</button>

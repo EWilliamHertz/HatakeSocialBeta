@@ -1,4 +1,3 @@
-import { GameEngine } from './gameEngine.js';
 import { LoryxEngine } from './loryxEngine.js';
 import { db as pool } from './db.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -191,8 +190,7 @@ export function registerSocketHandlers(io) {
               engine = new LoryxEngine(lobby.mode);
               engine.setupGame(lobby.players[0]?.deck || [], lobby.players[1]?.deck || []);
             } else {
-              engine = new GameEngine(lobby.mode, lobby.players, true); // true = isBO3
-              engine.initGame();
+              throw new Error('Game not supported by this engine anymore.');
             }
 
             const gameId = uuidv4();
@@ -278,32 +276,8 @@ export function registerSocketHandlers(io) {
             console.warn(`Player ${playerId} not found in Loryx game.`);
           }
         } else {
-          const result = engine.handleAction(playerId, data);
-          
-          if (result && result.success === true) {
-            console.log(`✓ Action ${type} succeeded for player ${playerId}`);
-            for (const p of engine.state.players) {
-              const pSocket = io.sockets.sockets.get(p.socketId);
-              if (pSocket) {
-                pSocket.emit('game-update', engine.getState(p.id));
-              }
-            }
-            if (engine.isGameOver()) {
-              io.to(gameId).emit('game-over');
-              activeGames.delete(gameId);
-              for (const [id, lobby] of lobbies.entries()) {
-                if (lobby.gameId === gameId) {
-                  lobbies.delete(id);
-                  break;
-                }
-              }
-            }
-          } else {
-            const errorMsg = result?.error || `Action ${type} failed`;
-            console.warn(`❌ Action failed: ${errorMsg}`);
-            socket.emit('error', errorMsg);
-            socket.emit('game-update', engine.getState(playerId));
-          }
+          console.warn(`Game type not supported for action ${type}`);
+          socket.emit('error', 'Game not supported');
         }
       } catch (error) {
         console.error(`💥 Error handling action ${type}:`, error.message);

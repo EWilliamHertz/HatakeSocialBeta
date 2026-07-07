@@ -316,9 +316,21 @@ export default function YourCollectionTab({ instances, sealedInstances = [] }: {
       {processedInstances.length === 0 ? (
         <div className="text-center text-slate-500 py-10 font-bold">No cards match your filters.</div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        <motion.div 
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
+          }}
+          className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6"
+        >
           {processedInstances.map((inst) => (
-            <div 
+            <motion.div 
+              variants={{
+                hidden: { opacity: 0, y: 20, scale: 0.95 },
+                visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+              }}
               key={inst.id} 
               className={`relative group flex flex-col p-2 rounded-2xl transition-all ${selectedCards.has(inst.id) ? 'bg-cyan-500/10 border border-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.2)]' : 'border border-transparent'}`}
             >
@@ -442,9 +454,9 @@ export default function YourCollectionTab({ instances, sealedInstances = [] }: {
                   </button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       )}
 
       {showSealedProducts && sealedInstances.length > 0 && (

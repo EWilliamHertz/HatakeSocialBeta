@@ -42,7 +42,11 @@ export default function CardModal({ card, onClose }: { card: CardData, onClose: 
     let base = card.price || 0;
     
     // 1. Look for explicit TCGCSV variant pricing
-    if (card.prices) {
+    if ((isFoil || isHolo) && card.foilPrice) {
+      base = card.foilPrice;
+    } else if (isReverseHolo && card.reverseHoloPrice) {
+      base = card.reverseHoloPrice;
+    } else if (card.prices) {
       if ((isFoil || isHolo) && card.prices.foil) {
         base = card.prices.foil;
       } else if (isReverseHolo && card.prices.reverseHolo) {

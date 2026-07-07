@@ -96,7 +96,7 @@ app.prepare().then(() => {
   });
 
   const ioMtg = new Server(httpServer, {
-    path: "/ouyrie/socket.io",
+    path: "/phase/socket.io",
     cors: { origin: "*", methods: ["GET", "POST"], credentials: true },
     transports: ["websocket", "polling"],
   });

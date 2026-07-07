@@ -8,14 +8,14 @@
 ## 🚀 PHASE 1: IMMEDIATE PRIORITIES (Months 1-3)
 *Focus: Establishing the developer ecosystem, driving engagement, and finalizing core features.*
 
-* [ ] **API Services & Hub Relocation:** 
+* [x] **API Services & Hub Relocation:** 
   * Move the Multi-Game API Dashboard from "Resources" to `/apps`.
   * Launch API Services in Beta (Starter, Professional, Business, Enterprise tiers).
   * Build Developer Docs & sandbox environment.
-* [ ] **Giveaway & Rewards System:** 
+* [x] **Giveaway & Rewards System:** 
   * Implement Daily login bonuses, virtual currency ("Hatake Credits"), and loyalty tiers.
   * Allow creator-initiated & platform-sponsored giveaways.
-* [x] **The "Ouyrie" MTG Client & "Euryx" Pokémon Client Integrations (Game Arena):** 
+* [x] **The "Phase" MTG Client & "Euryx" Pokémon Client Integrations (Game Arena):** 
   * Hosts clients within Hatake's `/play/...` portals.
   * Navbars seamlessly hide during gameplay for true fullscreen immersion.
 * [x] **In-Browser Simulator:** A sandbox digital tabletop where users can drag and drop digital representations of their collected cards to play without a webcam.
@@ -42,12 +42,12 @@
 
 * [ ] **Mobile Applications (Alpha/Beta):** 
   * Native iOS and Android apps with cross-platform sync.
-* [ ] **Advanced Marketplace Features & Seller Tools:** 
+* [x] **Advanced Marketplace Features & Seller Tools:** 
   * Real-time socket-based bidding system for Marketplace Auctions.
   * Seller dashboard, bulk listing tools, and store customization.
 * [ ] **Media & Rich Content Engine:** 
   * Image & Video uploads for posts (card pulls, tournament setups).
-* [ ] **User Trust & Verification:** 
+* [x] **User Trust & Verification:** 
   * Seller/buyer ratings, reviews, and transaction history transparency (Trusted Seller badges).
 * [ ] **Deck Builder Polish:** 
   * Drag-and-drop interface for constructing decks with curve analytics.
@@ -63,7 +63,7 @@
 ## ⚔️ PHASE 3: COMPETITIVE & ESPORTS INFRASTRUCTURE (Months 6-12)
 *Focus: Tournaments, Guild mechanics, and Premium scaling.*
 
-* [ ] **Guild Wars & Vaults:** 
+* [x] **Guild Wars & Vaults:** 
   * Guild resource pooling, Guild vs Guild 5v5, and Global Elo Leaderboards.
 * [ ] **Tournament Infrastructure:** 
   * Bracket generation (Swiss, single elimination).
@@ -83,6 +83,17 @@
 * [ ] **Advanced Analytics Dashboards:** Market intelligence, portfolio valuation, tax lot tracking.
 * [ ] **P2P Video Chat System:** Webcam-based WebRTC Arena matchmaking to play physical cards remotely.
 * [ ] **PWA Push Notifications:** Live global notifications for trades, messages, and invites (WebSocket/Pusher).
-* [ ] **Expanded B2B Portal:** Deep integration of API and Wholesale portals for retailers.
+* [x] **Expanded B2B Portal:** Deep integration of API and Wholesale portals for retailers.
 * [ ] **Identity Verification:** KYC (Know Your Customer) integration for high-volume sellers to prevent fraud.
 * [ ] **Dedicated Socket.io Microservice:** Handle real-time social feed, messaging, and matchmaking efficiently.
+
+---
+
+## 🔍 NEW DISCOVERED FEATURES (Added during audit)
+* [x] **Leaderboard System:** Tracking top guilds, collectors, and players.
+* [x] **Deals & Discounts Page:** Dedicated `/deals` page for finding the best market opportunities.
+* [x] **Vision Image Recognition:** Dedicated `/vision` portal for AI-based card scanning.
+* [x] **Seller Sales Dashboard:** Real-time `/sales` dashboard tracking fulfillment and revenue.
+* [x] **Admin Management Panel:** Comprehensive `/admin` administrative views for user and app moderation.
+* [x] **Web Shop Interface:** Generalized `/shop` for platform-specific commerce.
+* [x] **Marketplace Hub:** Consolidated `/marketplace` landing interface.

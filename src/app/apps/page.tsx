@@ -48,7 +48,7 @@ export default function AppsDashboard() {
                 Hatake <span className="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-cyan-400">Arena</span>
               </h2>
               <p className="text-slate-300 leading-relaxed max-w-2xl">
-                The ultimate combat portal. Access Ouyrie (MTG), Euryx (Pokémon), and Loryx (Lorcana) from a unified digital arena. 
+                The ultimate combat portal. Access Phase (MTG), Euryx (Pokémon), and Loryx (Lorcana) from a unified digital arena. 
                 Build 60-card decks directly from your Hatake collection, queue for live matchmaking, and dominate the seasonal ladder.
               </p>
               <div className="mt-4 flex items-center gap-2 text-fuchsia-400 text-sm font-bold uppercase tracking-widest">

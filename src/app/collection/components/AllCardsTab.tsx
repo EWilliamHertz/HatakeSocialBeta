@@ -299,9 +299,21 @@ export default function AllCardsTab() {
           <Loader2 className="animate-spin" size={32} />
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        <motion.div 
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: { opacity: 1, transition: { staggerChildren: 0.05 } }
+          }}
+          className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6"
+        >
           {cards.map(card => (
-            <div 
+            <motion.div 
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } }
+              }}
               key={card.id} 
               onClick={() => setSelectedCard(card)}
               className="group cursor-pointer"
@@ -343,14 +355,14 @@ export default function AllCardsTab() {
                   `€${card.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`
                 )}
               </p>
-            </div>
+            </motion.div>
           ))}
           {cards.length === 0 && !loading && (
             <div className="col-span-full text-center py-20 text-slate-500">
               <p>No cards found. Try adjusting your search.</p>
             </div>
           )}
-        </div>
+        </motion.div>
       )}
 
       {cards.length > 0 && hasMore && (

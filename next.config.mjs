@@ -23,24 +23,11 @@ const nextConfig = {
   },
   async rewrites() {
     return [
-      // === Ouyrie (MTG Client) Routing ===
+      // === Phase (MTG Client) Routing ===
       {
-        source: '/mtg',
-        destination: 'https://mtg2-suqj.onrender.com/ouyrie',
+        source: '/phase-ws/:path*',
+        destination: 'http://127.0.0.1:9374/:path*',
       },
-      {
-        source: '/mtg/:path*',
-        destination: 'https://mtg2-suqj.onrender.com/ouyrie/:path*',
-      },
-      {
-        source: '/ouyrie',
-        destination: 'https://mtg2-suqj.onrender.com/ouyrie',
-      },
-      {
-        source: '/ouyrie/:path*',
-        destination: 'https://mtg2-suqj.onrender.com/ouyrie/:path*',
-      },
-      
       // === Euryx (Pokémon Client) Routing ===
       {
         source: '/pkmn',

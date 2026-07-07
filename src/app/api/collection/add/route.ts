@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     const reference = await db.cardReference.upsert({
       where: { apiId: cardId },
       update: {
-        price: price ? parseFloat(price) : null
+        // Do not overwrite global price with the user's specific estimated instance price
       },
       create: {
         apiId: cardId,

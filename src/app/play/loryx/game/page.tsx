@@ -31,13 +31,17 @@ function LoryxGameContent() {
     const initGame = async () => {
       let deck = [];
       try {
-        const res = await fetch('/api/decks?game=LORCANA');
+        const deckIdParam = searchParams?.get('deckId');
+        const fetchUrl = deckIdParam ? `/api/decks/${deckIdParam}` : '/api/decks?game=LORCANA';
+        
+        const res = await fetch(fetchUrl);
         if (res.ok) {
           const data = await res.json();
-          const firstDeck = data.decks?.[0]; // Use the most recently saved Lorcana deck
-          if (firstDeck && firstDeck.cards && firstDeck.cards.length > 0) {
-            firstDeck.cards.forEach((c: any) => {
-              for (let i = 0; i < c.count; i++) {
+          const fetchedDeck = deckIdParam ? data.deck : data.decks?.[0]; // If by ID, it returns `deck`, otherwise array
+          
+          if (fetchedDeck && fetchedDeck.cards && fetchedDeck.cards.length > 0) {
+            fetchedDeck.cards.forEach((c: any) => {
+              for (let i = 0; i < (c.count || c.quantity || 1); i++) {
                 deck.push({
                    ...c,
                    apiPayload: c.apiPayload || c.card?.apiPayload || {}

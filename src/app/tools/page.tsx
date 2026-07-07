@@ -7,12 +7,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function AppsHub() {
-  const handleOuyrieClick = (e: React.MouseEvent) => {
+  const handlePhaseClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    toast.info("This is currently in development", {
-      position: "bottom-center",
-      theme: "dark"
-    });
+    alert("Phase MTG integration is located at https://phase-rs.dev/");
   };
 
   return (
@@ -45,20 +42,21 @@ export default function AppsHub() {
             </motion.div>
           </Link>
 
-          {/* Ouyrie MTG Client (Disabled) */}
-          <div onClick={handleOuyrieClick} className="md:col-span-2">
-            <motion.div whileHover={{ scale: 1.02 }} className="bg-slate-900/50 border border-white/5 hover:border-white/10 rounded-3xl p-8 shadow-xl cursor-pointer group relative overflow-hidden transition-colors">
-              <div className="absolute top-0 right-0 p-8 opacity-5"><MonitorSmartphone size={100} /></div>
-              <div className="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10 text-center md:text-left">
-                <div className="bg-slate-950 p-6 rounded-2xl border border-white/5 shrink-0">
-                  <MonitorSmartphone size={48} className="text-slate-500 group-hover:text-fuchsia-400 transition-colors" />
+          {/* Phase MTG Client */}
+          <div onClick={handlePhaseClick} className="md:col-span-2">
+            <div className="bg-slate-900 border border-white/10 rounded-3xl p-8 hover:border-fuchsia-500/50 transition-all cursor-pointer group relative overflow-hidden h-full flex flex-col justify-between">
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-fuchsia-500/10 rounded-full blur-3xl group-hover:bg-fuchsia-500/20 transition-all"></div>
+              
+              <div>
+                <div className="flex justify-between items-start mb-6 relative z-10">
+                  <h2 className="text-3xl font-black text-white mb-2">Phase MTG Client</h2>
+                  <span className="px-3 py-1 bg-fuchsia-500/20 text-fuchsia-400 text-[10px] font-black uppercase rounded-full border border-fuchsia-500/30">Native App</span>
                 </div>
-                <div className="flex flex-col justify-center h-full pt-2">
-                  <h2 className="text-3xl font-black text-white mb-2">Ouyrie MTG Client</h2>
-                  <p className="text-slate-500 text-lg">Launch the integrated MTG web client. Play Magic: The Gathering directly from your browser using your digital collection.</p>
-                </div>
+                <p className="text-slate-400 mb-6 relative z-10 max-w-lg">
+                  A high-performance WebGL client for Magic: The Gathering. Rules enforced, animations injected.
+                </p>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </div>

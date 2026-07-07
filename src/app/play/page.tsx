@@ -10,10 +10,10 @@ import Link from 'next/link';
 
 const GAMES = [
   {
-    id: 'ouyrie',
-    name: 'Magic: The Gathering',
-    clientName: 'Ouyrie',
-    description: 'Enter the multiverse. Build your deck and battle with the Hatake Engine, now native.',
+    id: 'phase',
+    name: 'Phase',
+    clientName: 'Magic the Gathering',
+    description: 'Based on an engine created by Matt. Play MTG with advanced rules engine, queue, and goldfish mechanics natively hosted.',
     color: 'from-fuchsia-600 to-purple-800',
     shadow: 'shadow-fuchsia-500/50',
     deckUrl: '/play/mtg/deck-builder',
@@ -54,7 +54,7 @@ export default function PlayHub() {
     <div className="min-h-screen bg-slate-950 font-sans text-white selection:bg-cyan-500/30 flex flex-col relative overflow-hidden">
       {/* Dynamic Background Orbs based on selection */}
       <div className="absolute top-0 w-full h-[500px] overflow-hidden -z-10 pointer-events-none">
-        <div className={`absolute top-[-20%] left-1/4 w-[800px] h-[500px] rounded-[100%] blur-[120px] opacity-20 mix-blend-screen transition-colors duration-1000 ${selectedGame === 'ouyrie' ? 'bg-fuchsia-600' : selectedGame === 'euryx' ? 'bg-amber-500' : 'bg-slate-700'}`} />
+        <div className={`absolute top-[-20%] left-1/4 w-[800px] h-[500px] rounded-[100%] blur-[120px] opacity-20 mix-blend-screen transition-colors duration-1000 ${selectedGame === 'phase' ? 'bg-fuchsia-600' : selectedGame === 'euryx' ? 'bg-amber-500' : 'bg-slate-700'}`} />
       </div>
 
       <HaloNav />
