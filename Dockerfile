@@ -2,12 +2,21 @@
 
 # Stage 1: Build Phase Rust Server
 FROM rust:slim-bookworm AS phase-builder
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential libssl-dev pkg-config
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential libssl-dev pkg-config curl jq
 WORKDIR /app
 COPY phase-engine/ phase-engine/
 WORKDIR /app/phase-engine
-RUN apt-get install -y curl jq
 RUN ./scripts/gen-card-data.sh
+
+# Install WASM tools
+RUN rustup target add wasm32-unknown-unknown
+RUN curl -L https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.114/wasm-bindgen-0.2.114-x86_64-unknown-linux-musl.tar.gz | tar xz \
+    && mv wasm-bindgen-0.2.114-x86_64-unknown-linux-musl/wasm-bindgen /usr/local/bin/ \
+    && rm -rf wasm-bindgen-0.2.114-x86_64-unknown-linux-musl
+
+# Build WASM output
+RUN ./scripts/build-wasm.sh release
+
 RUN cargo build --profile server-release --bin phase-server
 
 # Stage 2: Build Hatake Next.js & Phase Vite Frontend
@@ -38,6 +47,7 @@ RUN npm run build
 
 # Build Phase Frontend
 WORKDIR /app/phase-engine/client
+COPY --from=phase-builder /app/phase-engine/client/src/wasm /app/phase-engine/client/src/wasm
 RUN npm install
 # Set WebSocket URL so Phase connects back to Hatake's proxy
 ENV VITE_WS_URL=wss://hatakesocialbeta.onrender.com/phase-ws
