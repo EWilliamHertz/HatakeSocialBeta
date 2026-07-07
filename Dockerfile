@@ -20,11 +20,9 @@ RUN corepack enable
 
 COPY . .
 
-# Generate Prisma Client
-RUN npx prisma generate
-
 # Build Hatake Next.js
 RUN npm install
+RUN npx prisma generate
 RUN npm run build
 
 # Build Phase Frontend
