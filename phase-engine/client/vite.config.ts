@@ -212,7 +212,7 @@ export default defineConfig(({ mode }) => ({
             urlPattern: /card-data(-[0-9a-f]+)?\.json$/,
             handler: "CacheFirst",
             options: {
-              cacheName: "card-database",
+              cacheName: "card-database-v2",
               expiration: { maxEntries: 1, maxAgeSeconds: 2592000 },
             },
           },
