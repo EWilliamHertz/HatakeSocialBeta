@@ -6,18 +6,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 WORKDIR /app
 COPY phase-engine/ phase-engine/
 WORKDIR /app/phase-engine
-RUN ./scripts/gen-card-data.sh
+RUN ./scripts/gen-card-data.sh && rm -rf target/tool
 
 # Install WASM tools
-RUN rustup target add wasm32-unknown-unknown
-RUN curl -L https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.121/wasm-bindgen-0.2.121-x86_64-unknown-linux-musl.tar.gz | tar xz \
-    && mv wasm-bindgen-0.2.121-x86_64-unknown-linux-musl/wasm-bindgen /usr/local/bin/ \
-    && rm -rf wasm-bindgen-0.2.121-x86_64-unknown-linux-musl
+RUN rustup target add wasm32-unknown-unknown && \
+    curl -L https://github.com/rustwasm/wasm-bindgen/releases/download/0.2.121/wasm-bindgen-0.2.121-x86_64-unknown-linux-musl.tar.gz | tar xz && \
+    mv wasm-bindgen-0.2.121-x86_64-unknown-linux-musl/wasm-bindgen /usr/local/bin/ && \
+    rm -rf wasm-bindgen-0.2.121-x86_64-unknown-linux-musl
 
-# Build WASM output
-RUN ./scripts/build-wasm.sh release
+# Build WASM output and clean up target to save disk space
+RUN ./scripts/build-wasm.sh release && rm -rf target/wasm32-unknown-unknown target/release
 
-RUN cargo build --profile server-release --bin phase-server
+# Build server and clean up target to save disk space
+RUN cargo build --profile server-release --bin phase-server && \
+    mv target/server-release/phase-server /tmp/phase-server && \
+    rm -rf target && \
+    mkdir -p target/server-release && \
+    mv /tmp/phase-server target/server-release/phase-server
 
 # Stage 2: Build Hatake Next.js & Phase Vite Frontend
 FROM node:24-slim AS node-builder
