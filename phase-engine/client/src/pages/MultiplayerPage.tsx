@@ -26,7 +26,7 @@ import { expandParsedDeck } from "../services/deckParser";
 import type { LiveCheck, MultiplayerView } from "./multiplayerPageState";
 import { classifyCompatResult } from "./multiplayerPageState";
 import { clearWsSession } from "../services/multiplayerSession";
-import { findLobbyGameByCode, useMultiplayerStore } from "../stores/multiplayerStore";
+import { findLobbyGameByCode, useMultiplayerStore, FORMAT_DEFAULTS } from "../stores/multiplayerStore";
 import {
   useMultiplayerDraftStore,
   type MultiplayerDraftPhase,
@@ -529,30 +529,6 @@ export function MultiplayerPage() {
     [connectionMode, activeDeckName, executeAction],
   );
 
-  useEffect(() => {
-    const onMessage = (e: MessageEvent) => {
-      if (e.data?.type === 'MATCH_HOST') {
-        const settings: HostSettings = {
-          formatConfig: FORMAT_DEFAULTS["Commander"],
-          matchType: "SingleGame",
-          aiSeats: []
-        };
-        const action: PendingAction = { type: "host", settings, connectionMode: "server" };
-        if (activeDeckName) {
-          executeAction(action);
-        } else {
-          setPendingAction(action);
-          setView("deck-select");
-        }
-      } else if (e.data?.type === 'MATCH_JOIN') {
-        const { roomCode } = e.data;
-        // Proceed directly into handleJoinGame as a server join
-        handleJoinGame(roomCode, undefined, "Commander" as GameFormat);
-      }
-    };
-    window.addEventListener('message', onMessage);
-    return () => window.removeEventListener('message', onMessage);
-  }, [activeDeckName, executeAction, handleJoinGame]);
 
   const hostGameCode = useMultiplayerStore((s) => s.hostGameCode);
   useEffect(() => {
@@ -687,6 +663,31 @@ export function MultiplayerPage() {
     },
     [lookupJoinTargetFromStore, handleJoinDraftFromLobby, showToast, t],
   );
+
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (e.data?.type === 'MATCH_HOST') {
+        const settings: HostSettings = {
+          formatConfig: FORMAT_DEFAULTS["Commander"],
+          matchType: "Bo1",
+          aiSeats: []
+        };
+        const action: PendingAction = { type: "host", settings, connectionMode: "server" };
+        if (activeDeckName) {
+          executeAction(action);
+        } else {
+          setPendingAction(action);
+          setView("deck-select");
+        }
+      } else if (e.data?.type === 'MATCH_JOIN') {
+        const { roomCode } = e.data;
+        // Proceed directly into handleJoinGame as a server join
+        handleJoinGame(roomCode, undefined, "Commander" as GameFormat);
+      }
+    };
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, [activeDeckName, executeAction, handleJoinGame]);
 
   const handleBack = () => {
     if (view === "deck-select") {

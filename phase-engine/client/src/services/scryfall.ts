@@ -549,8 +549,8 @@ function resolveImageAsset(
 function resolveImageUrl(
   entry: ScryfallDataEntry,
   faceIndex: number,
-  size: ImageSize,
-  diagnosticName: string,
+  _size: ImageSize,
+  _diagnosticName: string,
 ): string {
   const faceName = entry.face_names?.[faceIndex] || entry.name;
   return `/api/v1/mtg/cards/${encodeURIComponent(faceName)}/image`;
