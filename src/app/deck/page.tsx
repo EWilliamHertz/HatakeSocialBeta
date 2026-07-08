@@ -513,7 +513,7 @@ export default function DeckHubPage() {
                   };
                   localStorage.setItem(`phase-deck:${playModalDeck.name}`, JSON.stringify(phaseDeck));
                   localStorage.setItem('phase-active-deck', playModalDeck.name);
-                  router.push(`/play/mtg/play/queue`);
+                  router.push(`/play/mtg/multiplayer`);
                 } else {
                   alert('Ranked Queue coming soon!');
                 }
@@ -530,7 +530,7 @@ export default function DeckHubPage() {
                   };
                   localStorage.setItem(`phase-deck:${playModalDeck.name}`, JSON.stringify(phaseDeck));
                   localStorage.setItem('phase-active-deck', playModalDeck.name);
-                  router.push(`/play/mtg/lobby`);
+                  router.push(`/play/mtg/multiplayer`);
                 } else {
                   router.push(`/play/${playModalDeck.game.toLowerCase()}/lobby?deckId=${playModalDeck.id}`);
                 }
@@ -547,7 +547,7 @@ export default function DeckHubPage() {
                   };
                   localStorage.setItem(`phase-deck:${playModalDeck.name}`, JSON.stringify(phaseDeck));
                   localStorage.setItem('phase-active-deck', playModalDeck.name);
-                  router.push(`/play/mtg/goldfish`);
+                  router.push(`/play/mtg/setup`);
                 } else {
                   handleStartSolo();
                 }

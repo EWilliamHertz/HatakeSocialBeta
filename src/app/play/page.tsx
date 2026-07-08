@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import HaloNav from '@/components/HaloNav';
 import Footer from '@/components/Footer';
-import { Swords, LogOut, ArrowRight, Activity, Zap } from 'lucide-react';
+import { Swords, LogOut, ArrowRight, Activity, Zap, Layers } from 'lucide-react';
 import MatchHistoryDisplay from '@/components/MatchHistoryDisplay';
 import Link from 'next/link';
 
