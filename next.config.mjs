@@ -59,6 +59,26 @@ const nextConfig = {
           destination: '/phase/set-list.json',
         },
         {
+          source: '/decks.json',
+          destination: '/phase/decks.json',
+        },
+        {
+          source: '/draft-pools.json',
+          destination: '/phase/draft-pools.json',
+        },
+        {
+          source: '/card-data-meta.json',
+          destination: '/phase/card-data-meta.json',
+        },
+        {
+          source: '/coverage-data.json',
+          destination: '/phase/coverage-data.json',
+        },
+        {
+          source: '/coverage-summary.json',
+          destination: '/phase/coverage-summary.json',
+        },
+        {
           source: '/icons/:path*',
           destination: '/phase/icons/:path*',
         },
