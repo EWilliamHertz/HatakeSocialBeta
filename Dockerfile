@@ -51,9 +51,13 @@ COPY --from=phase-builder /app/phase-engine/client/src/wasm /app/phase-engine/cl
 RUN npm install
 # Set WebSocket URL so Phase connects back to Hatake's proxy
 ENV VITE_WS_URL=wss://hatakesocialbeta.onrender.com/phase-ws
+ENV CARD_DATA_URL=/phase/card-data.json
+ENV DATA_BASE_URL=/phase
 RUN npm run build
 # Move Phase Frontend to Hatake Public Folder so Next.js serves it
 RUN mv dist /app/public/phase
+# Copy Card Data and other JSON files to the public/phase folder
+COPY --from=phase-builder /app/phase-engine/data/*.json /app/public/phase/
 
 # Stage 3: Unified Runner
 FROM node:24-slim
@@ -75,6 +79,6 @@ EXPOSE 3000
 EXPOSE 9374
 
 # Optimizations for low-memory Render instance (512MB)
-ENV MALLOC_ARENA_MAX=2
+ENV MALLOC_ARENA_MAX=1
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

@@ -93,14 +93,19 @@ export function CardImage({
   if (!faceDown && imageError) {
     return (
       <div
-        className={`${baseClasses} bg-gray-800 shadow-md overflow-hidden flex flex-col p-2`}
+        className={`${baseClasses} bg-gray-800 shadow-md overflow-hidden flex flex-col p-2 relative`}
         style={borderStyle ?? { border: "1px solid #4b5563" }}
         role="img"
         aria-label={cardName}
       >
-        <div className="text-xs font-semibold text-gray-100 mb-1 truncate">{cardName}</div>
+        <img 
+          src="/hatake_logo.jpg" 
+          className="absolute inset-0 w-full h-full object-cover opacity-30" 
+          alt="Hatake Fallback Logo" 
+        />
+        <div className="text-xs font-semibold text-gray-100 mb-1 truncate relative z-10">{cardName}</div>
         {resolvedOracleText && (
-          <div className="text-[10px] text-gray-300 whitespace-pre-wrap leading-tight overflow-hidden">
+          <div className="text-[10px] text-gray-300 whitespace-pre-wrap leading-tight overflow-hidden relative z-10">
             <RichLabel text={resolvedOracleText} size="xs" />
           </div>
         )}

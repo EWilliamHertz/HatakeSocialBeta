@@ -11,10 +11,68 @@ function broadcastLobbies(io) {
   io.emit('lobby-list', lobbyList);
 }
 
+const mtgQueue = [];
+const mtgRooms = new Map();
+
+function pairMtgPlayers(io) {
+  while (mtgQueue.length >= 2) {
+    const p1 = mtgQueue.shift();
+    const p2 = mtgQueue.shift();
+    
+    // Check Elo later if needed (requires fetching from db)
+    const roomId = uuidv4();
+    mtgRooms.set(roomId, { host: p1, guest: p2, createdAt: Date.now() });
+
+    // Tell P1 to host
+    io.to(p1.socketId).emit("match-found", {
+      isHost: true,
+      opponent: { userId: p2.userId, username: p2.username },
+      roomId
+    });
+
+    // Tell P2 they are the guest, wait for roomCode
+    io.to(p2.socketId).emit("match-found", {
+      isHost: false,
+      opponent: { userId: p1.userId, username: p1.username },
+      roomId
+    });
+    
+    // Save roomId on both sockets so we know where to route the roomCode
+    p1.roomId = roomId;
+    p2.roomId = roomId;
+
+    console.log(`[MTG Matchmaking] Paired ${p1.username} vs ${p2.username} -> Match ${roomId}`);
+  }
+}
+
 export function registerSocketHandlers(io) {
   io.on('connection', (socket) => {
     // Send current lobbies to newly connected client
     socket.emit('lobby-list', Array.from(lobbies.values()).filter(l => l.status !== 'in-game'));
+
+    socket.on('queue:join', ({ userId, username }) => {
+      const existingIdx = mtgQueue.findIndex((q) => q.socketId === socket.id);
+      if (existingIdx >= 0) mtgQueue.splice(existingIdx, 1);
+      mtgQueue.push({ socketId: socket.id, userId, username: username || "Player" });
+      socket.emit('queue:joined', { position: mtgQueue.length });
+      pairMtgPlayers(io);
+    });
+
+    socket.on('queue:leave', () => {
+      const idx = mtgQueue.findIndex((q) => q.socketId === socket.id);
+      if (idx >= 0) mtgQueue.splice(idx, 1);
+    });
+
+    socket.on('room:created', ({ roomCode }) => {
+      // Find which room this host belongs to
+      for (const [roomId, room] of mtgRooms.entries()) {
+        if (room.host.socketId === socket.id) {
+           io.to(room.guest.socketId).emit('match-ready', { roomCode });
+           mtgRooms.delete(roomId);
+           break;
+        }
+      }
+    });
 
     // create-lobby: { name, mode, playerName, deckId, game }
     socket.on('create-lobby', ({ name, mode, playerName, deckId, game = 'MAGIC' }) => {
@@ -313,6 +371,9 @@ export function registerSocketHandlers(io) {
 
     // disconnect
     socket.on('disconnect', () => {
+      const idx = mtgQueue.findIndex((q) => q.socketId === socket.id);
+      if (idx >= 0) mtgQueue.splice(idx, 1);
+
       const info = playerSockets.get(socket.id);
       if (info) {
         const { playerId, gameId } = info;

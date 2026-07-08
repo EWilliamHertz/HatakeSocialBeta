@@ -51,6 +51,8 @@ panic = 'abort'
 
 # Native server: speed over size, unwind so tokio catches per-task panics
 [profile.server-release]
+lto = false
+codegen-units = 16
 inherits = "release"
 opt-level = 2
 panic = 'unwind'

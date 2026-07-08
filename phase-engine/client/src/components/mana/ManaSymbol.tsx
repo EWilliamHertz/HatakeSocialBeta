@@ -11,7 +11,8 @@ const SIZE_CLASSES = {
   lg: "w-8 h-8",
 } as const;
 
-const SCRYFALL_SVG_BASE = "https://svgs.scryfall.io/card-symbols";
+// We use Hatake's proxy to avoid ISP blocks
+const SCRYFALL_SVG_BASE = "/api/v1/mtg/proxy/svg";
 
 /** Map our internal shard notation to the Scryfall SVG filename (without .svg). */
 function shardToScryfallCode(shard: string): string {

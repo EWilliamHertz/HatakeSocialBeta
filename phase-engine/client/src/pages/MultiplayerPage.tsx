@@ -529,6 +529,38 @@ export function MultiplayerPage() {
     [connectionMode, activeDeckName, executeAction],
   );
 
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (e.data?.type === 'MATCH_HOST') {
+        const settings: HostSettings = {
+          formatConfig: FORMAT_DEFAULTS["Commander"],
+          matchType: "SingleGame",
+          aiSeats: []
+        };
+        const action: PendingAction = { type: "host", settings, connectionMode: "server" };
+        if (activeDeckName) {
+          executeAction(action);
+        } else {
+          setPendingAction(action);
+          setView("deck-select");
+        }
+      } else if (e.data?.type === 'MATCH_JOIN') {
+        const { roomCode } = e.data;
+        // Proceed directly into handleJoinGame as a server join
+        handleJoinGame(roomCode, undefined, "Commander" as GameFormat);
+      }
+    };
+    window.addEventListener('message', onMessage);
+    return () => window.removeEventListener('message', onMessage);
+  }, [activeDeckName, executeAction, handleJoinGame]);
+
+  const hostGameCode = useMultiplayerStore((s) => s.hostGameCode);
+  useEffect(() => {
+    if (hostGameCode) {
+      window.parent.postMessage({ type: 'HOST_CREATED', roomCode: hostGameCode }, '*');
+    }
+  }, [hostGameCode]);
+
   // Navigate to draft setup page. The multiplayer draft page handles its
   // own set selection and pod configuration — we just route the user there.
   const handleHostDraft = useCallback(() => {

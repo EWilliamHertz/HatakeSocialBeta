@@ -474,6 +474,14 @@ export function LobbyView({
           )}
           {isServer && (
             <button
+              onClick={() => window.parent.postMessage({ type: 'FIND_MATCH' }, '*')}
+              className={menuButtonClass({ tone: "cyan", size: "md" })}
+            >
+              Find Ranked Match
+            </button>
+          )}
+          {isServer && (
+            <button
               onClick={handleHost}
               className={menuButtonClass({ tone: "emerald", size: "md" })}
             >

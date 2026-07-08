@@ -30,8 +30,7 @@ interface ScryfallDataEntry {
  * WotC-copyrighted raster assets; the user's browser fetches directly from
  * Scryfall at runtime, matching the pattern used for every other card image.
  */
-export const CARD_BACK_URL =
-  "https://backs.scryfall.io/normal/0/a/0aeebaf5-8c7d-4636-9e82-8c27447861f7.jpg";
+export const CARD_BACK_URL = "/api/v1/mtg/proxy/back/normal/0/a/0aeebaf5-8c7d-4636-9e82-8c27447861f7.jpg";
 
 export interface PrintingEntry {
   id: string;
@@ -553,12 +552,8 @@ function resolveImageUrl(
   size: ImageSize,
   diagnosticName: string,
 ): string {
-  const face = entry.faces[faceIndex] ?? entry.faces[0];
-  const url = face?.[size === "small" || size === "large" ? "normal" : size];
-  if (!url) {
-    throw new Error(`No ${size} image for "${diagnosticName}"`);
-  }
-  return url;
+  const faceName = entry.face_names?.[faceIndex] || entry.name;
+  return `/api/v1/mtg/cards/${encodeURIComponent(faceName)}/image`;
 }
 
 const MANA_COLOR_TO_SCRYFALL: Record<string, string> = {
