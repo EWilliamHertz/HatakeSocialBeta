@@ -72,4 +72,9 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 ENV PHASE_DATA_DIR=/var/lib/phase-server
 ENV PORT=3000
 EXPOSE 3000
+EXPOSE 9374
+
+# Optimizations for low-memory Render instance (512MB)
+ENV MALLOC_ARENA_MAX=2
+
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
