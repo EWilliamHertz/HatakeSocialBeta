@@ -153,6 +153,9 @@ export default function PlayHub() {
                             <Link href={game.queueUrl} onClick={(e) => e.stopPropagation()} className={`flex-1 py-4 px-6 bg-gradient-to-r ${game.color} text-white font-black rounded-2xl text-center shadow-lg ${game.shadow} hover:scale-[1.02] transition-transform flex items-center justify-center gap-3 text-lg`}>
                               <Swords size={24} /> Enter Client
                             </Link>
+                            <Link href={game.deckUrl} onClick={(e) => e.stopPropagation()} className={`flex-1 py-4 px-6 bg-slate-800 border border-white/10 hover:border-white/30 text-white font-black rounded-2xl text-center shadow-lg hover:bg-slate-700 transition-all flex items-center justify-center gap-3 text-lg`}>
+                              <Layers size={24} /> Deck Builder
+                            </Link>
                           </div>
 
                           <div className="p-6 bg-black/40 rounded-2xl border border-white/5 mt-8">

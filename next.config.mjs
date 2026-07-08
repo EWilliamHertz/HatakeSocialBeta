@@ -29,6 +29,55 @@ const nextConfig = {
           source: '/phase-ws/:path*',
           destination: 'http://127.0.0.1:9374/:path*',
         },
+        // === Phase Static Assets (card data, icons, audio, etc) ===
+        {
+          source: '/card-data.json',
+          destination: '/phase/card-data.json',
+        },
+        {
+          source: '/scryfall-data.json',
+          destination: '/phase/scryfall-data.json',
+        },
+        {
+          source: '/scryfall-printings.json',
+          destination: '/phase/scryfall-printings.json',
+        },
+        {
+          source: '/scryfall-token-images.json',
+          destination: '/phase/scryfall-token-images.json',
+        },
+        {
+          source: '/scryfall-sets.json',
+          destination: '/phase/scryfall-sets.json',
+        },
+        {
+          source: '/card-names.json',
+          destination: '/phase/card-names.json',
+        },
+        {
+          source: '/set-list.json',
+          destination: '/phase/set-list.json',
+        },
+        {
+          source: '/icons/:path*',
+          destination: '/phase/icons/:path*',
+        },
+        {
+          source: '/audio/:path*',
+          destination: '/phase/audio/:path*',
+        },
+        {
+          source: '/battlefield/:path*',
+          destination: '/phase/battlefield/:path*',
+        },
+        {
+          source: '/preview-icons/:path*',
+          destination: '/phase/preview-icons/:path*',
+        },
+        {
+          source: '/feeds/:path*',
+          destination: '/phase/feeds/:path*',
+        }
       ],
       afterFiles: [
         // === Euryx (Pokémon Client) Routing ===

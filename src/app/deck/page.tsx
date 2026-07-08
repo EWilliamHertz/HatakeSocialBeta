@@ -507,7 +507,13 @@ export default function DeckHubPage() {
             <div className="space-y-4">
               <button disabled={launching} onClick={() => { 
                 if (playModalDeck.game === 'MAGIC') {
-                  router.push(`/play/mtg/play/queue?deckId=${playModalDeck.id}`);
+                  const phaseDeck = {
+                    main: playModalDeck.cards.filter((c: any) => !c.isSideboard && !c.is_sideboard).map((c: any) => ({ count: c.count || c.quantity || 1, name: c.name })),
+                    sideboard: playModalDeck.cards.filter((c: any) => c.isSideboard || c.is_sideboard).map((c: any) => ({ count: c.count || c.quantity || 1, name: c.name }))
+                  };
+                  localStorage.setItem(`phase-deck:${playModalDeck.name}`, JSON.stringify(phaseDeck));
+                  localStorage.setItem('phase-active-deck', playModalDeck.name);
+                  router.push(`/play/mtg/play/queue`);
                 } else {
                   alert('Ranked Queue coming soon!');
                 }
@@ -518,7 +524,13 @@ export default function DeckHubPage() {
 
               <button disabled={launching} onClick={() => { 
                 if (playModalDeck.game === 'MAGIC') {
-                  router.push(`/play/mtg/lobby?deckId=${playModalDeck.id}`);
+                  const phaseDeck = {
+                    main: playModalDeck.cards.filter((c: any) => !c.isSideboard && !c.is_sideboard).map((c: any) => ({ count: c.count || c.quantity || 1, name: c.name })),
+                    sideboard: playModalDeck.cards.filter((c: any) => c.isSideboard || c.is_sideboard).map((c: any) => ({ count: c.count || c.quantity || 1, name: c.name }))
+                  };
+                  localStorage.setItem(`phase-deck:${playModalDeck.name}`, JSON.stringify(phaseDeck));
+                  localStorage.setItem('phase-active-deck', playModalDeck.name);
+                  router.push(`/play/mtg/lobby`);
                 } else {
                   router.push(`/play/${playModalDeck.game.toLowerCase()}/lobby?deckId=${playModalDeck.id}`);
                 }
@@ -529,7 +541,13 @@ export default function DeckHubPage() {
 
               <button disabled={launching} onClick={() => {
                 if (playModalDeck.game === 'MAGIC') {
-                  router.push(`/play/mtg/goldfish?deckId=${playModalDeck.id}`);
+                  const phaseDeck = {
+                    main: playModalDeck.cards.filter((c: any) => !c.isSideboard && !c.is_sideboard).map((c: any) => ({ count: c.count || c.quantity || 1, name: c.name })),
+                    sideboard: playModalDeck.cards.filter((c: any) => c.isSideboard || c.is_sideboard).map((c: any) => ({ count: c.count || c.quantity || 1, name: c.name }))
+                  };
+                  localStorage.setItem(`phase-deck:${playModalDeck.name}`, JSON.stringify(phaseDeck));
+                  localStorage.setItem('phase-active-deck', playModalDeck.name);
+                  router.push(`/play/mtg/goldfish`);
                 } else {
                   handleStartSolo();
                 }
