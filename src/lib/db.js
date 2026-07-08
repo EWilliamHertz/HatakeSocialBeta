@@ -1,8 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 
 if (!process.env.DATABASE_URL) {
-  console.error('❌ DATABASE_URL is not set!');
-  process.exit(1);
+  console.warn('⚠️ DATABASE_URL is not set!');
 }
 
 const prisma = new PrismaClient();
