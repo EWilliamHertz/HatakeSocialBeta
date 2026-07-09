@@ -38,6 +38,10 @@ COPY . .
 RUN npm install
 RUN npx prisma generate
 
+# Artificial dependency to prevent parallel builds which cause 8GB OOM on Render
+# By copying from phase-builder here, we force Docker to finish the Rust build before Next.js build starts.
+COPY --from=phase-builder /app/phase-engine/client/src/wasm /app/phase-engine/client/src/wasm
+
 # Inject Environment Variables for Next.js Build
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
@@ -52,7 +56,6 @@ RUN npm run build
 
 # Build Phase Frontend
 WORKDIR /app/phase-engine/client
-COPY --from=phase-builder /app/phase-engine/client/src/wasm /app/phase-engine/client/src/wasm
 RUN npm install
 # Set WebSocket URL so Phase connects back to Hatake's proxy
 ENV VITE_WS_URL=wss://hatakesocialbeta.onrender.com/phase-ws
