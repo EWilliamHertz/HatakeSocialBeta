@@ -668,9 +668,17 @@ export function MultiplayerPage() {
     const onMessage = (e: MessageEvent) => {
       if (e.data?.type === 'MATCH_HOST') {
         const settings: HostSettings = {
+          displayName: useMultiplayerStore.getState().displayName || "Player",
+          public: false,
+          password: "",
+          timerSeconds: null,
           formatConfig: FORMAT_DEFAULTS["Commander"],
           matchType: "Bo1",
-          aiSeats: []
+          loopDetection: { type: "Off" },
+          aiSeats: [],
+          startWhenFull: false,
+          roomName: null,
+          ranked: false,
         };
         const action: PendingAction = { type: "host", settings, connectionMode: "server" };
         if (activeDeckName) {
