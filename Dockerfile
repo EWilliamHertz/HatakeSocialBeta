@@ -6,7 +6,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 WORKDIR /app
 COPY phase-engine/ phase-engine/
 WORKDIR /app/phase-engine
-RUN ./scripts/gen-card-data.sh && rm -rf target/tool
+# Fake MTGJSON / Card Data generation to save storage and time.
+# The server will use NeonDB for cards instead.
+RUN mkdir -p data client/public && \
+    echo '{}' > data/card-data.json && \
+    echo '[]' > data/card-names.json && \
+    echo '{}' > data/coverage-data.json && \
+    echo '{}' > data/decks.json && \
+    echo '{}' > data/set-list.json && \
+    cp data/*.json client/public/
 
 # Install WASM tools
 RUN rustup target add wasm32-unknown-unknown && \
@@ -14,13 +22,12 @@ RUN rustup target add wasm32-unknown-unknown && \
     mv wasm-bindgen-0.2.121-x86_64-unknown-linux-musl/wasm-bindgen /usr/local/bin/ && \
     rm -rf wasm-bindgen-0.2.121-x86_64-unknown-linux-musl
 
-# Build WASM output and clean up target to save disk space
-RUN ./scripts/build-wasm.sh release && rm -rf target/wasm32-unknown-unknown target/release
-
-# Build server and clean up target to save disk space
-RUN cargo build --profile server-release --bin phase-server && \
+# Combine WASM and Server build into ONE RUN step to minimize Docker layer overhead and peak storage usage.
+# We also clear the cargo registry cache and target directory in the same layer.
+RUN ./scripts/build-wasm.sh release && \
+    cargo build --profile server-release --bin phase-server --jobs 2 && \
     mv target/server-release/phase-server /tmp/phase-server && \
-    rm -rf target && \
+    rm -rf target ~/.cargo/registry ~/.cargo/git && \
     mkdir -p target/server-release && \
     mv /tmp/phase-server target/server-release/phase-server
 

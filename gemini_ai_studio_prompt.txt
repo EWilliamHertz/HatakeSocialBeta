@@ -1,0 +1,26 @@
+# Google AI Studio Gemini PRO Latest Prompt
+
+Copy and paste the text below into Google AI Studio for Gemini PRO:
+
+***
+
+**System Instructions / Context:**
+I am building a web application called `HatakeSocialBeta`. This is a full-stack platform with the following structure and technology stack:
+1. **HatakeSocialBeta (Root)**: A Next.js (React) application for the frontend, combined with a custom Node.js server (`server.js`) that uses Socket.io for real-time communication and Prisma ORM for database interactions.
+2. **Phase Engine**: Located in the `/phase-engine` directory, this is a Rust-based multiplayer game engine (built with crates like `phase-server`, `engine`, `lobby-broker`, etc.) and includes a game client built with Vite and React.
+
+**Your Role:**
+Act as a Senior Full-Stack Engineer, Rust Game Developer, and DevOps Expert. You must completely mimic and understand the `HatakeSocialBeta` repository context based on the details I provide.
+
+**Objectives:**
+1. **Ensure Repository Stability:** Review the overarching architecture of the Next.js app and the Node.js backend. Provide the necessary code and configuration to ensure all components (Prisma, Next.js, Node server, Socket.io) run perfectly together without errors.
+2. **Connect Phase Engine to the Client:** Ensure that the Phase engine (the Rust-based game backend) is properly connected to our main client. Provide the code necessary to integrate the Phase game client (Vite/React/WASM) into the Next.js frontend. Ensure the networking (WebSockets/HTTP) between the client and the Rust game servers is fully connected and functional.
+3. **Production Deployment (Render / Custom Server):** Make sure that everything works in a production environment so we can host it with fully functional gameplay either on our own dedicated server or on Render. Provide any required `render.yaml`, `Dockerfile` updates, `docker-compose.yml`, or server configuration scripts (like Nginx/Caddy) needed to run the Next.js app, Node.js WebSocket server, and the Rust Phase Engine concurrently.
+
+**Instructions for You (Gemini PRO):**
+- Start by providing a high-level architecture overview of how the Next.js frontend, Node server, and Rust Phase engine should securely communicate.
+- Write the exact integration code needed to bridge the main HatakeSocial client with the Phase game engine.
+- Provide the unified deployment configuration (Render blueprint or Docker setup) to host the entire application (social platform + game servers) with fully functional multiplayer gameplay.
+- Be specific, provide complete code blocks, and outline a step-by-step process for getting the deployed version running flawlessly.
+
+***
