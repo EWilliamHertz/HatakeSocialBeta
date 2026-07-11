@@ -56,10 +56,43 @@ let printingsDataPromise: Promise<PrintingsDataMap | null> | null = null;
 let tokenImagesDataPromise: Promise<TokenImagesDataMap | null> | null = null;
 let scryfallQueue: Promise<void> = Promise.resolve();
 
+/**
+ * Same-origin proxy for Scryfall URLs (images + API). When `__IMAGE_PROXY_URL__`
+ * is set at build time (Hatake integration), any scryfall.io / scryfall.com URL
+ * is rewritten to `${proxy}?u=<encoded url>` so networks that block Scryfall
+ * still resolve card images through the Hatake server.
+ */
+const SCRYFALL_URL_RE = /^https?:\/\/([a-z0-9-]+\.)*scryfall\.(io|com)\//i;
+
+export function proxied(url: string): string {
+  if (!__IMAGE_PROXY_URL__ || !SCRYFALL_URL_RE.test(url)) return url;
+  return `${__IMAGE_PROXY_URL__}?u=${encodeURIComponent(url)}`;
+}
+
+/** Recursively rewrite every Scryfall URL string inside loaded data maps. */
+function proxyDeep<T>(value: T): T {
+  if (!__IMAGE_PROXY_URL__) return value;
+  const walk = (v: unknown): unknown => {
+    if (typeof v === "string") return proxied(v);
+    if (Array.isArray(v)) {
+      for (let i = 0; i < v.length; i++) v[i] = walk(v[i]);
+      return v;
+    }
+    if (v && typeof v === "object") {
+      const o = v as Record<string, unknown>;
+      for (const k of Object.keys(o)) o[k] = walk(o[k]);
+      return v;
+    }
+    return v;
+  };
+  return walk(value) as T;
+}
+
 export function loadScryfallData(): Promise<ScryfallDataMap | null> {
   if (!scryfallDataPromise) {
     scryfallDataPromise = fetch(__SCRYFALL_DATA_URL__)
       .then((r) => r.json() as Promise<ScryfallDataMap>)
+      .then((data) => proxyDeep(data))
       .then((data) => {
         scryfallDataResolved = data;
         scryfallFoldedNameIndex = buildFoldedNameIndex(data);
@@ -76,6 +109,7 @@ export function loadPrintingsData(): Promise<PrintingsDataMap | null> {
   if (!printingsDataPromise) {
     printingsDataPromise = fetch(__SCRYFALL_PRINTINGS_URL__)
       .then((r) => r.json() as Promise<PrintingsDataMap>)
+      .then((data) => proxyDeep(data))
       .then((data) => {
         printingsDataResolved = data;
         return data;
@@ -89,6 +123,7 @@ function loadTokenImagesData(): Promise<TokenImagesDataMap | null> {
   if (!tokenImagesDataPromise) {
     tokenImagesDataPromise = fetch(__SCRYFALL_TOKEN_IMAGES_URL__)
       .then((r) => r.json() as Promise<TokenImagesDataMap>)
+      .then((data) => proxyDeep(data))
       .catch(() => null);
   }
   return tokenImagesDataPromise;
@@ -305,7 +340,7 @@ async function rateLimitedFetch(
       }
 
       try {
-        const response = await fetch(url);
+        const response = await fetch(proxied(url));
         if (response.status === 429) {
           const backoffMs = parseRetryDelayMs(
             response.headers.get("Retry-After"),
@@ -464,10 +499,10 @@ function getImageUrl(
   faceIndex: number,
 ): string {
   if (card.card_faces?.[faceIndex]?.image_uris?.[size]) {
-    return card.card_faces[faceIndex].image_uris![size];
+    return proxied(card.card_faces[faceIndex].image_uris![size]);
   }
   if (card.image_uris?.[size]) {
-    return card.image_uris[size];
+    return proxied(card.image_uris[size]);
   }
   throw new Error("No image URI found for card");
 }
@@ -722,7 +757,9 @@ function buildTokenColorClause(colors: string[] | undefined | null): string {
 
 /** Get the best image URI for a card (handles double-faced cards). */
 export function getCardImageSmall(card: ScryfallCard): string {
-  return card.image_uris?.small
-    ?? card.card_faces?.[0]?.image_uris?.small
-    ?? "";
+  return proxied(
+    card.image_uris?.small
+      ?? card.card_faces?.[0]?.image_uris?.small
+      ?? "",
+  );
 }

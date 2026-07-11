@@ -11,50 +11,277 @@ function broadcastLobbies(io) {
   io.emit('lobby-list', lobbyList);
 }
 
+// ─── MTG Matchmaking (Phase engine) with Elo ─────────────────────────────────
+import { jwtVerify } from 'jose';
+
 const mtgQueue = [];
 const mtgRooms = new Map();
+const ELO_K = 32;
+const DEFAULT_ELO = 1200;
+const SINGLE_REPORT_GRACE_MS = 60 * 1000;
 
-function pairMtgPlayers(io) {
-  while (mtgQueue.length >= 2) {
-    const p1 = mtgQueue.shift();
-    const p2 = mtgQueue.shift();
-    
-    // Check Elo later if needed (requires fetching from db)
-    const roomId = uuidv4();
-    mtgRooms.set(roomId, { host: p1, guest: p2, createdAt: Date.now() });
+const JWT_KEY = process.env.JWT_SECRET
+  ? new TextEncoder().encode(process.env.JWT_SECRET)
+  : null;
 
-    // Tell P1 to host
-    io.to(p1.socketId).emit("match-found", {
-      isHost: true,
-      opponent: { userId: p2.userId, username: p2.username },
-      roomId
+/** Authenticate a socket from the hatake_session cookie (same-origin). */
+async function getUserFromSocket(socket) {
+  try {
+    if (!JWT_KEY) return null;
+    const cookieHeader = socket.handshake?.headers?.cookie || '';
+    const match = cookieHeader.match(/(?:^|;\s*)hatake_session=([^;]+)/);
+    if (!match) return null;
+    const { payload } = await jwtVerify(decodeURIComponent(match[1]), JWT_KEY, {
+      algorithms: ['HS256'],
     });
-
-    // Tell P2 they are the guest, wait for roomCode
-    io.to(p2.socketId).emit("match-found", {
-      isHost: false,
-      opponent: { userId: p1.userId, username: p1.username },
-      roomId
-    });
-    
-    // Save roomId on both sockets so we know where to route the roomCode
-    p1.roomId = roomId;
-    p2.roomId = roomId;
-
-    console.log(`[MTG Matchmaking] Paired ${p1.username} vs ${p2.username} -> Match ${roomId}`);
+    if (!payload?.id) return null;
+    let username = payload.username;
+    if (!username) {
+      const u = await pool.user.findUnique({
+        where: { id: payload.id },
+        select: { username: true },
+      });
+      username = u?.username;
+    }
+    return username ? { id: payload.id, username } : null;
+  } catch {
+    return null;
   }
 }
 
+async function getElo(userId) {
+  try {
+    const rating = await pool.playerRating.findUnique({
+      where: { userId_game: { userId, game: 'MAGIC' } },
+    });
+    return rating?.elo ?? DEFAULT_ELO;
+  } catch {
+    return DEFAULT_ELO;
+  }
+}
+
+function expectedScore(a, b) {
+  return 1 / (1 + Math.pow(10, (b - a) / 400));
+}
+
+/**
+ * Elo-based pairing: match the two closest-rated players whose Elo gap fits
+ * inside a window that widens the longer they wait (±150 base, +50/5s waited).
+ */
+function pairMtgPlayers(io) {
+  let paired = true;
+  while (paired && mtgQueue.length >= 2) {
+    paired = false;
+    const sorted = [...mtgQueue].sort((a, b) => a.elo - b.elo);
+    let best = null;
+    for (let i = 0; i < sorted.length - 1; i++) {
+      const a = sorted[i];
+      const b = sorted[i + 1];
+      const diff = Math.abs(a.elo - b.elo);
+      const waited = Math.min(Date.now() - a.joinedAt, Date.now() - b.joinedAt);
+      const window = 150 + 50 * Math.floor(waited / 5000);
+      if (diff <= window && (!best || diff < best.diff)) best = { a, b, diff };
+    }
+    if (!best) return;
+
+    const { a: p1, b: p2 } = best;
+    mtgQueue.splice(mtgQueue.findIndex((q) => q.socketId === p1.socketId), 1);
+    mtgQueue.splice(mtgQueue.findIndex((q) => q.socketId === p2.socketId), 1);
+
+    const roomId = uuidv4();
+    mtgRooms.set(roomId, {
+      id: roomId,
+      host: p1,
+      guest: p2,
+      roomCode: null,
+      reports: {},
+      finalized: false,
+      finalizeTimer: null,
+      createdAt: Date.now(),
+    });
+
+    io.to(p1.socketId).emit('match-found', {
+      isHost: true,
+      opponent: { userId: p2.userId, username: p2.username, elo: Math.round(p2.elo) },
+      roomId,
+    });
+    io.to(p2.socketId).emit('match-found', {
+      isHost: false,
+      opponent: { userId: p1.userId, username: p1.username, elo: Math.round(p1.elo) },
+      roomId,
+    });
+
+    console.log(
+      `[MTG Matchmaking] Paired ${p1.username} (${Math.round(p1.elo)}) vs ${p2.username} (${Math.round(p2.elo)}) -> Match ${roomId}`,
+    );
+    paired = true;
+  }
+}
+
+function findMtgRoomBySocket(socketId) {
+  for (const room of mtgRooms.values()) {
+    if (room.host.socketId === socketId || room.guest.socketId === socketId) {
+      return room;
+    }
+  }
+  return null;
+}
+
+/** Apply Elo + persist Match once we trust the outcome. */
+async function finalizeMtgMatch(io, room, winnerUserId /* null = draw */) {
+  if (room.finalized) return;
+  room.finalized = true;
+  if (room.finalizeTimer) clearTimeout(room.finalizeTimer);
+  mtgRooms.delete(room.id);
+
+  const { host, guest } = room;
+  // Guests without a real hatake account can play, but no Elo is recorded.
+  if (!host.userId || !guest.userId || host.userId === guest.userId) return;
+
+  try {
+    const scoreHost = winnerUserId == null ? 0.5 : winnerUserId === host.userId ? 1 : 0;
+    const hostElo = await getElo(host.userId);
+    const guestElo = await getElo(guest.userId);
+    const hostDelta = ELO_K * (scoreHost - expectedScore(hostElo, guestElo));
+    const guestDelta = -hostDelta;
+
+    const upsert = (userId, delta, won, draw) =>
+      pool.playerRating.upsert({
+        where: { userId_game: { userId, game: 'MAGIC' } },
+        create: {
+          userId,
+          game: 'MAGIC',
+          elo: DEFAULT_ELO + delta,
+          matchesPlayed: 1,
+          wins: won ? 1 : 0,
+          losses: won || draw ? 0 : 1,
+        },
+        update: {
+          elo: { increment: delta },
+          matchesPlayed: { increment: 1 },
+          wins: { increment: won ? 1 : 0 },
+          losses: { increment: won || draw ? 0 : 1 },
+        },
+      });
+
+    const draw = winnerUserId == null;
+    await pool.$transaction([
+      upsert(host.userId, hostDelta, winnerUserId === host.userId, draw),
+      upsert(guest.userId, guestDelta, winnerUserId === guest.userId, draw),
+      pool.match.create({
+        data: {
+          game: 'MAGIC',
+          player1Id: host.userId,
+          player2Id: guest.userId,
+          winnerId: winnerUserId,
+          player1EloChange: hostDelta,
+          player2EloChange: guestDelta,
+          durationSeconds: Math.floor((Date.now() - room.createdAt) / 1000),
+        },
+      }),
+    ]);
+
+    io.to(host.socketId).emit('elo:update', {
+      elo: Math.round(hostElo + hostDelta),
+      delta: Math.round(hostDelta),
+      result: draw ? 'draw' : winnerUserId === host.userId ? 'win' : 'loss',
+    });
+    io.to(guest.socketId).emit('elo:update', {
+      elo: Math.round(guestElo + guestDelta),
+      delta: Math.round(guestDelta),
+      result: draw ? 'draw' : winnerUserId === guest.userId ? 'win' : 'loss',
+    });
+
+    console.log(
+      `[MTG Elo] ${host.username} ${hostDelta >= 0 ? '+' : ''}${Math.round(hostDelta)} / ${guest.username} ${guestDelta >= 0 ? '+' : ''}${Math.round(guestDelta)}`,
+    );
+  } catch (err) {
+    console.error('[MTG Elo] Failed to finalize match:', err);
+  }
+}
+
+function tryResolveMtgReports(io, room) {
+  const hostReport = room.reports[room.host.userId];
+  const guestReport = room.reports[room.guest.userId];
+
+  if (hostReport && guestReport) {
+    if (hostReport === 'draw' && guestReport === 'draw') {
+      finalizeMtgMatch(io, room, null);
+    } else if (hostReport === 'win' && guestReport === 'loss') {
+      finalizeMtgMatch(io, room, room.host.userId);
+    } else if (hostReport === 'loss' && guestReport === 'win') {
+      finalizeMtgMatch(io, room, room.guest.userId);
+    } else {
+      // Conflicting reports — do not adjust ratings.
+      console.warn(`[MTG Elo] Conflicting reports for match ${room.id}, skipping Elo.`);
+      room.finalized = true;
+      if (room.finalizeTimer) clearTimeout(room.finalizeTimer);
+      mtgRooms.delete(room.id);
+    }
+    return;
+  }
+
+  // Only one report so far: trust it after a grace period (covers opponents
+  // who close the tab instead of reporting).
+  if (!room.finalizeTimer) {
+    room.finalizeTimer = setTimeout(() => {
+      const report = room.reports[room.host.userId]
+        ? { userId: room.host.userId, result: room.reports[room.host.userId], other: room.guest.userId }
+        : { userId: room.guest.userId, result: room.reports[room.guest.userId], other: room.host.userId };
+      if (!report.result) return;
+      const winnerId =
+        report.result === 'draw' ? null : report.result === 'win' ? report.userId : report.other;
+      finalizeMtgMatch(io, room, winnerId);
+    }, SINGLE_REPORT_GRACE_MS);
+  }
+}
+
+let mtgSweepStarted = false;
+
 export function registerSocketHandlers(io) {
+  // Re-run pairing every 5s (the Elo window widens with wait time) and drop
+  // abandoned match rooms after 6 hours.
+  if (!mtgSweepStarted) {
+    mtgSweepStarted = true;
+    setInterval(() => {
+      if (mtgQueue.length >= 2) pairMtgPlayers(io);
+      const cutoff = Date.now() - 6 * 60 * 60 * 1000;
+      for (const [id, room] of mtgRooms.entries()) {
+        if (room.createdAt < cutoff) {
+          if (room.finalizeTimer) clearTimeout(room.finalizeTimer);
+          mtgRooms.delete(id);
+        }
+      }
+    }, 5000);
+  }
+
   io.on('connection', (socket) => {
     // Send current lobbies to newly connected client
     socket.emit('lobby-list', Array.from(lobbies.values()).filter(l => l.status !== 'in-game'));
 
-    socket.on('queue:join', ({ userId, username }) => {
+    socket.on('queue:join', async ({ userId, username } = {}) => {
+      // Authoritative identity comes from the session cookie; the payload is
+      // only a fallback for unauthenticated/dev usage (no Elo recorded).
+      const sessionUser = await getUserFromSocket(socket);
+      const resolvedId = sessionUser?.id ?? userId ?? null;
+      const resolvedName = sessionUser?.username ?? username ?? 'Player';
+      const elo = resolvedId ? await getElo(resolvedId) : DEFAULT_ELO;
+
       const existingIdx = mtgQueue.findIndex((q) => q.socketId === socket.id);
       if (existingIdx >= 0) mtgQueue.splice(existingIdx, 1);
-      mtgQueue.push({ socketId: socket.id, userId, username: username || "Player" });
-      socket.emit('queue:joined', { position: mtgQueue.length });
+      // Prevent the same account queueing twice from two tabs.
+      if (resolvedId) {
+        const dupIdx = mtgQueue.findIndex((q) => q.userId === resolvedId);
+        if (dupIdx >= 0) mtgQueue.splice(dupIdx, 1);
+      }
+      mtgQueue.push({
+        socketId: socket.id,
+        userId: resolvedId,
+        username: resolvedName,
+        elo,
+        joinedAt: Date.now(),
+      });
+      socket.emit('queue:joined', { position: mtgQueue.length, elo: Math.round(elo) });
       pairMtgPlayers(io);
     });
 
@@ -64,14 +291,28 @@ export function registerSocketHandlers(io) {
     });
 
     socket.on('room:created', ({ roomCode }) => {
-      // Find which room this host belongs to
-      for (const [roomId, room] of mtgRooms.entries()) {
+      // Relay the Phase room code from the host to the guest. The room is kept
+      // alive so the match result can be reported for Elo afterwards.
+      for (const room of mtgRooms.values()) {
         if (room.host.socketId === socket.id) {
-           io.to(room.guest.socketId).emit('match-ready', { roomCode });
-           mtgRooms.delete(roomId);
-           break;
+          room.roomCode = roomCode;
+          io.to(room.guest.socketId).emit('match-ready', { roomCode });
+          break;
         }
       }
+    });
+
+    // match:result — { result: 'win' | 'loss' | 'draw' }, sent by each client
+    // when their game-over screen appears. Elo updates when reports agree.
+    socket.on('match:result', ({ result } = {}) => {
+      if (!['win', 'loss', 'draw'].includes(result)) return;
+      const room = findMtgRoomBySocket(socket.id);
+      if (!room || room.finalized) return;
+      const reporter = room.host.socketId === socket.id ? room.host : room.guest;
+      if (!reporter.userId) return;
+      if (room.reports[reporter.userId]) return; // first report wins
+      room.reports[reporter.userId] = result;
+      tryResolveMtgReports(io, room);
     });
 
     // create-lobby: { name, mode, playerName, deckId, game }

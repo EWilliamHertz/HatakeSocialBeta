@@ -2590,6 +2590,28 @@ function GameOverScreen({
     });
   }, [isDraft, gameId, isDraw, isVictory, resultRecorded]);
 
+  // Hatake integration: report the final result to the embedding page exactly
+  // once so hatake.social can update Elo ratings and match history.
+  const hatakeReportedRef = useRef(false);
+  useEffect(() => {
+    if (hatakeReportedRef.current) return;
+    hatakeReportedRef.current = true;
+    try {
+      window.parent?.postMessage(
+        {
+          type: 'MATCH_RESULT',
+          result: isDraw ? 'draw' : isVictory ? 'win' : 'loss',
+          winnerSeat: winner,
+          mySeat: activePlayerId,
+          isOnlineMode,
+        },
+        '*',
+      );
+    } catch {
+      /* not embedded */
+    }
+  }, [isDraw, isVictory, winner, activePlayerId, isOnlineMode]);
+
   useEffect(() => {
     if (!isDraftPodMatch || resultRecorded) return;
     void useMultiplayerDraftStore

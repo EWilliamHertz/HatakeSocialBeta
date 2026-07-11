@@ -666,6 +666,16 @@ export function MultiplayerPage() {
 
   useEffect(() => {
     const onMessage = (e: MessageEvent) => {
+      if (e.data?.type === 'HATAKE_IDENTITY') {
+        // Carry the hatake.social profile name into the Phase client so the
+        // opponent sees the real username instead of "Player".
+        const name =
+          typeof e.data.displayName === 'string'
+            ? e.data.displayName.trim().slice(0, 24)
+            : '';
+        if (name) useMultiplayerStore.getState().setDisplayName(name);
+        return;
+      }
       if (e.data?.type === 'MATCH_HOST') {
         const settings: HostSettings = {
           displayName: useMultiplayerStore.getState().displayName || "Player",
@@ -694,6 +704,13 @@ export function MultiplayerPage() {
       }
     };
     window.addEventListener('message', onMessage);
+    // Tell the embedding page (hatake.social) that the Phase client is ready
+    // to receive identity / matchmaking messages.
+    try {
+      window.parent?.postMessage({ type: 'PHASE_READY' }, '*');
+    } catch {
+      /* not embedded */
+    }
     return () => window.removeEventListener('message', onMessage);
   }, [activeDeckName, executeAction, handleJoinGame]);
 

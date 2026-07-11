@@ -66,17 +66,19 @@ WORKDIR /app/phase-engine/client
 RUN npm install
 # Set WebSocket URL so Phase connects back to Hatake's proxy
 ENV VITE_WS_URL=wss://hatakesocialbeta.onrender.com/phase-ws
-ENV CARD_DATA_URL=/phase/card-data.json
-ENV DATA_BASE_URL=/phase
+# Real MTGJSON/Scryfall card data is served through Hatake's caching proxy
+# (/api/phase-data), and all Scryfall image/API traffic goes through /api/img
+# so networks that block Scryfall still work.
+ENV CARD_DATA_URL=/api/phase-data/card-data.json
+ENV DATA_BASE_URL=/api/phase-data
+ENV IMAGE_PROXY_URL=/api/img
 RUN npm run build
 # Move Phase Frontend to Hatake Public Folder so Next.js serves it
 RUN mv dist /app/public/phase
-# Copy Card Data and other JSON files to the public/phase folder
-COPY --from=phase-builder /app/phase-engine/data/*.json /app/public/phase/
 
 # Stage 3: Unified Runner
 FROM node:24-slim
-RUN apt-get update && apt-get install -y openssl supervisor && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y openssl supervisor curl && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 # Copy built Node app and Next.js static files
@@ -85,6 +87,10 @@ COPY --from=node-builder /app /app
 COPY --from=phase-builder /app/phase-engine/target/server-release/phase-server /usr/local/bin/phase-server
 RUN mkdir -p /var/lib/phase-server
 COPY --from=phase-builder /app/phase-engine/data/card-data.json /var/lib/phase-server/card-data.json
+# Boot wrapper downloads the REAL card database (~80MB) on first start,
+# replacing the '{}' build-time fake above.
+COPY phase-server-start.sh /usr/local/bin/phase-server-start.sh
+RUN chmod +x /usr/local/bin/phase-server-start.sh
 # Setup supervisor to run both Node and Rust
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 

@@ -103,6 +103,9 @@ function dataFileDefines(mode: string): Record<string, string> {
     // compiles to a permanent no-op and nothing is ever sent anywhere.
     __TELEMETRY_URL__: JSON.stringify(process.env.TELEMETRY_URL || ""),
     __CARD_DATA_URL__: JSON.stringify(process.env.CARD_DATA_URL || "/card-data.json"),
+    // When set (e.g. "/api/img"), all scryfall.io/scryfall.com URLs are routed
+    // through this same-origin proxy so networks that block Scryfall still work.
+    __IMAGE_PROXY_URL__: JSON.stringify(process.env.IMAGE_PROXY_URL || ""),
     // Per-locale content-i18n sidecar URL template ({lng} replaced at runtime).
     // The sidecars are listed in data-files.json, so on deploy they are uploaded
     // to `${DATA_BASE_URL}/card-data.<lng>.json` and stripped from the Pages
